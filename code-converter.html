@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ CodeForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070d;--s1:#0e1120;--s2:#131729;--s3:#181d30;--border:#1e2438;--border2:#2a3050;--cyan:#22d3ee;--purple:#a78bfa;--green:#4ade80;--orange:#fb923c;--yellow:#fbbf24;--red:#f87171;--text:#f0f4ff;--text2:#8892b0;--text3:#4a5578;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(34,211,238,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:20px 14px 60px;}
+
+.header{text-align:center;padding:28px 0 24px;}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:20px;margin:0 auto 14px;background:linear-gradient(135deg,#0e2a3a,#0a1f3d);border:1px solid rgba(34,211,238,0.25);box-shadow:0 0 40px rgba(34,211,238,0.1);font-size:28px;}
+.header h1{font-size:26px;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#f0f4ff,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.header p{font-size:13px;color:var(--text3);}
+
+.api-row{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:11px 14px;margin-bottom:12px;}
+.api-inp{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 12px;outline:none;direction:ltr;transition:border-color 0.2s;}
+.api-inp:focus{border-color:var(--cyan);}
+.api-inp::placeholder{color:var(--text3);}
+.api-save{background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.25);border-radius:10px;color:var(--cyan);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.api-save:hover{background:rgba(34,211,238,0.2);}
+.api-ok{font-size:11px;color:var(--text3);white-space:nowrap;}
+.api-ok.saved{color:var(--green);}
+
+/* Input panel */
+.input-panel{background:var(--s2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--s3);border-bottom:1px solid var(--border);}
+.panel-title{font-size:12px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.lp{padding:2px 10px;border-radius:100px;font-size:10px;font-weight:700;background:var(--s1);border:1px solid var(--border2);color:var(--text3);}
+.lp.det{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,0.08);}
+.panel-acts{display:flex;gap:6px;}
+.pa{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:11px;padding:4px 10px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.pa:hover{border-color:var(--cyan);color:var(--cyan);}
+textarea{width:100%;min-height:200px;background:var(--s1);border:none;outline:none;color:#c9d8ff;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;padding:16px;resize:vertical;direction:ltr;text-align:left;}
+textarea::placeholder{color:var(--text3);font-size:11px;}
+
+/* Format selector */
+.fmt-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.fmt-label{font-size:12px;color:var(--text3);font-weight:700;white-space:nowrap;}
+.fmt-btn{padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.fmt-btn:hover{border-color:var(--border2);color:var(--text2);}
+.fmt-btn.a-html{border-color:var(--orange);color:var(--orange);background:rgba(251,146,60,0.08);}
+.fmt-btn.a-jsx{border-color:#61dafb;color:#61dafb;background:rgba(97,218,251,0.08);}
+.fmt-btn.a-js{border-color:var(--yellow);color:var(--yellow);background:rgba(251,191,36,0.08);}
+
+/* Convert button */
+.cvt-btn{width:100%;padding:16px;border-radius:16px;background:linear-gradient(135deg,#0e4a5a,#0a2d6b,#1a0a4a);border:1px solid rgba(34,211,238,0.2);color:white;font-family:'Vazirmatn',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 30px rgba(34,211,238,0.08);display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;position:relative;overflow:hidden;}
+.cvt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(34,211,238,0.18);}
+.cvt-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.ldots{display:none;align-items:center;gap:5px;}
+.ldots.show{display:flex;}
+.ld{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:ldB 1.2s infinite;}
+.ld:nth-child(2){animation-delay:0.2s;}
+.ld:nth-child(3){animation-delay:0.4s;}
+@keyframes ldB{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+
+.status{display:none;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:12px;color:var(--text3);margin-bottom:12px;}
+.status.show{display:flex;}
+.status.ok{border-color:rgba(74,222,128,0.3);color:var(--green);background:rgba(74,222,128,0.05);}
+.status.err{border-color:rgba(248,113,113,0.3);color:var(--red);background:rgba(248,113,113,0.05);}
+.status.busy{border-color:rgba(34,211,238,0.3);color:var(--cyan);background:rgba(34,211,238,0.05);}
+
+/* Result section */
+.result-section{display:none;background:var(--s2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;}
+.result-section.show{display:block;}
+.result-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--s3);border-bottom:1px solid var(--border);}
+.result-title{font-size:12px;font-weight:700;color:var(--green);}
+.result-acts{display:flex;gap:6px;}
+
+/* LIVE PREVIEW — این قسمت اصلی است */
+.preview-wrap{background:#fff;border-radius:0 0 18px 18px;overflow:hidden;}
+.preview-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1a2e;border-bottom:1px solid var(--border);}
+.preview-dot{width:10px;height:10px;border-radius:50%;}
+.preview-iframe{width:100%;min-height:400px;border:none;display:block;}
+
+/* Code toggle */
+.code-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--s3);}
+.code-toggle span{font-size:11px;color:var(--text3);}
+.toggle-btn{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:11px;padding:4px 10px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.toggle-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.code-view{display:none;background:var(--s1);padding:16px;direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a5f3a0;line-height:1.7;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;}
+.code-view.show{display:block;}
+
+/* Examples */
+.examples{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;}
+.ex-head{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ex-c{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;padding:6px 12px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.ex-c:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,0.05);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--green);color:#052010;font-size:13px;font-weight:700;padding:9px 22px;border-radius:100px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="wrap">
+
+<div class="header">
+  <div class="logo">⚡</div>
+  <h1>مبدل هوشمند کد</h1>
+  <p>کد را بینداز — برنامه آماده می‌شود و مستقیم اجرا می‌شود</p>
+</div>
+
+<div class="api-row">
+  <span style="font-size:18px">🔑</span>
+  <input class="api-inp" type="password" id="apiKey" placeholder="sk-ant-api03-...">
+  <button class="api-save" onclick="saveKey()">ذخیره</button>
+  <span class="api-ok" id="apiOk">وارد نشده</span>
+</div>
+
+<div class="input-panel">
+  <div class="panel-hd">
+    <div class="panel-title">
+      <span>کد ورودی</span>
+      <span class="lp" id="detLang">auto detect</span>
+    </div>
+    <div class="panel-acts">
+      <button class="pa" onclick="clearIn()">پاک</button>
+      <button class="pa" onclick="pasteIn()">📋 Paste</button>
+    </div>
+  </div>
+  <textarea id="codeIn" oninput="detectLang(this.value)"
+    placeholder="// هر کدی اینجا بینداز:&#10;// Python, Java, C#, PHP, SQL, Ruby...&#10;// یا HTML/CSS قدیمی&#10;// یا توضیح به فارسی!&#10;//&#10;// بعد از تبدیل برنامه مستقیم اجرا می‌شود ✨"></textarea>
+</div>
+
+<div class="fmt-row">
+  <span class="fmt-label">فرمت خروجی:</span>
+  <button class="fmt-btn a-html" id="f-html" onclick="setFmt('html',this)">🟠 HTML</button>
+  <button class="fmt-btn" id="f-jsx" onclick="setFmt('jsx',this)">⚛️ React JSX</button>
+  <button class="fmt-btn" id="f-js" onclick="setFmt('js',this)">🟡 JavaScript</button>
+</div>
+
+<div class="status" id="status"><span id="stTxt"></span></div>
+
+<button class="cvt-btn" id="cvtBtn" onclick="convert()">
+  <span id="btnTxt">⚡ تبدیل و اجرا</span>
+  <div class="ldots" id="ldots"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
+</button>
+
+<!-- نتیجه — پیش‌نمایش زنده -->
+<div class="result-section" id="resultSection">
+  <div class="result-hd">
+    <span class="result-title">✅ برنامه آماده است — در حال اجرا</span>
+    <div class="result-acts">
+      <button class="pa" onclick="copyCode()">📋 کپی کد</button>
+      <button class="pa" onclick="dlCode()">⬇️ دانلود</button>
+      <button class="pa" onclick="openFull()">🔗 باز کردن کامل</button>
+    </div>
+  </div>
+  <!-- پیش‌نمایش زنده -->
+  <div class="preview-wrap">
+    <div class="preview-bar">
+      <div class="preview-dot" style="background:#ff5f57"></div>
+      <div class="preview-dot" style="background:#febc2e"></div>
+      <div class="preview-dot" style="background:#28c840"></div>
+      <span style="font-size:11px;color:#666;margin-right:8px;">پیش‌نمایش زنده</span>
+    </div>
+    <iframe class="preview-iframe" id="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+  </div>
+  <div class="code-toggle">
+    <span>مشاهده کد HTML</span>
+    <button class="toggle-btn" onclick="toggleCode()">نشان بده ▼</button>
+  </div>
+  <div class="code-view" id="codeView"></div>
+</div>
+
+<div class="examples">
+  <div class="ex-head">📌 مثال‌های آماده</div>
+  <div class="ex-chips">
+    <button class="ex-c" onclick="eg('py')">🐍 Python Quiz</button>
+    <button class="ex-c" onclick="eg('java')">☕ Java Calculator</button>
+    <button class="ex-c" onclick="eg('cs')">🔷 C# Login</button>
+    <button class="ex-c" onclick="eg('timer')">⏱️ تایمر ساده</button>
+    <button class="ex-c" onclick="eg('desc')">💬 توضیح فارسی</button>
+    <button class="ex-c" onclick="eg('flash')">🃏 فلش‌کارت آلمانی</button>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let fmt='html', apiKey=localStorage.getItem('cf_key')||'', outputCode='', codeShown=false;
+if(apiKey){document.getElementById('apiKey').value=apiKey;setOk(true);}
+
+function saveKey(){
+  const k=document.getElementById('apiKey').value.trim();
+  if(!k.startsWith('sk-')){showSt('کلید API معتبر نیست','err');return;}
+  apiKey=k; localStorage.setItem('cf_key',k); setOk(true); showSt('✓ ذخیره شد','ok');
+}
+function setOk(ok){const e=document.getElementById('apiOk');e.textContent=ok?'✓ ذخیره شده':'وارد نشده';e.className='api-ok'+(ok?' saved':'');}
+
+function setFmt(f,btn){
+  fmt=f;
+  document.querySelectorAll('.fmt-btn').forEach(b=>b.className='fmt-btn');
+  btn.className='fmt-btn a-'+f;
+}
+
+const LP=[[/def\s+\w+\s*\(|print\s*\(|elif\s+/,'Python'],[/public\s+class|System\.out|void\s+main/,'Java'],[/using\s+System|Console\.Write|namespace/,'C#'],[/<\?php|\$_POST|echo\s+/,'PHP'],[/SELECT\s+|INSERT\s+INTO/i,'SQL'],[/def\s+\w+|puts\s+|require\s+'/,'Ruby'],[/<!DOCTYPE|<html|<div/i,'HTML']];
+function detectLang(code){
+  if(!code.trim()){const e=document.getElementById('detLang');e.textContent='auto detect';e.className='lp';return;}
+  for(const[rx,n]of LP){if(rx.test(code)){const e=document.getElementById('detLang');e.textContent=n;e.className='lp det';return;}}
+}
+
+async function convert(){
+  const code=document.getElementById('codeIn').value.trim();
+  if(!code){showSt('ابتدا کدی وارد کن','err');return;}
+  if(!apiKey){showSt('ابتدا کلید API را وارد و ذخیره کن','err');return;}
+
+  setLoad(true); showSt('⏳ در حال ساختن برنامه...','busy');
+  document.getElementById('resultSection').classList.remove('show');
+
+  const fmtDesc = fmt==='html'
+    ? 'HTML5 کامل با CSS زیبا و JavaScript — همه در یک فایل — قابل اجرا در مرورگر'
+    : fmt==='jsx'
+    ? 'React functional component کامل با export default'
+    : 'JavaScript ES6+ خالص';
+
+  const prompt=`تو یک متخصص ساخت برنامه‌های وب هستی.
+کد یا توضیح زیر را به ${fmtDesc} تبدیل کن که مستقیم در مرورگر اجرا شود.
+
+قوانین مهم:
+1. فقط کد را برگردان — بدون توضیح، بدون markdown، بدون backtick
+2. کد باید 100% کار کند و قابل اجرا باشد
+3. طراحی زیبا، تم تاریک، فونت Vazirmatn از Google Fonts
+4. پشتیبانی از RTL و متن فارسی
+5. Responsive برای موبایل
+6. اگر Python/Java/C# است منطق آن را کاملاً در JavaScript پیاده کن
+7. اگر توضیح متنی است یک برنامه کامل و زیبا بساز
+8. برنامه باید واقعاً کار کند — نه فقط UI
+
+کد/توضیح ورودی:
+${code}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'خطا: '+res.status);}
+    const data=await res.json();
+    let out=data.content?.[0]?.text||'';
+    out=out.replace(/^```[\w]*\n?/gm,'').replace(/^```$/gm,'').trim();
+
+    outputCode=out;
+    // نمایش پیش‌نمایش زنده
+    const frame=document.getElementById('previewFrame');
+    frame.srcdoc=out;
+    frame.style.minHeight='450px';
+    document.getElementById('codeView').textContent=out;
+    document.getElementById('resultSection').classList.add('show');
+    showSt('✅ برنامه آماده و در حال اجرا!','ok');
+    showToast('✓ برنامه اجرا شد');
+    // اسکرول به نتیجه
+    setTimeout(()=>document.getElementById('resultSection').scrollIntoView({behavior:'smooth'}),200);
+  }catch(e){
+    showSt('❌ خطا: '+e.message,'err');
+  }finally{
+    setLoad(false);
+  }
+}
+
+function setLoad(on){document.getElementById('cvtBtn').disabled=on;document.getElementById('btnTxt').style.display=on?'none':'';document.getElementById('ldots').className='ldots'+(on?' show':'');}
+function showSt(msg,type){const el=document.getElementById('status');document.getElementById('stTxt').textContent=msg;el.className='status show '+(type||'');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function clearIn(){document.getElementById('codeIn').value='';const e=document.getElementById('detLang');e.textContent='auto detect';e.className='lp';}
+async function pasteIn(){try{const t=await navigator.clipboard.readText();document.getElementById('codeIn').value=t;detectLang(t);}catch(e){document.getElementById('codeIn').focus();}}
+
+function toggleCode(){
+  codeShown=!codeShown;
+  document.getElementById('codeView').className='code-view'+(codeShown?' show':'');
+  document.querySelector('.toggle-btn').textContent=codeShown?'مخفی کن ▲':'نشان بده ▼';
+}
+
+function copyCode(){
+  if(outputCode)navigator.clipboard.writeText(outputCode).then(()=>showToast('✓ کد کپی شد'));
+}
+
+function dlCode(){
+  if(!outputCode)return;
+  const ext=fmt==='jsx'?'jsx':fmt==='js'?'js':'html';
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(outputCode);
+  a.download='app.'+ext; a.click();
+  showToast('✓ دانلود شد');
+}
+
+function openFull(){
+  if(!outputCode)return;
+  const w=window.open('','_blank');
+  w.document.write(outputCode);
+  w.document.close();
+}
+
+const EX={
+py:`# Python vocabulary quiz
+words = {"Haus":"خانه","Auto":"ماشین","Schule":"مکتب","Wasser":"آب","Buch":"کتاب","Mann":"مرد","Frau":"زن","Kind":"بچه","Tag":"روز","Nacht":"شب"}
+score = 0
+for word, meaning in words.items():
+    ans = input(f"معنی '{word}' چیست؟ ").strip()
+    if ans == meaning:
+        print("✓ درست!")
+        score += 1
+    else:
+        print(f"✗ جواب: {meaning}")
+print(f"نتیجه: {score}/{len(words)}")`,
+
+java:`// Java BMI Calculator
+import java.util.Scanner;
+public class BMI {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("وزن (kg): ");
+        double w = sc.nextDouble();
+        System.out.print("قد (cm): ");
+        double h = sc.nextDouble() / 100;
+        double bmi = w / (h * h);
+        System.out.printf("BMI: %.1f%n", bmi);
+        if(bmi < 18.5) System.out.println("کم وزن");
+        else if(bmi < 25) System.out.println("وزن نرمال ✓");
+        else if(bmi < 30) System.out.println("اضافه وزن");
+        else System.out.println("چاقی");
+    }
+}`,
+
+cs:`// C# Login System
+using System;
+using System.Collections.Generic;
+class Auth {
+    static Dictionary<string,string> users = new(){
+        {"naveed","1234"},{"admin","admin"}
+    };
+    static void Main(){
+        Console.Write("نام کاربری: ");
+        string u = Console.ReadLine();
+        Console.Write("رمز عبور: ");
+        string p = Console.ReadLine();
+        if(users.ContainsKey(u) && users[u]==p)
+            Console.WriteLine("✓ خوش آمدی " + u);
+        else
+            Console.WriteLine("✗ اشتباه است");
+    }
+}`,
+
+timer:`یک تایمر زیبا بساز با:
+- نمایش ساعت:دقیقه:ثانیه
+- دکمه شروع، توقف، ریست
+- قابلیت تنظیم Countdown
+- صدای اعلام وقتی تایمر تمام شود
+- طراحی فوق‌العاده زیبا`,
+
+desc:`یک ماشین حساب علمی زیبا بساز با:
+- عملیات پایه: جمع، تفریق، ضرب، تقسیم
+- عملیات پیشرفته: توان، جذر، سینوس، کسینوس
+- تاریخچه محاسبات
+- کیبورد و دکمه هر دو کار کنند
+- طراحی زیبا تم تاریک`,
+
+flash:`یک برنامه فلش‌کارت آلمانی بساز با این کلمات:
+der Hund=سگ, die Katze=گربه, das Haus=خانه, der Mann=مرد, die Frau=زن, das Kind=بچه, der Tag=روز, die Nacht=شب, das Wasser=آب, das Buch=کتاب, der Tisch=میز, die Schule=مکتب, das Auto=ماشین, der Baum=درخت, die Stadt=شهر
+ویژگی‌ها: کارت قابل چرخش، دکمه بلدم/نبلدم، پیشرفت، امتیازدهی`
+};
+
+function eg(k){document.getElementById('codeIn').value=EX[k];detectLang(EX[k]);showSt('مثال بارگذاری شد — تبدیل و اجرا را بزن','');}
+</script>
+</body>
+</html>
