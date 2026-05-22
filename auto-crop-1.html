@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کراپ خودکار عکس</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16181c;
+    --card: #1e2028;
+    --border: #2a2d35;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1c24 0%, #16181c 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 { font-size: 18px; font-weight: 700; }
+  .header-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Upload Zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: var(--surface);
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(79,142,247,0.05);
+  }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .upload-icon { font-size: 48px; margin-bottom: 12px; }
+  .upload-zone h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .upload-zone p { font-size: 13px; color: var(--muted); }
+
+  /* Settings */
+  .settings-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 16px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .setting-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  input[type=range] {
+    flex: 1;
+    accent-color: var(--accent);
+    height: 4px;
+  }
+
+  .val-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    min-width: 48px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .toggle-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .toggle-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: rgba(79,142,247,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Action Bar */
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    flex: 1;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+  }
+  .btn-success:hover { opacity: 0.9; }
+  .btn-success:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-pdf {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: white;
+  }
+  .btn-pdf:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-pdf:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* PDF Settings */
+  .pdf-panel {
+    background: var(--surface);
+    border: 1px solid #ef444440;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 0 0 16px;
+    display: none;
+  }
+  .pdf-panel.show { display: block; }
+  .pdf-panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ef4444;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pdf-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 600px) { .pdf-options { grid-template-columns: 1fr 1fr; } }
+
+  /* Progress */
+  .progress-wrap {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .progress-wrap.show { display: block; }
+  .progress-label { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .progress-bar-outer {
+    background: var(--card);
+    border-radius: 100px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* Gallery */
+  .gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0 12px;
+  }
+  .gallery-header h3 { font-size: 15px; font-weight: 600; }
+  .count-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .img-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .img-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .img-thumb {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: contain;
+    background: #111;
+    display: block;
+  }
+
+  .img-info {
+    padding: 10px;
+  }
+  .img-name {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
+    text-align: left;
+  }
+  .img-dims {
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 3px;
+    font-weight: 600;
+  }
+
+  .img-status {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .status-pending { background: rgba(107,114,128,0.8); }
+  .status-done { background: rgba(34,197,94,0.9); }
+  .status-processing { background: rgba(79,142,247,0.9); }
+
+  .img-remove {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(239,68,68,0.85);
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .img-card:hover .img-remove { opacity: 1; }
+
+  /* Before/After toggle */
+  .preview-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 4px 10px;
+  }
+  .prev-btn {
+    flex: 1;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .prev-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  canvas { display: none; }
+
+  @media (max-width: 600px) {
+    .settings-panel { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">✂️</div>
+  <div class="header-text">
+    <h1>کراپ خودکار اسکرین‌شات</h1>
+    <p>حاشیه‌های سیاه و اضافی را به صورت خودکار حذف کنید</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <div class="upload-icon">🖼️</div>
+    <h2>عکس‌های خود را اینجا بیندازید</h2>
+    <p>یا کلیک کنید تا انتخاب کنید · JPG, PNG, WEBP · چند عکس یکجا</p>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel">
+    <div class="setting-group">
+      <label>آستانه تشخیص رنگ تیره</label>
+      <div class="setting-row">
+        <input type="range" id="threshold" min="5" max="80" value="30">
+        <span class="val-badge" id="thresholdVal">30</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>حاشیه اضافی (پیکسل)</label>
+      <div class="setting-row">
+        <input type="range" id="padding" min="0" max="40" value="6">
+        <span class="val-badge" id="paddingVal">6px</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>رنگ حاشیه برای حذف</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-mode="dark" onclick="setMode(this)">⬛ سیاه/تیره</button>
+        <button class="toggle-btn" data-mode="white" onclick="setMode(this)">⬜ سفید/روشن</button>
+        <button class="toggle-btn" data-mode="both" onclick="setMode(this)">🔲 هر دو</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>فرمت خروجی</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-fmt="png" onclick="setFmt(this)">PNG</button>
+        <button class="toggle-btn" data-fmt="jpeg" onclick="setFmt(this)">JPG</button>
+        <button class="toggle-btn" data-fmt="webp" onclick="setFmt(this)">WEBP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-bar">
+    <button class="btn btn-primary" id="processBtn" onclick="processAll()" disabled>
+      ✂️ کراپ همه عکس‌ها
+    </button>
+    <button class="btn btn-success" id="downloadBtn" onclick="downloadAll()" disabled>
+      ⬇️ دانلود عکس‌ها
+    </button>
+    <button class="btn btn-pdf" id="pdfBtn" onclick="togglePdfPanel()" disabled>
+      📄 ساخت PDF
+    </button>
+    <button class="btn btn-secondary" onclick="clearAll()">
+      🗑️ پاک کردن همه
+    </button>
+  </div>
+
+  <!-- PDF Settings Panel -->
+  <div class="pdf-panel" id="pdfPanel">
+    <div class="pdf-panel-title">📄 تنظیمات PDF</div>
+    <div class="pdf-options">
+      <div class="setting-group">
+        <label>اندازه صفحه</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-psize="fit" onclick="setPdfOpt('size', this)">متناسب با عکس</button>
+          <button class="toggle-btn" data-psize="a4" onclick="setPdfOpt('size', this)">A4</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label>جهت صفحه</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-por="auto" onclick="setPdfOpt('orient', this)">خودکار</button>
+          <button class="toggle-btn" data-por="portrait" onclick="setPdfOpt('orient', this)">عمودی</button>
+          <button class="toggle-btn" data-por="landscape" onclick="setPdfOpt('orient', this)">افقی</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label>کیفیت تصویر</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-pq="lossless" onclick="setPdfOpt('quality', this)">🔥 بدون افت (PNG)</button>
+          <button class="toggle-btn" data-pq="high" onclick="setPdfOpt('quality', this)">بالا (JPG 97%)</button>
+          <button class="toggle-btn" data-pq="medium" onclick="setPdfOpt('quality', this)">متوسط (JPG 85%)</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-pdf" id="buildPdfBtn" onclick="buildPdf()" style="width:100%">
+        📄 ساخت و دانلود PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label" id="progressLabel">در حال پردازش...</div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <div id="gallerySection" style="display:none">
+    <div class="gallery-header">
+      <h3>عکس‌ها</h3>
+      <span class="count-badge" id="countBadge">0 عکس</span>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <div class="icon">📂</div>
+    <p>هنوز هیچ عکسی اضافه نشده</p>
+  </div>
+
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+let images = []; // {file, name, originalSrc, croppedSrc, status}
+let cropMode = 'dark';
+let outFormat = 'png';
+let pdfOpts = { size: 'fit', orient: 'auto', quality: 'lossless' };
+
+function togglePdfPanel() {
+  const panel = document.getElementById('pdfPanel');
+  panel.classList.toggle('show');
+}
+
+function setPdfOpt(key, btn) {
+  const attr = key === 'size' ? 'data-psize' : key === 'orient' ? 'data-por' : 'data-pq';
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  pdfOpts[key] = btn.getAttribute(attr);
+}
+
+async function buildPdf() {
+  const done = images.filter(i => i.status === 'done' && i.croppedSrc);
+  if (done.length === 0) return;
+
+  const buildBtn = document.getElementById('buildPdfBtn');
+  buildBtn.disabled = true;
+  buildBtn.textContent = '⏳ در حال ساخت PDF...';
+
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const progressLabel = document.getElementById('progressLabel');
+  progressWrap.classList.add('show');
+  progressBar.style.width = '0%';
+
+  const { jsPDF } = window.jspdf;
+
+  // We'll create PDF page by page
+  let pdf = null;
+
+  for (let i = 0; i < done.length; i++) {
+    const img = done[i];
+    progressLabel.textContent = `در حال افزودن عکس ${i + 1} از ${done.length} به PDF...`;
+    progressBar.style.width = ((i / done.length) * 100) + '%';
+    await new Promise(r => setTimeout(r, 10));
+
+    // Load image to get dimensions
+    const dims = await getImageDimensions(img.croppedSrc);
+    const imgW = dims.width;
+    const imgH = dims.height;
+
+    let pageW, pageH, orientation;
+
+    if (pdfOpts.size === 'fit') {
+      // Page exactly matches image (in pt, 1px ≈ 0.75pt at 96dpi)
+      // Use mm: 1px = 0.2645833mm at 96dpi
+      pageW = imgW * 0.2646;
+      pageH = imgH * 0.2646;
+      orientation = imgW >= imgH ? 'landscape' : 'portrait';
+    } else {
+      // A4
+      orientation = pdfOpts.orient === 'auto'
+        ? (imgW >= imgH ? 'landscape' : 'portrait')
+        : pdfOpts.orient;
+      pageW = orientation === 'landscape' ? 297 : 210;
+      pageH = orientation === 'landscape' ? 210 : 297;
+    }
+
+    if (i === 0) {
+      pdf = new jsPDF({ orientation, unit: 'mm', format: pdfOpts.size === 'fit' ? [pageW, pageH] : orientation === 'landscape' ? 'a4' : 'a4' });
+      // For fit mode, set correct page size
+      if (pdfOpts.size === 'fit') {
+        pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [pageW, pageH] });
+      }
+    } else {
+      if (pdfOpts.size === 'fit') {
+        pdf.addPage([pageW, pageH], 'portrait');
+      } else {
+        pdf.addPage(orientation === 'landscape' ? 'a4' : 'a4', orientation);
+      }
+    }
+
+    // Determine image format for jsPDF
+    let imgFormat, imgData;
+    if (pdfOpts.quality === 'lossless') {
+      // Convert to PNG for lossless
+      imgData = await convertToPng(img.croppedSrc);
+      imgFormat = 'PNG';
+    } else {
+      const q = pdfOpts.quality === 'high' ? 0.97 : 0.85;
+      imgData = await convertToJpeg(img.croppedSrc, q);
+      imgFormat = 'JPEG';
+    }
+
+    // Calculate position to fit image on page
+    const curW = pdf.internal.pageSize.getWidth();
+    const curH = pdf.internal.pageSize.getHeight();
+
+    if (pdfOpts.size === 'fit') {
+      // Image fills the entire page
+      pdf.addImage(imgData, imgFormat, 0, 0, curW, curH, '', 'FAST');
+    } else {
+      // Scale to fit A4 with small margin
+      const margin = 5;
+      const maxW = curW - margin * 2;
+      const maxH = curH - margin * 2;
+      const ratio = Math.min(maxW / imgW, maxH / imgH);
+      const drawW = imgW * ratio;
+      const drawH = imgH * ratio;
+      const x = (curW - drawW) / 2;
+      const y = (curH - drawH) / 2;
+      pdf.addImage(imgData, imgFormat, x, y, drawW, drawH, '', 'FAST');
+    }
+  }
+
+  progressBar.style.width = '100%';
+  progressLabel.textContent = '✅ PDF آماده شد! در حال دانلود...';
+
+  pdf.save('screenshots_cropped.pdf');
+
+  buildBtn.disabled = false;
+  buildBtn.textContent = '📄 ساخت و دانلود PDF';
+  setTimeout(() => progressWrap.classList.remove('show'), 3000);
+}
+
+function getImageDimensions(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.src = src;
+  });
+}
+
+function convertToPng(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      c.getContext('2d').drawImage(img, 0, 0);
+      resolve(c.toDataURL('image/png'));
+    };
+    img.src = src;
+  });
+}
+
+function convertToJpeg(src, quality) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0);
+      resolve(c.toDataURL('image/jpeg', quality));
+    };
+    img.src = src;
+  });
+}
+
+// Settings listeners
+document.getElementById('threshold').addEventListener('input', function() {
+  document.getElementById('thresholdVal').textContent = this.value;
+});
+document.getElementById('padding').addEventListener('input', function() {
+  document.getElementById('paddingVal').textContent = this.value + 'px';
+});
+
+function setMode(btn) {
+  document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  cropMode = btn.dataset.mode;
+}
+
+function setFmt(btn) {
+  document.querySelectorAll('[data-fmt]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  outFormat = btn.dataset.fmt;
+}
+
+// Drag & Drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+document.getElementById('fileInput').addEventListener('change', function() {
+  handleFiles(this.files);
+  this.value = '';
+});
+
+function handleFiles(files) {
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      images.push({ file, name: file.name, originalSrc: e.target.result, croppedSrc: null, status: 'pending' });
+      renderGallery();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderGallery() {
+  const gallery = document.getElementById('gallery');
+  const emptyState = document.getElementById('emptyState');
+  const gallerySection = document.getElementById('gallerySection');
+
+  if (images.length === 0) {
+    emptyState.style.display = 'block';
+    gallerySection.style.display = 'none';
+    document.getElementById('processBtn').disabled = true;
+    document.getElementById('downloadBtn').disabled = true;
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  gallerySection.style.display = 'block';
+  document.getElementById('processBtn').disabled = false;
+  document.getElementById('countBadge').textContent = images.length + ' عکس';
+
+  gallery.innerHTML = '';
+  images.forEach((img, idx) => {
+    const displaySrc = img.croppedSrc || img.originalSrc;
+    const statusIcon = img.status === 'done' ? '✅' : img.status === 'processing' ? '⏳' : '⏸️';
+    const statusClass = 'status-' + (img.status === 'done' ? 'done' : img.status === 'processing' ? 'processing' : 'pending');
+
+    const card = document.createElement('div');
+    card.className = 'img-card';
+    card.innerHTML = `
+      <img class="img-thumb" src="${displaySrc}" alt="${img.name}" id="thumb-${idx}">
+      <div class="img-status ${statusClass}" id="status-${idx}">${statusIcon}</div>
+      <button class="img-remove" onclick="removeImage(${idx})">✕</button>
+      <div class="img-info">
+        <div class="img-name">${img.name}</div>
+        <div class="img-dims" id="dims-${idx}">${img.status === 'done' ? '✂️ کراپ شد' : '⏸️ آماده'}</div>
+      </div>
+      ${img.croppedSrc ? `
+      <div class="preview-toggle">
+        <button class="prev-btn" onclick="showOriginal(${idx}, this)">اصلی</button>
+        <button class="prev-btn active" onclick="showCropped(${idx}, this)">کراپ</button>
+      </div>` : ''}
+    `;
+    gallery.appendChild(card);
+  });
+
+  const doneCount = images.filter(i => i.status === 'done').length;
+  document.getElementById('downloadBtn').disabled = doneCount === 0;
+  document.getElementById('pdfBtn').disabled = doneCount === 0;
+}
+
+function showOriginal(idx, btn) {
+  document.getElementById('thumb-' + idx).src = images[idx].originalSrc;
+  btn.parentElement.querySelectorAll('.prev-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showCropped(idx, btn) {
+  if (images[idx].croppedSrc) {
+    document.getElementById('thumb-' + idx).src = images[idx].croppedSrc;
+    btn.parentElement.querySelectorAll('.prev-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+function removeImage(idx) {
+  images.splice(idx, 1);
+  renderGallery();
+}
+
+function clearAll() {
+  images = [];
+  renderGallery();
+}
+
+async function processAll() {
+  const btn = document.getElementById('processBtn');
+  btn.disabled = true;
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const progressLabel = document.getElementById('progressLabel');
+
+  progressWrap.classList.add('show');
+
+  const threshold = parseInt(document.getElementById('threshold').value);
+  const padding = parseInt(document.getElementById('padding').value);
+
+  for (let i = 0; i < images.length; i++) {
+    images[i].status = 'processing';
+    renderGallery();
+
+    progressLabel.textContent = `در حال پردازش ${i + 1} از ${images.length}: ${images[i].name}`;
+    progressBar.style.width = ((i / images.length) * 100) + '%';
+
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    images[i].croppedSrc = await cropImage(images[i].originalSrc, threshold, padding);
+    images[i].status = 'done';
+    renderGallery();
+  }
+
+  progressBar.style.width = '100%';
+  progressLabel.textContent = `✅ ${images.length} عکس کراپ شد!`;
+  btn.disabled = false;
+  document.getElementById('downloadBtn').disabled = false;
+
+  setTimeout(() => progressWrap.classList.remove('show'), 3000);
+}
+
+function cropImage(src, threshold, padding) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const data = ctx.getImageData(0, 0, img.width, img.height).data;
+      const W = img.width, H = img.height;
+
+      function isBorder(r, g, b) {
+        const brightness = (r + g + b) / 3;
+        if (cropMode === 'dark') return brightness < threshold;
+        if (cropMode === 'white') return brightness > (255 - threshold);
+        // both
+        return brightness < threshold || brightness > (255 - threshold);
+      }
+
+      function rowIsBorder(y) {
+        let borderCount = 0;
+        for (let x = 0; x < W; x++) {
+          const i = (y * W + x) * 4;
+          if (isBorder(data[i], data[i+1], data[i+2])) borderCount++;
+        }
+        return (borderCount / W) > 0.85;
+      }
+
+      function colIsBorder(x) {
+        let borderCount = 0;
+        for (let y = 0; y < H; y++) {
+          const i = (y * W + x) * 4;
+          if (isBorder(data[i], data[i+1], data[i+2])) borderCount++;
+        }
+        return (borderCount / H) > 0.85;
+      }
+
+      let top = 0, bottom = H - 1, left = 0, right = W - 1;
+
+      while (top < bottom && rowIsBorder(top)) top++;
+      while (bottom > top && rowIsBorder(bottom)) bottom--;
+      while (left < right && colIsBorder(left)) left++;
+      while (right > left && colIsBorder(right)) right--;
+
+      // Add padding
+      top = Math.max(0, top - padding);
+      bottom = Math.min(H - 1, bottom + padding);
+      left = Math.max(0, left - padding);
+      right = Math.min(W - 1, right + padding);
+
+      const cropW = right - left + 1;
+      const cropH = bottom - top + 1;
+
+      if (cropW <= 0 || cropH <= 0) {
+        resolve(src);
+        return;
+      }
+
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = cropW;
+      outCanvas.height = cropH;
+      const outCtx = outCanvas.getContext('2d');
+      outCtx.drawImage(canvas, left, top, cropW, cropH, 0, 0, cropW, cropH);
+
+      const mime = outFormat === 'jpeg' ? 'image/jpeg' : outFormat === 'webp' ? 'image/webp' : 'image/png';
+      resolve(outCanvas.toDataURL(mime, 0.95));
+    };
+    img.src = src;
+  });
+}
+
+function downloadAll() {
+  const done = images.filter(i => i.status === 'done' && i.croppedSrc);
+  if (done.length === 0) return;
+
+  done.forEach((img, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      const ext = outFormat === 'jpeg' ? 'jpg' : outFormat;
+      const baseName = img.name.replace(/\.[^.]+$/, '');
+      a.download = baseName + '_cropped.' + ext;
+      a.href = img.croppedSrc;
+      a.click();
+    }, i * 200);
+  });
+}
+</script>
+</body>
+</html>
