@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ترکیب عکس</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0c0c10;
+    --surface: #15151c;
+    --surface2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #7c6aff;
+    --accent2: #ff6ab0;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 16px;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,106,255,0.15), transparent);
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #7c6aff, #ff6ab0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 20px;
+  }
+
+  .upload-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .upload-box {
+    flex: 1;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .upload-box:hover { border-color: var(--accent); }
+  .upload-box.has-img { border-style: solid; border-color: var(--accent); }
+
+  .upload-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: 8px;
+  }
+
+  .upload-box input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .upload-icon { font-size: 2rem; }
+  .upload-text { font-size: 0.8rem; color: var(--muted); }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .control-group {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  select, input[type=range] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  select:focus { border-color: var(--accent); }
+
+  input[type=range] {
+    padding: 4px 0;
+    accent-color: var(--accent);
+  }
+
+  .range-val {
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  .color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  input[type=color] {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: none;
+    padding: 2px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-combine {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+  }
+
+  .btn-combine:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-combine:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-download {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-download:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-download:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .preview-wrap {
+    margin-top: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+  }
+
+  canvas {
+    max-width: 100%;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .empty-preview {
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 32px;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(124,106,255,0.15);
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 480px) {
+    .upload-row { flex-direction: column; }
+    .upload-box { min-height: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🖼️ ترکیب عکس</h1>
+<p class="subtitle">دو عکس رو کنار هم بذار و دانلود کن</p>
+
+<div class="card">
+  <span class="tag">آپلود عکس‌ها</span>
+  <div class="upload-row">
+    <div class="upload-box" id="box1">
+      <input type="file" accept="image/*" id="file1">
+      <div class="upload-label">
+        <span class="upload-icon">📷</span>
+        <span class="upload-text">عکس اول</span>
+      </div>
+    </div>
+    <div class="upload-box" id="box2">
+      <input type="file" accept="image/*" id="file2">
+      <div class="upload-label">
+        <span class="upload-icon">📷</span>
+        <span class="upload-text">عکس دوم</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>چیدمان</label>
+      <select id="layout">
+        <option value="horizontal">↔ کنار هم (افقی)</option>
+        <option value="vertical">↕ روی هم (عمودی)</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>فاصله بین عکس‌ها: <span class="range-val" id="gapVal">10px</span></label>
+      <input type="range" id="gap" min="0" max="60" value="10">
+    </div>
+    <div class="control-group">
+      <label>رنگ فاصله</label>
+      <div class="color-row">
+        <input type="color" id="gapColor" value="#ffffff">
+        <span style="font-size:0.8rem;color:var(--muted)">رنگ پس‌زمینه</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>کیفیت خروجی: <span class="range-val" id="qualVal">90%</span></label>
+      <input type="range" id="quality" min="50" max="100" value="90">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-combine" id="combineBtn" disabled onclick="combine()">✨ ترکیب کن</button>
+    <button class="btn-download" id="dlBtn" disabled onclick="download()">⬇️ دانلود</button>
+  </div>
+
+  <div class="preview-wrap" id="previewWrap">
+    <p class="empty-preview">نتیجه اینجا نمایش داده می‌شه</p>
+  </div>
+</div>
+
+<canvas id="canvas" style="display:none"></canvas>
+
+<script>
+let img1 = null, img2 = null;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function loadImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => callback(img);
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setupBox(inputId, boxId, setter) {
+  const inp = document.getElementById(inputId);
+  const box = document.getElementById(boxId);
+  inp.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    loadImage(file, img => {
+      setter(img);
+      box.classList.add('has-img');
+      // show thumbnail
+      const existing = box.querySelector('img');
+      if (existing) existing.remove();
+      const thumb = document.createElement('img');
+      thumb.src = img.src;
+      box.appendChild(thumb);
+      checkReady();
+    });
+  });
+}
+
+setupBox('file1', 'box1', img => img1 = img);
+setupBox('file2', 'box2', img => img2 = img);
+
+document.getElementById('gap').addEventListener('input', e => {
+  document.getElementById('gapVal').textContent = e.target.value + 'px';
+});
+document.getElementById('quality').addEventListener('input', e => {
+  document.getElementById('qualVal').textContent = e.target.value + '%';
+});
+
+function checkReady() {
+  document.getElementById('combineBtn').disabled = !(img1 && img2);
+}
+
+function combine() {
+  if (!img1 || !img2) return;
+  const layout = document.getElementById('layout').value;
+  const gap = parseInt(document.getElementById('gap').value);
+  const bgColor = document.getElementById('gapColor').value;
+
+  const maxH = Math.max(img1.height, img2.height);
+  const maxW = Math.max(img1.width, img2.width);
+
+  let cw, ch;
+  if (layout === 'horizontal') {
+    const scale1 = maxH / img1.height;
+    const scale2 = maxH / img2.height;
+    const w1 = img1.width * scale1;
+    const w2 = img2.width * scale2;
+    cw = w1 + gap + w2;
+    ch = maxH;
+    canvas.width = cw; canvas.height = ch;
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(img1, 0, 0, w1, ch);
+    ctx.drawImage(img2, w1 + gap, 0, w2, ch);
+  } else {
+    const scale1 = maxW / img1.width;
+    const scale2 = maxW / img2.width;
+    const h1 = img1.height * scale1;
+    const h2 = img2.height * scale2;
+    cw = maxW;
+    ch = h1 + gap + h2;
+    canvas.width = cw; canvas.height = ch;
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(img1, 0, 0, cw, h1);
+    ctx.drawImage(img2, 0, h1 + gap, cw, h2);
+  }
+
+  // show preview
+  const dataUrl = canvas.toDataURL('image/jpeg', parseInt(document.getElementById('quality').value) / 100);
+  const previewWrap = document.getElementById('previewWrap');
+  previewWrap.innerHTML = '';
+  const previewImg = document.createElement('img');
+  previewImg.src = dataUrl;
+  previewImg.style.maxWidth = '100%';
+  previewImg.style.borderRadius = '12px';
+  previewWrap.appendChild(previewImg);
+
+  document.getElementById('dlBtn').disabled = false;
+  document.getElementById('dlBtn').dataset.url = dataUrl;
+}
+
+function download() {
+  const url = document.getElementById('dlBtn').dataset.url;
+  if (!url) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'combined-photo.jpg';
+  a.click();
+}
+</script>
+</body>
+</html>
