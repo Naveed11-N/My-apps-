@@ -1328,7 +1328,7 @@ async function aiFileUpload(inp){
 }
 
 // ===== TTS =====
-function tts(text,lang){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang==='de-DE'?0.85:0.9;window.speechSynthesis.speak(u);}
+function tts(text,lang){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();setTimeout(()=>{const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang==='de-DE'?0.85:0.9;window.speechSynthesis.speak(u);},150);}
 
 // ===== UTILS =====
 function strSim(a,b){
