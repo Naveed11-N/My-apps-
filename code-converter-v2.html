@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ CodeForge Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070d;--s1:#0e1120;--s2:#131729;--s3:#181d30;
+  --border:#1e2438;--border2:#2a3050;
+  --cyan:#22d3ee;--purple:#a78bfa;--green:#4ade80;
+  --orange:#fb923c;--yellow:#fbbf24;--red:#f87171;--pink:#f472b6;
+  --text:#f0f4ff;--text2:#8892b0;--text3:#4a5578;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* animated bg */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(34,211,238,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+.bg-glow{position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(34,211,238,0.05) 0%,transparent 70%);pointer-events:none;z-index:0;}
+.bg-glow2{position:fixed;bottom:-200px;left:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(167,139,250,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+/* TAB SYSTEM */
+.tabs-outer{position:relative;z-index:1;display:flex;border-bottom:1px solid var(--border);background:var(--s1);}
+.tab-btn{flex:1;padding:14px 10px;font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;color:var(--text3);background:none;border:none;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.tab-page{display:none;position:relative;z-index:1;}
+.tab-page.active{display:block;}
+
+/* ===== PAGE 1: CODE CONVERTER ===== */
+.wrap{max-width:700px;margin:0 auto;padding:20px 14px 60px;}
+.header{text-align:center;padding:28px 0 24px;}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:20px;margin:0 auto 14px;background:linear-gradient(135deg,#0e2a3a,#0a1f3d);border:1px solid rgba(34,211,238,0.25);box-shadow:0 0 40px rgba(34,211,238,0.15);font-size:28px;animation:pulse 3s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(34,211,238,0.15);}50%{box-shadow:0 0 60px rgba(34,211,238,0.3);}}
+.header h1{font-size:26px;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#f0f4ff,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.header p{font-size:13px;color:var(--text3);}
+
+/* model selector */
+.model-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.model-label{font-size:12px;color:var(--text3);font-weight:700;white-space:nowrap;}
+.model-btn{padding:7px 12px;border-radius:9px;border:1px solid var(--border);background:var(--s2);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.model-btn.active{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,0.1);}
+
+.api-row{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:11px 14px;margin-bottom:12px;}
+.api-inp{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 12px;outline:none;direction:ltr;transition:border-color 0.2s;}
+.api-inp:focus{border-color:var(--cyan);}
+.api-inp::placeholder{color:var(--text3);}
+.api-save{background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.25);border-radius:10px;color:var(--cyan);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.api-save:hover{background:rgba(34,211,238,0.2);}
+.api-ok{font-size:11px;color:var(--text3);white-space:nowrap;}
+.api-ok.saved{color:var(--green);}
+
+.input-panel{background:var(--s2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--s3);border-bottom:1px solid var(--border);}
+.panel-title{font-size:12px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.lp{padding:2px 10px;border-radius:100px;font-size:10px;font-weight:700;background:var(--s1);border:1px solid var(--border2);color:var(--text3);}
+.lp.det{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,0.08);}
+.panel-acts{display:flex;gap:6px;}
+.pa{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:11px;padding:4px 10px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.pa:hover{border-color:var(--cyan);color:var(--cyan);}
+textarea{width:100%;min-height:200px;background:var(--s1);border:none;outline:none;color:#c9d8ff;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;padding:16px;resize:vertical;direction:ltr;text-align:left;}
+textarea::placeholder{color:var(--text3);font-size:11px;}
+
+/* quality selector */
+.qual-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.qual-label{font-size:12px;color:var(--text3);font-weight:700;white-space:nowrap;}
+.qual-btn{padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:var(--s2);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.qual-btn.active-fast{border-color:var(--green);color:var(--green);background:rgba(74,222,128,0.08);}
+.qual-btn.active-balance{border-color:var(--yellow);color:var(--yellow);background:rgba(251,191,36,0.08);}
+.qual-btn.active-best{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,0.08);}
+
+.fmt-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.fmt-label{font-size:12px;color:var(--text3);font-weight:700;white-space:nowrap;}
+.fmt-btn{padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.fmt-btn.a-html{border-color:var(--orange);color:var(--orange);background:rgba(251,146,60,0.08);}
+.fmt-btn.a-jsx{border-color:#61dafb;color:#61dafb;background:rgba(97,218,251,0.08);}
+.fmt-btn.a-js{border-color:var(--yellow);color:var(--yellow);background:rgba(251,191,36,0.08);}
+
+.cvt-btn{width:100%;padding:16px;border-radius:16px;background:linear-gradient(135deg,#0e4a5a,#0a2d6b,#1a0a4a);border:1px solid rgba(34,211,238,0.2);color:white;font-family:'Vazirmatn',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 30px rgba(34,211,238,0.08);display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;position:relative;overflow:hidden;}
+.cvt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(34,211,238,0.22);}
+.cvt-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.ldots{display:none;align-items:center;gap:5px;}
+.ldots.show{display:flex;}
+.ld{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:ldB 1.2s infinite;}
+.ld:nth-child(2){animation-delay:0.2s;}
+.ld:nth-child(3){animation-delay:0.4s;}
+@keyframes ldB{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+
+.status{display:none;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:12px;color:var(--text3);margin-bottom:12px;}
+.status.show{display:flex;}
+.status.ok{border-color:rgba(74,222,128,0.3);color:var(--green);background:rgba(74,222,128,0.05);}
+.status.err{border-color:rgba(248,113,113,0.3);color:var(--red);background:rgba(248,113,113,0.05);}
+.status.busy{border-color:rgba(34,211,238,0.3);color:var(--cyan);background:rgba(34,211,238,0.05);}
+
+.result-section{display:none;background:var(--s2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:12px;}
+.result-section.show{display:block;}
+.result-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--s3);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.result-title{font-size:12px;font-weight:700;color:var(--green);}
+.result-acts{display:flex;gap:6px;flex-wrap:wrap;}
+.preview-wrap{background:#fff;border-radius:0 0 18px 18px;overflow:hidden;}
+.preview-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#1a1a2e;border-bottom:1px solid var(--border);}
+.preview-dot{width:10px;height:10px;border-radius:50%;}
+.preview-iframe{width:100%;min-height:420px;border:none;display:block;}
+.code-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--s3);}
+.code-toggle span{font-size:11px;color:var(--text3);}
+.toggle-btn{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:11px;padding:4px 10px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.toggle-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.code-view{display:none;background:var(--s1);padding:16px;direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a5f3a0;line-height:1.7;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;}
+.code-view.show{display:block;}
+
+.examples{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;}
+.ex-head{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ex-c{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;padding:6px 12px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.ex-c:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,0.05);}
+
+/* tokens/cost info */
+.token-info{display:none;font-size:10px;color:var(--text3);text-align:center;margin-bottom:8px;}
+.token-info.show{display:block;}
+
+/* ===== PAGE 2: GERMAN QUIZ ===== */
+.quiz-wrap{max-width:600px;margin:0 auto;padding:20px 14px 60px;}
+.quiz-header{text-align:center;padding:24px 0 20px;}
+.quiz-header h2{font-size:22px;font-weight:900;background:linear-gradient(135deg,#fbbf24,#f472b6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+
+/* quiz type selector */
+.quiz-types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.qtype-btn{padding:12px 10px;border-radius:14px;border:1px solid var(--border);background:var(--s2);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
+.qtype-btn:hover{border-color:var(--border2);color:var(--text);}
+.qtype-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,0.08);}
+.qtype-btn .qt-icon{font-size:20px;display:block;margin-bottom:4px;}
+.qtype-btn .qt-label{display:block;font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* input section */
+.quiz-input-section{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
+.qi-label{font-size:12px;color:var(--text3);font-weight:700;margin-bottom:8px;}
+.qi-textarea{width:100%;min-height:100px;background:var(--s1);border:1px solid var(--border2);border-radius:10px;color:#c9d8ff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:12px;outline:none;direction:ltr;resize:vertical;transition:border-color 0.2s;}
+.qi-textarea:focus{border-color:var(--cyan);}
+.qi-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.qi-num{background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:12px;padding:7px 12px;width:80px;outline:none;text-align:center;}
+.qi-gen-btn{flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(34,211,238,0.2));border:1px solid rgba(167,139,250,0.3);color:var(--purple);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.qi-gen-btn:hover{background:linear-gradient(135deg,rgba(167,139,250,0.35),rgba(34,211,238,0.35));}
+.qi-gen-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* quick topic chips */
+.topic-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.topic-chip{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Vazirmatn',sans-serif;transition:all 0.15s;}
+.topic-chip:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* quiz card area */
+.quiz-area{display:none;}
+.quiz-area.show{display:block;}
+
+/* progress */
+.quiz-prog{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.prog-bar{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:3px;transition:width 0.5s ease;}
+.prog-txt{font-size:12px;color:var(--text3);white-space:nowrap;}
+
+/* question card */
+.q-card{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));}
+.q-type-badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;margin-bottom:12px;}
+.badge-vocab{background:rgba(34,211,238,0.12);color:var(--cyan);border:1px solid rgba(34,211,238,0.2);}
+.badge-grammar{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.2);}
+.badge-article{background:rgba(251,191,36,0.12);color:var(--yellow);border:1px solid rgba(251,191,36,0.2);}
+.badge-fill{background:rgba(74,222,128,0.12);color:var(--green);border:1px solid rgba(74,222,128,0.2);}
+.badge-nebensatz{background:rgba(244,114,182,0.12);color:var(--pink);border:1px solid rgba(244,114,182,0.2);}
+.badge-praep{background:rgba(251,146,60,0.12);color:var(--orange);border:1px solid rgba(251,146,60,0.2);}
+
+.q-text{font-size:18px;font-weight:700;margin-bottom:6px;line-height:1.5;}
+.q-hint{font-size:12px;color:var(--text3);margin-bottom:16px;}
+
+/* MCQ options */
+.mcq-opts{display:flex;flex-direction:column;gap:8px;}
+.mcq-opt{padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--s1);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:right;}
+.mcq-opt:hover:not([disabled]){border-color:var(--cyan);color:var(--text);}
+.mcq-opt.correct{border-color:var(--green)!important;background:rgba(74,222,128,0.12)!important;color:var(--green)!important;}
+.mcq-opt.wrong{border-color:var(--red)!important;background:rgba(248,113,113,0.12)!important;color:var(--red)!important;}
+
+/* fill input */
+.fill-row{display:flex;gap:8px;}
+.fill-inp{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;padding:12px 14px;outline:none;direction:ltr;transition:border-color 0.2s;}
+.fill-inp:focus{border-color:var(--cyan);}
+.fill-inp.correct{border-color:var(--green);}
+.fill-inp.wrong{border-color:var(--red);}
+.check-btn{padding:12px 18px;border-radius:10px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);color:var(--cyan);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.check-btn:hover{background:rgba(34,211,238,0.2);}
+
+/* feedback */
+.q-feedback{display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-top:10px;}
+.q-feedback.show{display:block;}
+.q-feedback.correct{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:var(--green);}
+.q-feedback.wrong{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:var(--red);}
+
+/* explanation box */
+.q-explain{display:none;background:var(--s3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text2);margin-top:8px;line-height:1.7;}
+.q-explain.show{display:block;}
+
+/* next btn */
+.next-btn{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#0e4a5a,#0a2d6b);border:1px solid rgba(34,211,238,0.2);color:white;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all 0.2s;display:none;margin-top:10px;}
+.next-btn.show{display:block;}
+.next-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(34,211,238,0.15);}
+
+/* score card */
+.score-card{display:none;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:30px 20px;text-align:center;margin-bottom:14px;}
+.score-card.show{display:block;}
+.score-big{font-size:60px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.score-label{font-size:14px;color:var(--text2);margin-bottom:6px;}
+.score-msg{font-size:16px;font-weight:700;margin:10px 0;}
+.score-stars{font-size:32px;margin:8px 0;}
+.restart-btn{padding:12px 30px;border-radius:12px;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(167,139,250,0.15));border:1px solid rgba(34,211,238,0.3);color:var(--cyan);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;margin-top:10px;}
+.restart-btn:hover{background:linear-gradient(135deg,rgba(34,211,238,0.3),rgba(167,139,250,0.3));}
+
+/* quiz status */
+.quiz-status{display:none;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:12px;color:var(--text3);margin-bottom:12px;}
+.quiz-status.show{display:flex;}
+.quiz-status.busy{border-color:rgba(167,139,250,0.3);color:var(--purple);background:rgba(167,139,250,0.05);}
+.quiz-status.err{border-color:rgba(248,113,113,0.3);color:var(--red);}
+
+/* streak */
+.streak-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.streak-item{font-size:11px;color:var(--text3);background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;display:flex;align-items:center;gap:4px;}
+.streak-item span{font-weight:700;color:var(--text);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--green);color:#052010;font-size:13px;font-weight:700;padding:9px 22px;border-radius:100px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<!-- TABS -->
+<div class="tabs-outer">
+  <button class="tab-btn active" onclick="switchTab('converter',this)">⚡ مبدل کد</button>
+  <button class="tab-btn" onclick="switchTab('quiz',this)">🇩🇪 کوییز آلمانی</button>
+</div>
+
+<!-- ===== TAB 1: CODE CONVERTER ===== -->
+<div id="tab-converter" class="tab-page active">
+<div class="wrap">
+
+<div class="header">
+  <div class="logo">⚡</div>
+  <h1>مبدل هوشمند کد</h1>
+  <p>کد را بینداز — برنامه آماده می‌شود و مستقیم اجرا می‌شود</p>
+</div>
+
+<div class="api-row">
+  <span style="font-size:18px">🔑</span>
+  <input class="api-inp" type="password" id="apiKey" placeholder="sk-ant-api03-...">
+  <button class="api-save" onclick="saveKey()">ذخیره</button>
+  <span class="api-ok" id="apiOk">وارد نشده</span>
+</div>
+
+<div class="model-row">
+  <span class="model-label">مدل:</span>
+  <button class="model-btn active" id="m-haiku" onclick="setModel('haiku-4-5-20251001',this)">⚡ Haiku (سریع)</button>
+  <button class="model-btn" id="m-sonnet" onclick="setModel('sonnet-4-20250514',this)">🧠 Sonnet (بهتر)</button>
+</div>
+
+<div class="input-panel">
+  <div class="panel-hd">
+    <div class="panel-title">
+      <span>کد ورودی</span>
+      <span class="lp" id="detLang">auto detect</span>
+    </div>
+    <div class="panel-acts">
+      <button class="pa" onclick="clearIn()">پاک</button>
+      <button class="pa" onclick="pasteIn()">📋 Paste</button>
+    </div>
+  </div>
+  <textarea id="codeIn" oninput="detectLang(this.value)"
+    placeholder="// هر کدی اینجا بینداز:&#10;// Python, Java, C#, PHP, SQL, Ruby...&#10;// یا HTML/CSS قدیمی&#10;// یا توضیح به فارسی!&#10;//&#10;// بعد از تبدیل برنامه مستقیم اجرا می‌شود ✨"></textarea>
+</div>
+
+<div class="qual-row">
+  <span class="qual-label">کیفیت خروجی:</span>
+  <button class="qual-btn active-fast" id="q-fast" onclick="setQual('fast',this)">⚡ سریع</button>
+  <button class="qual-btn" id="q-balance" onclick="setQual('balance',this)">⚖️ متعادل</button>
+  <button class="qual-btn" id="q-best" onclick="setQual('best',this)">💎 بهترین</button>
+</div>
+
+<div class="fmt-row">
+  <span class="fmt-label">فرمت خروجی:</span>
+  <button class="fmt-btn a-html" id="f-html" onclick="setFmt('html',this)">🟠 HTML</button>
+  <button class="fmt-btn" id="f-jsx" onclick="setFmt('jsx',this)">⚛️ React JSX</button>
+  <button class="fmt-btn" id="f-js" onclick="setFmt('js',this)">🟡 JavaScript</button>
+</div>
+
+<div class="status" id="status"><span id="stTxt"></span></div>
+<div class="token-info" id="tokenInfo"></div>
+
+<button class="cvt-btn" id="cvtBtn" onclick="convert()">
+  <span id="btnTxt">⚡ تبدیل و اجرا</span>
+  <div class="ldots" id="ldots"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
+</button>
+
+<div class="result-section" id="resultSection">
+  <div class="result-hd">
+    <span class="result-title">✅ برنامه آماده است — در حال اجرا</span>
+    <div class="result-acts">
+      <button class="pa" onclick="copyCode()">📋 کپی کد</button>
+      <button class="pa" onclick="dlCode()">⬇️ دانلود</button>
+      <button class="pa" onclick="openFull()">🔗 باز کردن کامل</button>
+    </div>
+  </div>
+  <div class="preview-wrap">
+    <div class="preview-bar">
+      <div class="preview-dot" style="background:#ff5f57"></div>
+      <div class="preview-dot" style="background:#febc2e"></div>
+      <div class="preview-dot" style="background:#28c840"></div>
+      <span style="font-size:11px;color:#666;margin-right:8px;">پیش‌نمایش زنده</span>
+    </div>
+    <iframe class="preview-iframe" id="previewFrame" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+  </div>
+  <div class="code-toggle">
+    <span>مشاهده کد HTML</span>
+    <button class="toggle-btn" onclick="toggleCode()">نشان بده ▼</button>
+  </div>
+  <div class="code-view" id="codeView"></div>
+</div>
+
+<div class="examples">
+  <div class="ex-head">📌 مثال‌های آماده</div>
+  <div class="ex-chips">
+    <button class="ex-c" onclick="eg('py')">🐍 Python Quiz (با آرتیکل)</button>
+    <button class="ex-c" onclick="eg('java')">☕ Java Calculator</button>
+    <button class="ex-c" onclick="eg('cs')">🔷 C# Login</button>
+    <button class="ex-c" onclick="eg('timer')">⏱️ تایمر زیبا</button>
+    <button class="ex-c" onclick="eg('desc')">💬 ماشین حساب علمی</button>
+    <button class="ex-c" onclick="eg('flash')">🃏 فلش‌کارت آلمانی</button>
+    <button class="ex-c" onclick="eg('praep')">📚 کوییز حروف اضافه</button>
+    <button class="ex-c" onclick="eg('nebensatz')">🔗 تمرین Nebensatz</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ===== TAB 2: GERMAN QUIZ ===== -->
+<div id="tab-quiz" class="tab-page">
+<div class="quiz-wrap">
+
+<div class="quiz-header">
+  <div style="font-size:36px;margin-bottom:8px;">🇩🇪</div>
+  <h2>کوییز زبان آلمانی</h2>
+  <p style="font-size:12px;color:var(--text3);">مثل امتحان واقعی Goethe — لغات + گرامر + حروف اضافه + Nebensatz</p>
+</div>
+
+<!-- quiz type -->
+<div class="quiz-types">
+  <button class="qtype-btn active" onclick="setQType('vocab',this)">
+    <span class="qt-icon">📖</span>لغات + آرتیکل
+    <span class="qt-label">معنی + der/die/das</span>
+  </button>
+  <button class="qtype-btn" onclick="setQType('article',this)">
+    <span class="qt-icon">🏷️</span>آرتیکل
+    <span class="qt-label">der / die / das</span>
+  </button>
+  <button class="qtype-btn" onclick="setQType('praep',this)">
+    <span class="qt-icon">🔗</span>حروف اضافه
+    <span class="qt-label">Präpositionen</span>
+  </button>
+  <button class="qtype-btn" onclick="setQType('nebensatz',this)">
+    <span class="qt-icon">📝</span>Nebensatz
+    <span class="qt-label">weil / dass / wenn</span>
+  </button>
+  <button class="qtype-btn" onclick="setQType('fill',this)">
+    <span class="qt-icon">✏️</span>جاخالی
+    <span class="qt-label">Fill in the blank</span>
+  </button>
+  <button class="qtype-btn" onclick="setQType('mixed',this)">
+    <span class="qt-icon">🎲</span>ترکیبی
+    <span class="qt-label">همه نوع سوال</span>
+  </button>
+</div>
+
+<!-- input -->
+<div class="quiz-input-section">
+  <div class="qi-label">📋 موضوع یا لغات خود را وارد کن (یا یکی از موضوعات آماده را انتخاب کن):</div>
+  <textarea class="qi-textarea" id="quizTopic" placeholder="مثال: Präpositionen mit Dativ&#10;یا: der Hund=سگ, die Katze=گربه, das Haus=خانه&#10;یا: modal verbs, Nebensatz mit weil..."></textarea>
+  <div class="topic-chips">
+    <button class="topic-chip" onclick="setTopic('Präpositionen mit Dativ und Akkusativ')">📌 حروف اضافه</button>
+    <button class="topic-chip" onclick="setTopic('Nebensatz mit weil, dass, wenn, obwohl')">🔗 Nebensatz</button>
+    <button class="topic-chip" onclick="setTopic('Modalverben: müssen, sollen, wollen, möchten, können, dürfen')">⚙️ Modal Verben</button>
+    <button class="topic-chip" onclick="setTopic('Körperteile und Pflege Vokabular für Pflegeausbildung')">🏥 لغات Pflege</button>
+    <button class="topic-chip" onclick="setTopic('Alltag Vokabular A1: Haus, Familie, Essen, Arbeit')">🏠 لغات روزمره</button>
+    <button class="topic-chip" onclick="setTopic('Akkusativ und Dativ Artikel: der/die/das → den/die/das')">📊 آرتیکل‌ها</button>
+  </div>
+  <div class="qi-row">
+    <input class="qi-num" type="number" id="qCount" value="8" min="3" max="15">
+    <span style="font-size:12px;color:var(--text3);align-self:center;">سوال</span>
+    <button class="qi-gen-btn" id="genBtn" onclick="generateQuiz()">
+      🤖 ساخت کوییز با هوش مصنوعی
+    </button>
+  </div>
+</div>
+
+<div class="quiz-status" id="quizStatus"><span id="qstTxt"></span></div>
+
+<!-- quiz area -->
+<div class="quiz-area" id="quizArea">
+
+  <div class="streak-bar">
+    <div class="streak-item">سوال <span id="qNum">1</span> از <span id="qTotal">8</span></div>
+    <div class="streak-item">✅ <span id="qCorrect">0</span> درست</div>
+    <div class="streak-item">❌ <span id="qWrong">0</span> غلط</div>
+  </div>
+
+  <div class="quiz-prog">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="prog-txt" id="progTxt">0%</div>
+  </div>
+
+  <div class="q-card" id="qCard">
+    <div class="q-type-badge badge-vocab" id="qBadge">لغات</div>
+    <div class="q-text" id="qText">سوال...</div>
+    <div class="q-hint" id="qHint"></div>
+    <!-- MCQ -->
+    <div class="mcq-opts" id="mcqOpts"></div>
+    <!-- Fill -->
+    <div class="fill-row" id="fillRow" style="display:none">
+      <input class="fill-inp" id="fillInp" placeholder="جواب را بنویس..." onkeydown="if(event.key==='Enter')checkFill()">
+      <button class="check-btn" onclick="checkFill()">تایید ✓</button>
+    </div>
+    <div class="q-feedback" id="qFeedback"></div>
+    <div class="q-explain" id="qExplain"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">سوال بعدی ←</button>
+  </div>
+
+</div>
+
+<!-- score -->
+<div class="score-card" id="scoreCard">
+  <div class="score-label">نتیجه نهایی</div>
+  <div class="score-big" id="scoreBig">0/0</div>
+  <div class="score-stars" id="scoreStars">⭐</div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <button class="restart-btn" onclick="restartQuiz()">🔄 دوباره امتحان کن</button>
+</div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== SHARED =====
+let apiKey = localStorage.getItem('cf_key') || '';
+if(apiKey){ document.getElementById('apiKey').value = apiKey; setOk(true); }
+
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== CONVERTER =====
+let fmt='html', outputCode='', codeShown=false, cvtModel='claude-haiku-4-5-20251001', cvtQual='fast';
+
+function saveKey(){
+  const k=document.getElementById('apiKey').value.trim();
+  if(!k.startsWith('sk-')){showStC('کلید API معتبر نیست','err');return;}
+  apiKey=k; localStorage.setItem('cf_key',k); setOk(true); showStC('✓ ذخیره شد','ok');
+}
+function setOk(ok){
+  const e=document.getElementById('apiOk');
+  e.textContent=ok?'✓ ذخیره شده':'وارد نشده';
+  e.className='api-ok'+(ok?' saved':'');
+}
+function setModel(m,btn){
+  cvtModel='claude-'+m;
+  document.querySelectorAll('.model-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setQual(q,btn){
+  cvtQual=q;
+  document.querySelectorAll('.qual-btn').forEach(b=>b.className='qual-btn');
+  btn.className='qual-btn active-'+q;
+}
+function setFmt(f,btn){
+  fmt=f;
+  document.querySelectorAll('.fmt-btn').forEach(b=>b.className='fmt-btn');
+  btn.className='fmt-btn a-'+f;
+}
+
+const LP=[[/def\s+\w+\s*\(|print\s*\(|elif\s+/,'Python'],[/public\s+class|System\.out|void\s+main/,'Java'],[/using\s+System|Console\.Write|namespace/,'C#'],[/<\?php|\$_POST|echo\s+/,'PHP'],[/SELECT\s+|INSERT\s+INTO/i,'SQL'],[/def\s+\w+|puts\s+|require\s+'/,'Ruby'],[/<!DOCTYPE|<html|<div/i,'HTML']];
+function detectLang(code){
+  if(!code.trim()){const e=document.getElementById('detLang');e.textContent='auto detect';e.className='lp';return;}
+  for(const[rx,n]of LP){if(rx.test(code)){const e=document.getElementById('detLang');e.textContent=n;e.className='lp det';return;}}
+}
+
+const qualPrompts={
+  fast:'طراحی زیبا و ساده',
+  balance:'طراحی حرفه‌ای با انیمیشن‌های روان',
+  best:'طراحی فوق‌العاده زیبا، انیمیشن‌های پیچیده، بهترین UX ممکن'
+};
+
+async function convert(){
+  const code=document.getElementById('codeIn').value.trim();
+  if(!code){showStC('ابتدا کدی وارد کن','err');return;}
+  if(!apiKey){showStC('ابتدا کلید API را وارد و ذخیره کن','err');return;}
+  setLoad(true); showStC('⏳ در حال ساختن برنامه...','busy');
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('tokenInfo').classList.remove('show');
+
+  const fmtDesc=fmt==='html'?'HTML5 کامل با CSS زیبا و JavaScript — همه در یک فایل':fmt==='jsx'?'React functional component کامل با export default':'JavaScript ES6+ خالص';
+  const prompt=`تو یک متخصص ساخت برنامه‌های وب هستی.
+کد یا توضیح زیر را به ${fmtDesc} تبدیل کن که مستقیم در مرورگر اجرا شود.
+${qualPrompts[cvtQual]}
+
+قوانین مهم:
+1. فقط کد را برگردان — بدون توضیح، بدون markdown، بدون backtick
+2. کد باید 100% کار کند و قابل اجرا باشد
+3. تم تاریک، فونت Vazirmatn از Google Fonts
+4. پشتیبانی از RTL و متن فارسی
+5. Responsive برای موبایل
+6. اگر Python/Java/C# است منطق آن را کاملاً در JavaScript پیاده کن
+7. اگر کوییز لغات آلمانی است: آرتیکل (der/die/das) را همیشه همراه اسم نشان بده
+8. برنامه باید واقعاً کار کند — نه فقط UI
+
+کد/توضیح ورودی:
+${code}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:cvtModel,max_tokens:8000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'خطا: '+res.status);}
+    const data=await res.json();
+    let out=data.content?.[0]?.text||'';
+    out=out.replace(/^```[\w]*\n?/gm,'').replace(/^```$/gm,'').trim();
+    const inTok=data.usage?.input_tokens||0, outTok=data.usage?.output_tokens||0;
+
+    outputCode=out;
+    const frame=document.getElementById('previewFrame');
+    frame.srcdoc=out;
+    frame.style.minHeight='450px';
+    document.getElementById('codeView').textContent=out;
+    document.getElementById('resultSection').classList.add('show');
+    const ti=document.getElementById('tokenInfo');
+    ti.textContent=`توکن ورودی: ${inTok} | توکن خروجی: ${outTok}`;
+    ti.classList.add('show');
+    showStC('✅ برنامه آماده و در حال اجرا!','ok');
+    showToast('✓ برنامه اجرا شد');
+    setTimeout(()=>document.getElementById('resultSection').scrollIntoView({behavior:'smooth'}),200);
+  }catch(e){showStC('❌ خطا: '+e.message,'err');}
+  finally{setLoad(false);}
+}
+
+function setLoad(on){document.getElementById('cvtBtn').disabled=on;document.getElementById('btnTxt').style.display=on?'none':'';document.getElementById('ldots').className='ldots'+(on?' show':'');}
+function showStC(msg,type){const el=document.getElementById('status');document.getElementById('stTxt').textContent=msg;el.className='status show '+(type||'');}
+function clearIn(){document.getElementById('codeIn').value='';const e=document.getElementById('detLang');e.textContent='auto detect';e.className='lp';}
+async function pasteIn(){try{const t=await navigator.clipboard.readText();document.getElementById('codeIn').value=t;detectLang(t);}catch(e){document.getElementById('codeIn').focus();}}
+function toggleCode(){codeShown=!codeShown;document.getElementById('codeView').className='code-view'+(codeShown?' show':'');document.querySelector('.toggle-btn').textContent=codeShown?'مخفی کن ▲':'نشان بده ▼';}
+function copyCode(){if(outputCode)navigator.clipboard.writeText(outputCode).then(()=>showToast('✓ کد کپی شد'));}
+function dlCode(){if(!outputCode)return;const ext=fmt==='jsx'?'jsx':fmt==='js'?'js':'html';const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(outputCode);a.download='app.'+ext;a.click();showToast('✓ دانلود شد');}
+function openFull(){if(!outputCode)return;const w=window.open('','_blank');w.document.write(outputCode);w.document.close();}
+
+const EX={
+py:`# Python vocabulary quiz - با آرتیکل
+words = {
+    "der Hund": "سگ", "die Katze": "گربه", "das Haus": "خانه",
+    "der Mann": "مرد", "die Frau": "زن", "das Kind": "بچه",
+    "der Tag": "روز", "die Nacht": "شب", "das Wasser": "آب",
+    "das Buch": "کتاب", "der Tisch": "میز", "die Schule": "مکتب"
+}
+score = 0
+for word, meaning in words.items():
+    ans = input(f"معنی '{word}' چیست؟ ").strip()
+    if ans == meaning:
+        print("✓ درست!")
+        score += 1
+    else:
+        print(f"✗ جواب: {meaning}")
+print(f"نتیجه: {score}/{len(words)}")`,
+
+java:`// Java BMI Calculator
+import java.util.Scanner;
+public class BMI {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("وزن (kg): ");
+        double w = sc.nextDouble();
+        System.out.print("قد (cm): ");
+        double h = sc.nextDouble() / 100;
+        double bmi = w / (h * h);
+        System.out.printf("BMI: %.1f%n", bmi);
+        if(bmi < 18.5) System.out.println("کم وزن");
+        else if(bmi < 25) System.out.println("وزن نرمال ✓");
+        else if(bmi < 30) System.out.println("اضافه وزن");
+        else System.out.println("چاقی");
+    }
+}`,
+
+cs:`// C# Login System
+using System;
+using System.Collections.Generic;
+class Auth {
+    static Dictionary<string,string> users = new(){{"naveed","1234"},{"admin","admin"}};
+    static void Main(){
+        Console.Write("نام کاربری: ");
+        string u = Console.ReadLine();
+        Console.Write("رمز عبور: ");
+        string p = Console.ReadLine();
+        if(users.ContainsKey(u) && users[u]==p) Console.WriteLine("✓ خوش آمدی " + u);
+        else Console.WriteLine("✗ اشتباه است");
+    }
+}`,
+
+timer:`یک تایمر زیبا و حرفه‌ای بساز با:
+- نمایش ساعت:دقیقه:ثانیه با انیمیشن
+- دکمه شروع، توقف، ریست
+- قابلیت تنظیم Countdown با ورودی
+- صدای اعلام وقتی تایمر تمام شود
+- طراحی فوق‌العاده زیبا تم تاریک`,
+
+desc:`یک ماشین حساب علمی زیبا بساز با:
+- عملیات پایه: جمع، تفریق، ضرب، تقسیم
+- عملیات پیشرفته: توان، جذر، sin، cos، log
+- تاریخچه محاسبات
+- کیبورد و دکمه هر دو کار کنند
+- طراحی زیبا تم تاریک`,
+
+flash:`یک برنامه فلش‌کارت آلمانی بساز با این کلمات (آرتیکل هم نشان بده):
+der Hund=سگ, die Katze=گربه, das Haus=خانه, der Mann=مرد, die Frau=زن, das Kind=بچه, der Tag=روز, die Nacht=شب, das Wasser=آب, das Buch=کتاب, der Tisch=میز, die Schule=مکتب, das Auto=ماشین, der Baum=درخت, die Stadt=شهر
+ویژگی‌ها: کارت قابل چرخش، آرتیکل رنگ‌بندی شده (der=آبی، die=صورتی، das=سبز)، دکمه بلدم/نبلدم، پیشرفت`,
+
+praep:`یک اپ تعاملی برای یادگیری حروف اضافه آلمانی بساز:
+Präpositionen mit Akkusativ: durch, für, gegen, ohne, um
+Präpositionen mit Dativ: mit, bei, nach, seit, von, zu, aus
+برای هر حرف: معنی دری + مثال جمله کامل + کوییز MCQ
+طراحی زیبا با رنگ‌بندی Akkusativ=نارنجی، Dativ=آبی`,
+
+nebensatz:`یک تمرین Nebensatz تعاملی بساز:
+- weil (چون): Ich lerne Deutsch, weil ich nach Deutschland möchte.
+- dass (که): Er sagt, dass er Pfleger werden will.
+- wenn (وقتی): Wenn ich Zeit habe, lerne ich.
+- obwohl (اگرچه): Obwohl er müde ist, arbeitet er.
+ویژگی: جاخالی پر کردن + توضیح قانون + امتیاز`
+};
+
+function eg(k){
+  document.getElementById('codeIn').value=EX[k];
+  detectLang(EX[k]);
+  showStC('مثال بارگذاری شد — تبدیل و اجرا را بزن','');
+}
+
+// ===== GERMAN QUIZ =====
+let qType='vocab', questions=[], curQ=0, correct=0, wrong=0, answered=false;
+
+function setQType(t,btn){
+  qType=t;
+  document.querySelectorAll('.qtype-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setTopic(t){
+  document.getElementById('quizTopic').value=t;
+}
+
+async function generateQuiz(){
+  const topic=document.getElementById('quizTopic').value.trim();
+  if(!topic){showStQ('یک موضوع وارد کن','err');return;}
+  if(!apiKey){showStQ('کلید API را در تب مبدل کد وارد و ذخیره کن','err');return;}
+
+  const count=parseInt(document.getElementById('qCount').value)||8;
+  document.getElementById('genBtn').disabled=true;
+  showStQ('🤖 در حال ساخت کوییز...','busy');
+  document.getElementById('quizArea').classList.remove('show');
+  document.getElementById('scoreCard').classList.remove('show');
+
+  const typeInstructions={
+    vocab:`سوالات معنی لغات آلمانی به دری/فارسی. هر اسم باید با آرتیکل کامل باشد (der/die/das). نوع: mcq`,
+    article:`سوالات تشخیص آرتیکل صحیح (der/die/das) برای اسم‌های آلمانی. نوع: mcq با گزینه‌های der/die/das`,
+    praep:`سوالات حروف اضافه آلمانی — کدام حرف اضافه در این جمله درست است؟ نوع: mcq`,
+    nebensatz:`سوالات Nebensatz — کدام接続詞 درست است یا جمله را کامل کن. نوع: fill یا mcq`,
+    fill:`سوالات جاخالی — جمله آلمانی ناقص با ___ . نوع: fill`,
+    mixed:`ترکیبی از vocab, article, praep, nebensatz, fill`
+  };
+
+  const prompt=`تو یک معلم زبان آلمانی برای سطح A1-B1 هستی.
+موضوع: ${topic}
+نوع کوییز: ${typeInstructions[qType]}
+تعداد: ${count} سوال
+
+قوانین مهم:
+- هر اسم آلمانی حتماً با آرتیکل صحیح نوشته شود (der Hund نه فقط Hund)
+- سوالات باید واقعی و مثل امتحان Goethe باشند
+- توضیح گرامری کوتاه و مفید بنویس
+- جواب‌ها متنوع باشند
+
+فقط JSON خالص برگردان (بدون backtick):
+{
+  "questions": [
+    {
+      "type": "mcq" یا "fill",
+      "badge": "vocab" یا "article" یا "praep" یا "nebensatz" یا "fill",
+      "question": "متن سوال",
+      "hint": "راهنما کوچک (اختیاری)",
+      "options": ["گزینه۱","گزینه۲","گزینه۳","گزینه۴"],
+      "answer": "جواب صحیح",
+      "explanation": "توضیح کوتاه چرا این جواب درست است"
+    }
+  ]
+}
+برای fill: options را خالی بگذار []`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'خطا');}
+    const data=await res.json();
+    let txt=data.content?.[0]?.text||'';
+    txt=txt.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(txt);
+    questions=parsed.questions||[];
+    if(!questions.length) throw new Error('سوالی تولید نشد');
+    startQuiz();
+    showStQ('','');
+  }catch(e){
+    showStQ('❌ خطا: '+e.message,'err');
+  }finally{
+    document.getElementById('genBtn').disabled=false;
+  }
+}
+
+function startQuiz(){
+  curQ=0; correct=0; wrong=0; answered=false;
+  document.getElementById('qTotal').textContent=questions.length;
+  document.getElementById('scoreCard').classList.remove('show');
+  document.getElementById('quizArea').classList.add('show');
+  renderQ();
+}
+
+const badgeMap={
+  vocab:{cls:'badge-vocab',label:'لغات'},
+  article:{cls:'badge-article',label:'آرتیکل'},
+  praep:{cls:'badge-praep',label:'حروف اضافه'},
+  nebensatz:{cls:'badge-nebensatz',label:'Nebensatz'},
+  fill:{cls:'badge-fill',label:'جاخالی'},
+  grammar:{cls:'badge-grammar',label:'گرامر'}
+};
+
+function renderQ(){
+  if(curQ>=questions.length){showScore();return;}
+  answered=false;
+  const q=questions[curQ];
+  const bm=badgeMap[q.badge]||badgeMap.vocab;
+
+  document.getElementById('qNum').textContent=curQ+1;
+  document.getElementById('qCorrect').textContent=correct;
+  document.getElementById('qWrong').textContent=wrong;
+  const pct=Math.round(curQ/questions.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=pct+'%';
+
+  document.getElementById('qBadge').textContent=bm.label;
+  document.getElementById('qBadge').className='q-type-badge '+bm.cls;
+  document.getElementById('qText').textContent=q.question;
+  document.getElementById('qHint').textContent=q.hint||'';
+  document.getElementById('qFeedback').className='q-feedback';
+  document.getElementById('qExplain').className='q-explain';
+  document.getElementById('nextBtn').className='next-btn';
+
+  if(q.type==='fill'){
+    document.getElementById('mcqOpts').innerHTML='';
+    document.getElementById('fillRow').style.display='flex';
+    const inp=document.getElementById('fillInp');
+    inp.value=''; inp.className='fill-inp'; inp.disabled=false;
+    inp.focus();
+  } else {
+    document.getElementById('fillRow').style.display='none';
+    const opts=document.getElementById('mcqOpts');
+    opts.innerHTML='';
+    (q.options||[]).forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='mcq-opt';
+      btn.textContent=opt;
+      btn.onclick=()=>checkMCQ(opt,q.answer,q.explanation);
+      opts.appendChild(btn);
+    });
+  }
+}
+
+function checkMCQ(chosen, answer, explanation){
+  if(answered) return;
+  answered=true;
+  const btns=document.querySelectorAll('.mcq-opt');
+  btns.forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===answer) b.classList.add('correct');
+    else if(b.textContent===chosen) b.classList.add('wrong');
+  });
+  const isCorrect=chosen===answer;
+  if(isCorrect) correct++; else wrong++;
+  showFeedback(isCorrect, answer, explanation);
+}
+
+function checkFill(){
+  if(answered) return;
+  const q=questions[curQ];
+  const val=document.getElementById('fillInp').value.trim();
+  if(!val) return;
+  answered=true;
+  const inp=document.getElementById('fillInp');
+  inp.disabled=true;
+  const isCorrect=val.toLowerCase()===q.answer.toLowerCase();
+  inp.classList.add(isCorrect?'correct':'wrong');
+  if(isCorrect) correct++; else wrong++;
+  showFeedback(isCorrect, q.answer, q.explanation);
+}
+
+function showFeedback(ok, answer, explanation){
+  const fb=document.getElementById('qFeedback');
+  fb.textContent=ok?'✅ درست! آفرین!':'❌ غلط — جواب: '+answer;
+  fb.className='q-feedback show '+(ok?'correct':'wrong');
+  if(explanation){
+    document.getElementById('qExplain').textContent='💡 '+explanation;
+    document.getElementById('qExplain').className='q-explain show';
+  }
+  document.getElementById('nextBtn').className='next-btn show';
+}
+
+function nextQ(){
+  curQ++;
+  if(curQ>=questions.length) showScore();
+  else renderQ();
+}
+
+function showScore(){
+  document.getElementById('quizArea').classList.remove('show');
+  const total=questions.length;
+  const sc=document.getElementById('scoreCard');
+  sc.classList.add('show');
+  document.getElementById('scoreBig').textContent=correct+'/'+total;
+  const pct=Math.round(correct/total*100);
+  let stars='⭐',msg='';
+  if(pct>=90){stars='🌟🌟🌟';msg='عالی! آماده‌ی Goethe هستی!';}
+  else if(pct>=70){stars='⭐⭐⭐';msg='خوب! کمی تمرین بیشتر!';}
+  else if(pct>=50){stars='⭐⭐';msg='بد نیست! دوباره تمرین کن!';}
+  else{stars='⭐';msg='ادامه بده، می‌شود! 💪';}
+  document.getElementById('scoreStars').textContent=stars;
+  document.getElementById('scoreMsg').textContent=msg;
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('progTxt').textContent='100%';
+}
+
+function restartQuiz(){
+  document.getElementById('scoreCard').classList.remove('show');
+  startQuiz();
+}
+
+function showStQ(msg,type){
+  const el=document.getElementById('quizStatus');
+  document.getElementById('qstTxt').textContent=msg;
+  el.className='quiz-status'+(msg?' show':'')+' '+(type||'');
+}
+</script>
+</body>
+</html>
