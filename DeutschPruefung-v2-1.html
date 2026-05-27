@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>DeutschPrüfung — کوییز حرفه‌ای آلمانی</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d14;
+  --bg2:#0f131e;
+  --surface:#141925;
+  --surface2:#1a2030;
+  --surface3:#222a3d;
+  --border:#1f2738;
+  --border2:#2d3650;
+  --text:#f3f6ff;
+  --text2:#9ba8c5;
+  --text3:#5d6a87;
+  --text4:#3a4359;
+  /* accents */
+  --gold:#f5c542;
+  --amber:#f59e0b;
+  --crimson:#dc2626;
+  --emerald:#10b981;
+  --cyan:#06b6d4;
+  --indigo:#6366f1;
+  --rose:#f43f5e;
+  --violet:#a855f7;
+  /* German flag */
+  --de-black:#000;
+  --de-red:#dd0000;
+  --de-gold:#ffce00;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Vazirmatn',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  direction:rtl;
+  overflow-x:hidden;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Decorative animated background */
+.bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,#000 0%,transparent 80%);}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.4;animation:float 20s ease-in-out infinite;}
+.bg-orb.o1{width:500px;height:500px;background:radial-gradient(circle,var(--indigo),transparent 70%);top:-100px;right:-100px;}
+.bg-orb.o2{width:400px;height:400px;background:radial-gradient(circle,var(--gold),transparent 70%);bottom:-100px;left:-100px;animation-delay:-7s;}
+.bg-orb.o3{width:350px;height:350px;background:radial-gradient(circle,var(--rose),transparent 70%);top:40%;left:30%;animation-delay:-14s;}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-50px) scale(1.05);}66%{transform:translate(-40px,30px) scale(0.95);}}
+.bg-noise{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' /%3E%3C/svg%3E");}
+
+/* App container */
+.app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 16px 80px;}
+
+/* HEADER */
+.hero{padding:40px 0 28px;text-align:center;position:relative;}
+.hero-flag{display:inline-flex;gap:0;border-radius:8px;overflow:hidden;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,0.5);}
+.hero-flag div{width:18px;height:42px;}
+.hero-flag .fb{background:var(--de-black);}
+.hero-flag .fr{background:var(--de-red);}
+.hero-flag .fg{background:var(--de-gold);}
+.hero h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(32px,7vw,52px);letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px;background:linear-gradient(135deg,#fff 0%,#fff 40%,var(--gold) 70%,var(--amber) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero h1 .ital{font-style:italic;font-weight:600;}
+.hero-tag{font-size:14px;color:var(--text3);letter-spacing:0.5px;font-weight:500;}
+.hero-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;}
+.hero-line .dot{width:4px;height:4px;border-radius:50%;background:var(--text4);}
+.hero-line span{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+
+/* SETUP CARD */
+.setup-card{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:24px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden;}
+.setup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+
+.section-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.section-label::before{content:'';width:18px;height:1px;background:var(--gold);}
+
+/* Progress mini card on setup */
+.progress-mini{background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(99,102,241,0.06));border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:14px;margin-bottom:14px;display:none;}
+.progress-mini.show{display:block;animation:fadeIn 0.4s ease;}
+.pm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pm-title{font-size:12px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:6px;}
+.pm-clear{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:color 0.2s;}
+.pm-clear:hover{color:var(--rose);}
+.pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.pm-stat{text-align:center;background:var(--surface);border-radius:10px;padding:8px 4px;border:1px solid var(--border);}
+.pm-stat-val{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--gold);line-height:1;}
+.pm-stat-lbl{font-size:9px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;}
+.pm-mistakes-btn{width:100%;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--rose),var(--crimson));border:none;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.pm-mistakes-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(244,63,94,0.3);}
+.pm-mistakes-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;background:var(--surface3);color:var(--text3);}
+
+/* Save mistakes button in results */
+.r-save-mistakes{padding:12px;border-radius:12px;background:linear-gradient(135deg,rgba(244,63,94,0.15),rgba(220,38,38,0.08));border:1px solid rgba(244,63,94,0.3);color:var(--rose);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;width:100%;}
+.r-save-mistakes:hover{background:linear-gradient(135deg,rgba(244,63,94,0.25),rgba(220,38,38,0.15));}
+.r-save-mistakes:disabled{opacity:0.5;cursor:not-allowed;}
+.r-save-mistakes.saved{color:var(--emerald);border-color:rgba(16,185,129,0.3);background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.05));}
+
+/* Expansion toggle */
+.expand-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface3);border:1px solid var(--border2);border-radius:14px;padding:14px 16px;margin-bottom:18px;cursor:pointer;transition:all 0.2s;}
+.expand-row:hover{border-color:var(--gold);}
+.expand-row.on{border-color:var(--gold);background:linear-gradient(135deg,rgba(245,197,66,0.08),rgba(245,158,11,0.03));}
+.expand-info{flex:1;}
+.expand-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:8px;}
+.expand-title .ai-tag{font-size:9px;background:var(--violet);color:#fff;padding:2px 6px;border-radius:5px;font-weight:700;letter-spacing:0.5px;}
+.expand-sub{font-size:11px;color:var(--text3);line-height:1.5;}
+.switch{width:44px;height:24px;border-radius:100px;background:var(--surface);border:1px solid var(--border2);position:relative;transition:all 0.2s;flex-shrink:0;}
+.switch::after{content:'';position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:var(--text3);transition:all 0.2s;}
+.expand-row.on .switch{background:var(--gold);border-color:var(--gold);}
+.expand-row.on .switch::after{right:22px;background:#1a1500;}
+
+/* Continue button in results */
+.r-continue{margin-bottom:8px;}
+
+/* API row */
+.api-box{display:flex;align-items:center;gap:8px;background:var(--surface3);border:1px solid var(--border2);border-radius:12px;padding:6px 6px 6px 14px;margin-bottom:18px;}
+.api-box .ico{font-size:14px;}
+.api-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 0;outline:none;direction:ltr;min-width:0;}
+.api-inp::placeholder{color:var(--text4);}
+.btn-save{background:var(--gold);color:#1a1500;border:none;border-radius:9px;font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:800;padding:8px 14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-save:hover{background:var(--amber);transform:translateY(-1px);}
+.api-state{font-size:10px;color:var(--text3);padding:0 6px;}
+.api-state.ok{color:var(--emerald);}
+
+/* Level pills */
+.level-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:18px;}
+.level-pill{padding:12px 4px;border-radius:11px;border:1px solid var(--border);background:var(--surface3);color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;position:relative;}
+.level-pill:hover{border-color:var(--border2);color:var(--text);}
+.level-pill.active{background:linear-gradient(180deg,var(--gold),var(--amber));border-color:var(--amber);color:#1a1500;box-shadow:0 4px 16px rgba(245,197,66,0.3);}
+.level-pill .lp-sub{display:block;font-size:8px;font-family:'Vazirmatn',sans-serif;font-weight:600;margin-top:2px;opacity:0.7;}
+.level-pill.active .lp-sub{opacity:0.85;}
+
+/* Exam type */
+.exam-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px;}
+.exam-card{padding:14px 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface3);cursor:pointer;transition:all 0.2s;text-align:right;position:relative;overflow:hidden;}
+.exam-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.exam-card.active{border-color:var(--gold);background:linear-gradient(135deg,rgba(245,197,66,0.1),rgba(245,158,11,0.04));}
+.exam-card.active::after{content:'✓';position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;background:var(--gold);color:#1a1500;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.exam-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.exam-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+
+/* Skills checkbox grid */
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:18px;}
+.skill-chk{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface3);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.skill-chk:hover{border-color:var(--border2);}
+.skill-chk.on{border-color:var(--cyan);background:rgba(6,182,212,0.08);}
+.skill-chk .chk-box{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--text4);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.skill-chk.on .chk-box{background:var(--cyan);border-color:var(--cyan);}
+.skill-chk.on .chk-box::after{content:'✓';color:#000;font-size:11px;font-weight:900;}
+.skill-chk .chk-icon{font-size:14px;}
+.skill-chk .chk-label{font-size:12px;font-weight:700;color:var(--text2);}
+.skill-chk.on .chk-label{color:var(--text);}
+
+/* Upload area */
+.upload-area{border:1.5px dashed var(--border2);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface3);margin-bottom:12px;position:relative;}
+.upload-area:hover{border-color:var(--gold);background:rgba(245,197,66,0.03);}
+.upload-area.has-file{border-style:solid;border-color:var(--emerald);background:rgba(16,185,129,0.04);}
+.upload-area input{display:none;}
+.upload-icon{font-size:24px;margin-bottom:6px;}
+.upload-title{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:2px;}
+.upload-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.upload-file{font-size:11px;color:var(--emerald);font-weight:700;margin-top:6px;display:none;}
+.upload-area.has-file .upload-file{display:block;}
+.upload-area.has-file .upload-title{color:var(--emerald);}
+
+/* Topic textarea */
+.topic-area{background:var(--surface3);border:1px solid var(--border2);border-radius:14px;padding:14px;margin-bottom:12px;}
+.topic-area textarea{width:100%;min-height:80px;background:transparent;border:none;outline:none;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:13px;line-height:1.7;resize:vertical;}
+.topic-area textarea::placeholder{color:var(--text4);font-size:12px;}
+
+.topic-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
+.tc{padding:5px 10px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.tc:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Numeric controls */
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.ctrl-box{background:var(--surface3);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;}
+.ctrl-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.ctrl-row-inner{display:flex;align-items:center;justify-content:space-between;}
+.ctrl-val{font-family:'Fraunces',serif;font-size:24px;font-weight:800;color:var(--text);}
+.ctrl-btns{display:flex;gap:4px;}
+.ctrl-btn{width:26px;height:26px;border-radius:7px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:14px;font-weight:800;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.ctrl-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* START button */
+.start-btn{width:100%;padding:20px;border-radius:18px;background:linear-gradient(135deg,var(--gold) 0%,var(--amber) 50%,#d97706 100%);border:none;color:#1a1500;font-family:'Vazirmatn',sans-serif;font-size:17px;font-weight:900;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.3px;box-shadow:0 8px 32px rgba(245,158,11,0.25),inset 0 1px 0 rgba(255,255,255,0.3);position:relative;overflow:hidden;}
+.start-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transition:left 0.5s;}
+.start-btn:hover::before{left:100%;}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,158,11,0.4),inset 0 1px 0 rgba(255,255,255,0.3);}
+.start-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.start-btn.loading .start-text{display:none;}
+.start-btn.loading .start-loader{display:flex;}
+.start-loader{display:none;align-items:center;gap:6px;}
+.start-loader .dot{width:6px;height:6px;border-radius:50%;background:#1a1500;animation:bounce 1.2s infinite;}
+.start-loader .dot:nth-child(2){animation-delay:0.15s;}
+.start-loader .dot:nth-child(3){animation-delay:0.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.5;}30%{transform:translateY(-6px);opacity:1;}}
+
+/* Status */
+.status{display:none;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--text2);margin-top:12px;line-height:1.6;}
+.status.show{display:flex;}
+.status.busy{border-color:rgba(99,102,241,0.3);color:var(--indigo);background:rgba(99,102,241,0.05);}
+.status.err{border-color:rgba(244,63,94,0.3);color:var(--rose);background:rgba(244,63,94,0.05);}
+.status.ok{border-color:rgba(16,185,129,0.3);color:var(--emerald);background:rgba(16,185,129,0.05);}
+
+/* ========== QUIZ MODE ========== */
+.quiz-mode{display:none;}
+.quiz-mode.active{display:block;}
+
+/* Quiz header bar */
+.qbar{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:10px 14px;margin-bottom:14px;position:sticky;top:10px;z-index:50;backdrop-filter:blur(20px);background:rgba(20,25,37,0.85);}
+.qbar-left{display:flex;align-items:center;gap:10px;}
+.qbar-back{width:32px;height:32px;border-radius:9px;background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-size:16px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.qbar-back:hover{color:var(--rose);border-color:var(--rose);}
+.qbar-info{display:flex;flex-direction:column;}
+.qbar-q{font-family:'Fraunces',serif;font-size:15px;font-weight:800;color:var(--text);line-height:1;}
+.qbar-q span{color:var(--gold);}
+.qbar-sub{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.qbar-right{display:flex;align-items:center;gap:8px;}
+.qbar-stat{display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:8px;background:var(--surface3);font-size:11px;font-weight:700;}
+.qbar-stat.ok{color:var(--emerald);}
+.qbar-stat.bad{color:var(--rose);}
+.qbar-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);background:var(--surface3);padding:5px 9px;border-radius:8px;font-weight:700;}
+
+/* Progress */
+.qprog{height:4px;background:var(--surface);border-radius:2px;overflow:hidden;margin-bottom:18px;}
+.qprog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--amber),var(--rose));border-radius:2px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 12px rgba(245,197,66,0.5);}
+
+/* Question card */
+.qcard{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:24px;padding:24px;margin-bottom:14px;position:relative;overflow:hidden;animation:cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--amber),var(--rose));}
+
+.qskill-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.qskill{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;}
+.qskill.vocab{background:rgba(6,182,212,0.15);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+.qskill.grammar{background:rgba(168,85,247,0.15);color:var(--violet);border:1px solid rgba(168,85,247,0.25);}
+.qskill.article{background:rgba(245,197,66,0.15);color:var(--gold);border:1px solid rgba(245,197,66,0.25);}
+.qskill.reading{background:rgba(16,185,129,0.15);color:var(--emerald);border:1px solid rgba(16,185,129,0.25);}
+.qskill.listening{background:rgba(244,63,94,0.15);color:var(--rose);border:1px solid rgba(244,63,94,0.25);}
+.qskill.writing{background:rgba(99,102,241,0.15);color:var(--indigo);border:1px solid rgba(99,102,241,0.25);}
+.qskill.praep{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+
+.qlevel{padding:4px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text3);background:var(--surface3);}
+
+/* Audio player */
+.audio-btn{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(244,63,94,0.1),rgba(244,63,94,0.04));border:1px solid rgba(244,63,94,0.25);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all 0.2s;margin-bottom:16px;color:var(--rose);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;width:100%;justify-content:center;}
+.audio-btn:hover{background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.08));}
+.audio-btn .play-ico{font-size:18px;}
+.audio-btn .speed-tag{margin-right:auto;font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* Reading passage */
+.reading-passage{background:var(--surface3);border:1px solid var(--border2);border-radius:14px;padding:16px;margin-bottom:18px;font-family:'Vazirmatn',sans-serif;font-size:14px;line-height:1.9;color:var(--text);direction:ltr;text-align:left;border-right:3px solid var(--emerald);}
+
+/* Question text */
+.q-text{font-family:'Vazirmatn',sans-serif;font-size:18px;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:6px;}
+.q-text.de{direction:ltr;text-align:left;font-family:'Fraunces',serif;letter-spacing:-0.3px;}
+.q-text .blank{display:inline-block;min-width:80px;border-bottom:2px dashed var(--gold);margin:0 4px;padding:0 6px;color:var(--gold);font-weight:800;}
+.q-hint{font-size:12px;color:var(--text3);margin-bottom:18px;font-style:italic;}
+
+/* MCQ */
+.mcq-list{display:flex;flex-direction:column;gap:8px;}
+.mcq-item{padding:14px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface3);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:right;display:flex;align-items:center;gap:12px;position:relative;}
+.mcq-item:hover:not([disabled]){border-color:var(--gold);background:rgba(245,197,66,0.05);transform:translateX(-4px);}
+.mcq-item .letter{width:28px;height:28px;border-radius:8px;background:var(--surface);border:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;color:var(--text2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.mcq-item:hover:not([disabled]) .letter{background:var(--gold);color:#1a1500;border-color:var(--gold);}
+.mcq-item .text{flex:1;}
+.mcq-item.correct{border-color:var(--emerald);background:rgba(16,185,129,0.1);color:var(--emerald);}
+.mcq-item.correct .letter{background:var(--emerald);color:#001a0e;border-color:var(--emerald);}
+.mcq-item.wrong{border-color:var(--rose);background:rgba(244,63,94,0.1);color:var(--rose);}
+.mcq-item.wrong .letter{background:var(--rose);color:#fff;border-color:var(--rose);}
+.mcq-item:disabled{cursor:default;}
+
+/* Multi-select MCQ (for listening reading) */
+.mcq-item.ltr{direction:ltr;text-align:left;font-family:'Fraunces',serif;}
+
+/* Fill input */
+.fill-wrap{display:flex;gap:8px;}
+.fill-inp{flex:1;background:var(--surface3);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Fraunces',serif;font-size:16px;font-weight:600;padding:14px 16px;outline:none;direction:ltr;text-align:left;transition:all 0.2s;}
+.fill-inp:focus{border-color:var(--gold);background:rgba(245,197,66,0.04);}
+.fill-inp.correct{border-color:var(--emerald);background:rgba(16,185,129,0.05);color:var(--emerald);}
+.fill-inp.wrong{border-color:var(--rose);background:rgba(244,63,94,0.05);color:var(--rose);}
+.btn-check{padding:14px 22px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;color:#1a1500;font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-check:hover{transform:translateY(-1px);}
+.btn-check:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* Word order — drag */
+.word-order-area{background:var(--surface3);border:1.5px dashed var(--border2);border-radius:12px;min-height:60px;padding:12px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;direction:ltr;}
+.word-order-area:empty::before{content:'کلمات را اینجا بکش...';color:var(--text4);font-size:12px;width:100%;text-align:center;align-self:center;direction:rtl;}
+.word-bank{background:var(--surface3);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;direction:ltr;min-height:60px;}
+.word-chip{padding:8px 12px;border-radius:9px;background:var(--surface);border:1.5px solid var(--border2);color:var(--text);font-family:'Fraunces',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;user-select:none;}
+.word-chip:hover{border-color:var(--gold);transform:translateY(-2px);}
+.word-chip.placed{background:linear-gradient(135deg,var(--gold),var(--amber));color:#1a1500;border-color:var(--amber);}
+
+/* Writing — long text */
+.write-area{width:100%;min-height:140px;background:var(--surface3);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:13px;line-height:1.7;padding:14px;outline:none;resize:vertical;direction:ltr;text-align:left;transition:all 0.2s;}
+.write-area:focus{border-color:var(--gold);}
+.write-counter{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px;}
+.write-counter .req{color:var(--text2);}
+
+/* Feedback */
+.fb-box{display:none;margin-top:14px;padding:14px 16px;border-radius:12px;animation:fadeIn 0.3s ease;}
+.fb-box.show{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fb-box.ok{background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(16,185,129,0.04));border:1px solid rgba(16,185,129,0.25);}
+.fb-box.bad{background:linear-gradient(135deg,rgba(244,63,94,0.1),rgba(244,63,94,0.04));border:1px solid rgba(244,63,94,0.25);}
+.fb-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin-bottom:6px;}
+.fb-box.ok .fb-title{color:var(--emerald);}
+.fb-box.bad .fb-title{color:var(--rose);}
+.fb-answer{font-size:13px;color:var(--text2);margin-bottom:8px;}
+.fb-answer strong{color:var(--text);font-family:'Fraunces',serif;}
+.fb-explain{font-size:12px;color:var(--text2);line-height:1.7;border-top:1px dashed var(--border2);padding-top:8px;margin-top:8px;}
+.fb-explain strong{color:var(--gold);}
+
+/* Writing feedback grade */
+.grade-bar{display:flex;gap:6px;margin-top:10px;}
+.grade-cell{flex:1;padding:8px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);text-align:center;}
+.grade-label{font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;letter-spacing:0.5px;}
+.grade-val{font-family:'Fraunces',serif;font-size:18px;font-weight:800;color:var(--gold);}
+
+/* Next button */
+.next-btn{width:100%;padding:16px;border-radius:14px;background:var(--surface3);border:1px solid var(--border2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;display:none;align-items:center;justify-content:center;gap:8px;margin-top:12px;}
+.next-btn.show{display:flex;animation:fadeIn 0.3s ease;}
+.next-btn:hover{background:linear-gradient(135deg,var(--gold),var(--amber));border-color:var(--amber);color:#1a1500;transform:translateY(-2px);}
+
+/* ========== RESULTS ========== */
+.results-mode{display:none;}
+.results-mode.active{display:block;}
+
+.result-hero{text-align:center;padding:30px 20px;background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:24px;margin-bottom:14px;position:relative;overflow:hidden;}
+.result-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--amber),var(--rose));}
+.r-trophy{font-size:56px;margin-bottom:12px;animation:trophy 2s ease-in-out infinite;}
+@keyframes trophy{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.r-score{font-family:'Fraunces',serif;font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--gold),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.r-pct{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--text2);font-weight:700;margin-bottom:14px;}
+.r-grade{display:inline-block;padding:6px 16px;border-radius:100px;font-size:13px;font-weight:800;letter-spacing:1px;}
+.r-grade.s-a{background:rgba(16,185,129,0.15);color:var(--emerald);border:1px solid rgba(16,185,129,0.3);}
+.r-grade.s-b{background:rgba(245,197,66,0.15);color:var(--gold);border:1px solid rgba(245,197,66,0.3);}
+.r-grade.s-c{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);}
+.r-grade.s-d{background:rgba(244,63,94,0.15);color:var(--rose);border:1px solid rgba(244,63,94,0.3);}
+.r-msg{font-size:13px;color:var(--text2);margin-top:12px;line-height:1.7;}
+
+/* Skills breakdown */
+.r-breakdown{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;}
+.r-bd-title{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.r-bd-item{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.r-bd-skill{flex-shrink:0;width:90px;font-size:11px;font-weight:700;color:var(--text2);}
+.r-bd-track{flex:1;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;}
+.r-bd-fill{height:100%;border-radius:4px;transition:width 0.8s ease;}
+.r-bd-val{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--text);width:42px;text-align:left;}
+
+/* Review section */
+.r-review{background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;}
+.review-title{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.review-item{padding:12px;border-radius:12px;background:var(--surface3);border:1px solid var(--border);margin-bottom:8px;}
+.review-item.ok{border-right:3px solid var(--emerald);}
+.review-item.bad{border-right:3px solid var(--rose);}
+.review-q{font-size:12px;color:var(--text);margin-bottom:6px;line-height:1.6;}
+.review-meta{display:flex;gap:8px;font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.review-meta .ans{color:var(--emerald);}
+.review-meta .user{color:var(--rose);}
+
+/* Action buttons */
+.r-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.r-act{padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.r-act:hover{border-color:var(--gold);transform:translateY(-2px);}
+.r-act.primary{background:linear-gradient(135deg,var(--gold),var(--amber));color:#1a1500;border-color:var(--amber);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--gold);color:var(--text);font-size:12px;font-weight:700;padding:10px 20px;border-radius:100px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Small footer note */
+.footer-note{text-align:center;font-size:10px;color:var(--text4);margin-top:30px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+
+@media (max-width:480px){
+  .level-grid{grid-template-columns:repeat(3,1fr);}
+  .exam-grid{grid-template-columns:1fr;}
+  .skills-grid{grid-template-columns:1fr;}
+  .ctrl-row{grid-template-columns:1fr;}
+  .hero h1{font-size:32px;}
+  .r-score{font-size:56px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="bg-grid"></div>
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+  <div class="bg-orb o3"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<div class="app">
+
+<!-- ========== SETUP MODE ========== -->
+<div id="setupMode">
+
+<div class="hero">
+  <div class="hero-flag">
+    <div class="fb"></div><div class="fr"></div><div class="fg"></div>
+  </div>
+  <h1>Deutsch<span class="ital">Prüfung</span></h1>
+  <p class="hero-tag">امتحان حرفه‌ای آلمانی — مثل Goethe و TestDaF</p>
+  <div class="hero-line">
+    <span>A1</span><div class="dot"></div>
+    <span>A2</span><div class="dot"></div>
+    <span>B1</span><div class="dot"></div>
+    <span>B2</span><div class="dot"></div>
+    <span>C1</span><div class="dot"></div>
+    <span>C2</span>
+  </div>
+</div>
+
+<div class="setup-card">
+
+  <!-- Progress mini card -->
+  <div class="progress-mini" id="progressMini">
+    <div class="pm-head">
+      <div class="pm-title">📊 پیشرفت تو</div>
+      <button class="pm-clear" onclick="clearProgress()" title="پاک کردن همه">پاک کردن</button>
+    </div>
+    <div class="pm-stats">
+      <div class="pm-stat">
+        <div class="pm-stat-val" id="pmExams">0</div>
+        <div class="pm-stat-lbl">امتحان</div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-val" id="pmAvg">0%</div>
+        <div class="pm-stat-lbl">میانگین</div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-val" id="pmMistakes">0</div>
+        <div class="pm-stat-lbl">غلط ذخیره</div>
+      </div>
+    </div>
+    <button class="pm-mistakes-btn" id="practiceMistakesBtn" onclick="practiceMistakes()">
+      🎯 تمرین فقط روی غلط‌های من
+    </button>
+  </div>
+
+  <!-- API key -->
+  <div class="section-label">کلید API</div>
+  <div class="api-box">
+    <span class="ico">🔑</span>
+    <input class="api-inp" type="password" id="apiKey" placeholder="sk-ant-api03-...">
+    <button class="btn-save" onclick="saveKey()">ذخیره</button>
+    <span class="api-state" id="apiState">وارد نشده</span>
+  </div>
+
+  <!-- Level -->
+  <div class="section-label">سطح زبان</div>
+  <div class="level-grid">
+    <button class="level-pill active" data-lv="A1" onclick="setLevel(this)">A1<span class="lp-sub">مبتدی</span></button>
+    <button class="level-pill" data-lv="A2" onclick="setLevel(this)">A2<span class="lp-sub">پایه</span></button>
+    <button class="level-pill" data-lv="B1" onclick="setLevel(this)">B1<span class="lp-sub">متوسط</span></button>
+    <button class="level-pill" data-lv="B2" onclick="setLevel(this)">B2<span class="lp-sub">بالا</span></button>
+    <button class="level-pill" data-lv="C1" onclick="setLevel(this)">C1<span class="lp-sub">پیشرفته</span></button>
+    <button class="level-pill" data-lv="C2" onclick="setLevel(this)">C2<span class="lp-sub">حرفه‌ای</span></button>
+  </div>
+
+  <!-- Exam style -->
+  <div class="section-label">سبک امتحان</div>
+  <div class="exam-grid">
+    <div class="exam-card active" data-exam="goethe" onclick="setExam(this)">
+      <div class="exam-title">🇩🇪 Goethe-Zertifikat</div>
+      <div class="exam-sub">سبک امتحانات Goethe Institut</div>
+    </div>
+    <div class="exam-card" data-exam="telc" onclick="setExam(this)">
+      <div class="exam-title">📘 telc Deutsch</div>
+      <div class="exam-sub">European Language Certificates</div>
+    </div>
+    <div class="exam-card" data-exam="testdaf" onclick="setExam(this)">
+      <div class="exam-title">🎓 TestDaF</div>
+      <div class="exam-sub">دانشگاهی — C1/C2</div>
+    </div>
+    <div class="exam-card" data-exam="dtz" onclick="setExam(this)">
+      <div class="exam-title">🏥 DTZ (Pflege)</div>
+      <div class="exam-sub">برای Pflegeausbildung</div>
+    </div>
+    <div class="exam-card" data-exam="mix" onclick="setExam(this)">
+      <div class="exam-title">🎲 ترکیبی</div>
+      <div class="exam-sub">همه سبک‌ها</div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="section-label">مهارت‌ها (هر چند تا که می‌خواهی)</div>
+  <div class="skills-grid">
+    <div class="skill-chk on" data-sk="vocab" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">📖</span>
+      <span class="chk-label">لغات + آرتیکل</span>
+    </div>
+    <div class="skill-chk on" data-sk="grammar" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">⚙️</span>
+      <span class="chk-label">گرامر</span>
+    </div>
+    <div class="skill-chk on" data-sk="praep" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">🔗</span>
+      <span class="chk-label">حروف اضافه</span>
+    </div>
+    <div class="skill-chk on" data-sk="article" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">🏷️</span>
+      <span class="chk-label">der/die/das</span>
+    </div>
+    <div class="skill-chk" data-sk="reading" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">📰</span>
+      <span class="chk-label">Lesen (خواندن)</span>
+    </div>
+    <div class="skill-chk" data-sk="listening" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">🎧</span>
+      <span class="chk-label">Hören (شنیدن)</span>
+    </div>
+    <div class="skill-chk" data-sk="writing" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">✍️</span>
+      <span class="chk-label">Schreiben (نوشتن)</span>
+    </div>
+    <div class="skill-chk" data-sk="wordorder" onclick="toggleSkill(this)">
+      <div class="chk-box"></div>
+      <span class="chk-icon">🔀</span>
+      <span class="chk-label">ترتیب کلمات</span>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div class="section-label">آپلود محتوا (اختیاری)</div>
+  <label class="upload-area" id="uploadArea" for="fileInp">
+    <input type="file" id="fileInp" accept=".pdf,.txt,.png,.jpg,.jpeg,.webp" onchange="handleFile(event)">
+    <div class="upload-icon">📎</div>
+    <div class="upload-title">فایل را اینجا بکش یا کلیک کن</div>
+    <div class="upload-sub">PDF · TXT · PNG · JPG</div>
+    <div class="upload-file" id="uploadFile"></div>
+  </label>
+
+  <!-- Topic -->
+  <div class="section-label">یا موضوع را تایپ کن</div>
+  <div class="topic-area">
+    <textarea id="topicInp" placeholder="مثال: Modalverben در زمان حال — Präpositionen mit Dativ — لغات Pflegeausbildung — جملات Nebensatz با weil و dass — متن درباره Krankenhaus..."></textarea>
+  </div>
+
+  <div class="topic-chips">
+    <span class="tc" onclick="setTopic('Modalverben: müssen, sollen, wollen, möchten, können, dürfen')">Modal Verben</span>
+    <span class="tc" onclick="setTopic('Präpositionen mit Dativ und Akkusativ')">Präpositionen</span>
+    <span class="tc" onclick="setTopic('Nebensatz mit weil, dass, wenn, obwohl, als, ob')">Nebensatz</span>
+    <span class="tc" onclick="setTopic('Pflege Vokabular: Körperteile, Krankheiten, Medikamente, Krankenhaus')">Pflege A2</span>
+    <span class="tc" onclick="setTopic('Perfekt und Präteritum: regelmäßige und unregelmäßige Verben')">Perfekt/Präteritum</span>
+    <span class="tc" onclick="setTopic('Adjektivdeklination nominativ, akkusativ, dativ')">Adjektivdeklination</span>
+    <span class="tc" onclick="setTopic('Konjunktiv II: höfliche Anfragen und Wünsche')">Konjunktiv II</span>
+    <span class="tc" onclick="setTopic('Passiv: Vorgangspassiv und Zustandspassiv')">Passiv</span>
+  </div>
+
+  <!-- Smart expansion toggle -->
+  <div class="expand-row on" id="expandRow" onclick="toggleExpand()">
+    <div class="expand-info">
+      <div class="expand-title">گسترش هوشمند <span class="ai-tag">AI</span></div>
+      <div class="expand-sub">اگر لغات یا متن تو کم باشد، AI لغات مرتبط و هم‌خانواده اضافه می‌کند تا سوالات متنوع‌تر شوند</div>
+    </div>
+    <div class="switch"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="ctrl-row">
+    <div class="ctrl-box">
+      <div class="ctrl-label">تعداد سوال</div>
+      <div class="ctrl-row-inner">
+        <div class="ctrl-val" id="qCntVal">10</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="bumpCnt(-5)">−</button>
+          <button class="ctrl-btn" onclick="bumpCnt(5)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <div class="ctrl-label">حالت تایمر</div>
+      <div class="ctrl-row-inner">
+        <div class="ctrl-val" id="timerVal" style="font-size:14px;font-family:'Vazirmatn';">بدون</div>
+        <div class="ctrl-btns">
+          <button class="ctrl-btn" onclick="cycleTimer()">⏱</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start -->
+  <button class="start-btn" id="startBtn" onclick="startQuiz()">
+    <span class="start-text">⚡ شروع امتحان</span>
+    <div class="start-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </button>
+
+  <div class="status" id="status"><span id="statusTxt"></span></div>
+
+</div>
+
+<div class="footer-note">DEUTSCH·PRÜFUNG · v2.0 · ساخته با Claude API</div>
+
+</div>
+
+<!-- ========== QUIZ MODE ========== -->
+<div class="quiz-mode" id="quizMode">
+
+  <div class="qbar">
+    <div class="qbar-left">
+      <button class="qbar-back" onclick="exitQuiz()" title="خروج">←</button>
+      <div class="qbar-info">
+        <div class="qbar-q">سوال <span id="qNum">1</span> / <span id="qTotal">10</span></div>
+        <div class="qbar-sub" id="qLvl">A1 · GOETHE</div>
+      </div>
+    </div>
+    <div class="qbar-right">
+      <div class="qbar-stat ok"><span>✓</span><span id="okCnt">0</span></div>
+      <div class="qbar-stat bad"><span>✗</span><span id="badCnt">0</span></div>
+      <div class="qbar-time" id="timerDisp" style="display:none">00:00</div>
+    </div>
+  </div>
+
+  <div class="qprog"><div class="qprog-fill" id="progFill" style="width:0%"></div></div>
+
+  <div class="qcard" id="qcard">
+    <!-- Filled dynamically -->
+  </div>
+
+</div>
+
+<!-- ========== RESULTS MODE ========== -->
+<div class="results-mode" id="resultsMode">
+
+  <div class="result-hero">
+    <div class="r-trophy" id="rTrophy">🏆</div>
+    <div class="r-score" id="rScore">0/10</div>
+    <div class="r-pct" id="rPct">0%</div>
+    <span class="r-grade s-a" id="rGrade">SEHR GUT</span>
+    <p class="r-msg" id="rMsg">عالی پیش رفتی!</p>
+  </div>
+
+  <div class="r-breakdown">
+    <div class="r-bd-title">📊 تحلیل مهارت‌ها</div>
+    <div id="breakdownBody"></div>
+  </div>
+
+  <div class="r-review">
+    <div class="review-title">📋 مرور سوالات</div>
+    <div id="reviewBody"></div>
+  </div>
+
+  <div class="r-actions" style="grid-template-columns:1fr;gap:8px;">
+    <button class="r-save-mistakes" id="saveMistakesBtn" onclick="saveMistakes()">
+      📚 ذخیره غلط‌های این امتحان برای تمرین بعدی
+    </button>
+    <button class="r-act primary" onclick="continueQuiz()">
+      ✨ ۱۰ سوال جدید با AI (ادامه با همین موضوع)
+    </button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="r-act" onclick="restartQuiz()">🔄 امتحان دوباره</button>
+      <button class="r-act" onclick="exitQuiz()">⚙️ تنظیمات</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ STATE ============
+const state = {
+  apiKey: localStorage.getItem('dp_key') || '',
+  level: 'A1',
+  exam: 'goethe',
+  skills: ['vocab','grammar','praep','article'],
+  qCount: 10,
+  timerMode: 0, // 0=off, 1=total, 2=per-q
+  expand: true, // smart AI expansion of vocab/topic
+  fileData: null, // {type, data, name}
+  questions: [],
+  curIdx: 0,
+  okCnt: 0,
+  badCnt: 0,
+  answered: false,
+  reviewLog: [],
+  startTime: 0,
+  timerInt: null
+};
+
+// Init
+if(state.apiKey){
+  document.getElementById('apiKey').value = state.apiKey;
+  setApiState(true);
+}
+
+// ============ PROGRESS TRACKING ============
+function getProgress(){
+  try {
+    return JSON.parse(localStorage.getItem('dp_progress') || '{"exams":[],"mistakes":[]}');
+  } catch(e){
+    return {exams:[], mistakes:[]};
+  }
+}
+function saveProgress(p){
+  try {
+    localStorage.setItem('dp_progress', JSON.stringify(p));
+  } catch(e){
+    console.error('Save progress failed', e);
+  }
+}
+function updateProgressUI(){
+  const p = getProgress();
+  const card = document.getElementById('progressMini');
+  if(!card) return;
+  if(p.exams.length === 0 && p.mistakes.length === 0){
+    card.classList.remove('show');
+    return;
+  }
+  card.classList.add('show');
+  document.getElementById('pmExams').textContent = p.exams.length;
+  const avg = p.exams.length > 0
+    ? Math.round(p.exams.reduce((s,e)=>s+e.pct,0) / p.exams.length)
+    : 0;
+  document.getElementById('pmAvg').textContent = avg + '%';
+  document.getElementById('pmMistakes').textContent = p.mistakes.length;
+  const btn = document.getElementById('practiceMistakesBtn');
+  btn.disabled = p.mistakes.length < 3;
+  if(p.mistakes.length < 3){
+    btn.innerHTML = `🎯 برای تمرین حداقل ۳ غلط ذخیره کن (${p.mistakes.length}/3)`;
+  } else {
+    btn.innerHTML = `🎯 تمرین روی ${p.mistakes.length} غلط من`;
+  }
+}
+function clearProgress(){
+  if(!confirm('همه پیشرفت و غلط‌های ذخیره شده پاک شود؟')) return;
+  localStorage.removeItem('dp_progress');
+  updateProgressUI();
+  showToast('✓ پاک شد');
+}
+function recordExam(){
+  const p = getProgress();
+  const total = state.questions.length;
+  const pct = Math.round(state.okCnt / total * 100);
+  p.exams.push({
+    date: Date.now(),
+    level: state.level,
+    exam: state.exam,
+    score: state.okCnt,
+    total: total,
+    pct: pct
+  });
+  // Keep last 50 only
+  if(p.exams.length > 50) p.exams = p.exams.slice(-50);
+  saveProgress(p);
+}
+function saveMistakes(){
+  const p = getProgress();
+  const wrongs = state.reviewLog.filter(r=>!r.ok);
+  if(wrongs.length === 0){
+    showToast('غلطی نداشتی برای ذخیره! 🎉');
+    return;
+  }
+  // Dedupe by question text
+  const existingTexts = new Set(p.mistakes.map(m=>m.q.question_de || m.q.question_fa));
+  let added = 0;
+  wrongs.forEach(w=>{
+    const key = w.q.question_de || w.q.question_fa;
+    if(!existingTexts.has(key)){
+      p.mistakes.push({savedAt: Date.now(), q: w.q});
+      existingTexts.add(key);
+      added++;
+    }
+  });
+  // Keep last 100
+  if(p.mistakes.length > 100) p.mistakes = p.mistakes.slice(-100);
+  saveProgress(p);
+
+  const btn = document.getElementById('saveMistakesBtn');
+  btn.classList.add('saved');
+  btn.innerHTML = `✓ ${added} غلط جدید ذخیره شد (مجموع: ${p.mistakes.length})`;
+  btn.disabled = true;
+  showToast('✓ ذخیره شد');
+}
+function practiceMistakes(){
+  const p = getProgress();
+  if(p.mistakes.length < 3){
+    showToast('حداقل ۳ غلط ذخیره کن');
+    return;
+  }
+  // Shuffle and use saved mistakes as questions
+  const shuffled = [...p.mistakes].sort(()=>Math.random()-0.5);
+  state.questions = shuffled.map(m=>m.q);
+  state.curIdx = 0;
+  state.okCnt = 0;
+  state.badCnt = 0;
+  state.reviewLog = [];
+  state.startTime = Date.now();
+
+  $('setupMode').style.display = 'none';
+  $('resultsMode').classList.remove('active');
+  $('quizMode').classList.add('active');
+  $('qTotal').textContent = state.questions.length;
+  $('qLvl').textContent = 'تمرین غلط‌ها';
+  renderQ();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Update progress UI on load
+updateProgressUI();
+
+// ============ HELPERS ============
+function $(id){return document.getElementById(id);}
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function showStatus(msg, type=''){
+  const s = $('status');
+  $('statusTxt').textContent = msg;
+  s.className = 'status show ' + type;
+}
+function hideStatus(){$('status').className = 'status';}
+
+// ============ SETUP HANDLERS ============
+function saveKey(){
+  const k = $('apiKey').value.trim();
+  if(!k.startsWith('sk-')){showStatus('کلید معتبر نیست','err');return;}
+  state.apiKey = k;
+  localStorage.setItem('dp_key', k);
+  setApiState(true);
+  showStatus('✓ کلید ذخیره شد','ok');
+}
+function setApiState(ok){
+  const el = $('apiState');
+  el.textContent = ok ? '✓ ذخیره شده' : 'وارد نشده';
+  el.className = 'api-state' + (ok ? ' ok' : '');
+}
+function setLevel(btn){
+  document.querySelectorAll('.level-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  state.level = btn.dataset.lv;
+}
+function setExam(card){
+  document.querySelectorAll('.exam-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+  state.exam = card.dataset.exam;
+}
+function toggleSkill(el){
+  const sk = el.dataset.sk;
+  el.classList.toggle('on');
+  if(el.classList.contains('on')){
+    if(!state.skills.includes(sk)) state.skills.push(sk);
+  } else {
+    state.skills = state.skills.filter(s=>s!==sk);
+  }
+}
+function setTopic(t){
+  $('topicInp').value = t;
+}
+function bumpCnt(n){
+  state.qCount = Math.max(5, Math.min(30, state.qCount + n));
+  $('qCntVal').textContent = state.qCount;
+}
+function cycleTimer(){
+  state.timerMode = (state.timerMode + 1) % 3;
+  const labels = ['بدون', 'کل امتحان', 'هر سوال'];
+  $('timerVal').textContent = labels[state.timerMode];
+}
+function toggleExpand(){
+  state.expand = !state.expand;
+  $('expandRow').classList.toggle('on', state.expand);
+}
+
+// ============ FILE UPLOAD ============
+async function handleFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const area = $('uploadArea');
+  const fileEl = $('uploadFile');
+  area.classList.add('has-file');
+  fileEl.textContent = `✓ ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  try {
+    if(ext === 'txt'){
+      const text = await file.text();
+      state.fileData = {type:'text', data:text, name:file.name};
+    } else if(['png','jpg','jpeg','webp'].includes(ext)){
+      const b64 = await fileToB64(file);
+      const mime = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+      state.fileData = {type:'image', data:b64, mime, name:file.name};
+    } else if(ext === 'pdf'){
+      const b64 = await fileToB64(file);
+      state.fileData = {type:'pdf', data:b64, name:file.name};
+    } else {
+      showToast('فرمت پشتیبانی نمی‌شود');
+      area.classList.remove('has-file');
+      state.fileData = null;
+    }
+  } catch(err){
+    showToast('خطا در خواندن فایل');
+    console.error(err);
+  }
+}
+function fileToB64(file){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = ()=> res(r.result.split(',')[1]);
+    r.onerror = ()=> rej(new Error('Read fail'));
+    r.readAsDataURL(file);
+  });
+}
+
+// ============ START QUIZ ============
+async function startQuiz(){
+  if(!state.apiKey){showStatus('کلید API را وارد و ذخیره کن','err');return;}
+  if(state.skills.length === 0){showStatus('حداقل یک مهارت انتخاب کن','err');return;}
+  const topic = $('topicInp').value.trim();
+  if(!topic && !state.fileData){
+    showStatus('یک موضوع تایپ کن یا فایل آپلود کن','err');return;
+  }
+
+  const btn = $('startBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  showStatus('🤖 در حال ساخت سوالات حرفه‌ای... این چند ثانیه طول می‌کشد','busy');
+
+  try {
+    await generateQuestions(topic);
+    if(state.questions.length === 0) throw new Error('سوالی تولید نشد');
+    state.curIdx = 0;
+    state.okCnt = 0;
+    state.badCnt = 0;
+    state.reviewLog = [];
+    state.startTime = Date.now();
+    enterQuiz();
+  } catch(err){
+    showStatus('❌ ' + (err.message || 'خطا'), 'err');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ============ AI GENERATION ============
+async function generateQuestions(topic){
+  const skillsDesc = {
+    vocab: 'سوالات معنی لغات (mcq) — اسامی آلمانی همیشه با آرتیکل der/die/das',
+    grammar: 'سوالات گرامر (mcq یا fill) — صرف افعال، زمان‌ها، حالت‌ها',
+    praep: 'سوالات حروف اضافه (mcq) — کدام Präposition درست است',
+    article: 'سوالات آرتیکل (mcq) — der/die/das/den/dem/des برای اسم',
+    reading: 'سوالات درک مطلب — متن کوتاه آلمانی + سوال درباره آن',
+    listening: 'سوالات شنیداری — متن آلمانی که با TTS خوانده می‌شود + سوال',
+    writing: 'سوال نوشتاری — درخواست متن کوتاه به آلمانی',
+    wordorder: 'ترتیب کلمات — کلمات نامرتب + ساخت جمله صحیح'
+  };
+
+  const activeSkills = state.skills.map(s => `- ${s}: ${skillsDesc[s]}`).join('\n');
+
+  const examStyles = {
+    goethe: 'سبک Goethe-Zertifikat — رسمی، دقیق، با تمرکز بر استفاده روزمره',
+    telc: 'سبک telc — کاربردی و موقعیتی',
+    testdaf: 'سبک TestDaF — دانشگاهی و آکادمیک',
+    dtz: 'سبک DTZ مخصوص Pflegeausbildung — لغات پرستاری، بیمارستان، مراقبت',
+    mix: 'ترکیبی از همه سبک‌ها'
+  };
+
+  const levelGuide = {
+    A1: 'بسیار ساده، جملات کوتاه، لغات روزمره پایه',
+    A2: 'ساده، جملات کمی پیچیده‌تر، گذشته ساده',
+    B1: 'متوسط، Nebensatz، Konjunktiv II ساده، Perfekt',
+    B2: 'پیشرفته، Passiv، Konjunktiv II کامل، اصطلاحات',
+    C1: 'حرفه‌ای، متون پیچیده، اصطلاحات تخصصی',
+    C2: 'فوق حرفه‌ای، ادبی، اصطلاحات نادر، تمایزات ظریف'
+  };
+
+  const expansionRule = state.expand
+    ? `7. **گسترش هوشمند فعال است:** اگر لغات/موضوع کاربر برای ${state.qCount} سوال کافی نیست، لغات و مفاهیم مرتبط و هم‌خانواده اضافه کن. مثلاً اگر کاربر "der Patient" داده، می‌توانی "die Krankenschwester, das Krankenhaus, die Spritze, der Arzt" را هم استفاده کنی. این لغات هم باید با ترجمه فارسی/دری در توضیح بیاید.`
+    : `7. **گسترش هوشمند خاموش است:** فقط از همان لغات و موضوع کاربر استفاده کن. لغت یا مفهوم خارج از آنچه کاربر داده اضافه نکن. اگر برای ${state.qCount} سوال کافی نیست، تعداد کمتری بساز و در آخر بنویس.`;
+
+  let promptText = `تو یک طراح حرفه‌ای امتحانات زبان آلمانی هستی که برای موسسه Goethe، telc، و TestDaF کار می‌کنی.
+
+سطح: ${state.level} — ${levelGuide[state.level]}
+سبک: ${examStyles[state.exam]}
+تعداد سوال: ${state.qCount}
+
+مهارت‌های فعال:
+${activeSkills}
+
+موضوع کاربر: ${topic || 'بر اساس فایل آپلود شده'}
+
+قوانین مهم:
+1. سوالات باید کاملاً جدید و خلاقانه باشند — تکراری نباشند
+2. سختی دقیقاً مطابق سطح ${state.level}
+3. هر اسم آلمانی حتماً با آرتیکل (der/die/das) نوشته شود
+4. توزیع متعادل بین مهارت‌های انتخاب شده
+5. سوالات مثل امتحان واقعی — نه شوخی، نه ساده‌انگارانه
+6. توضیح گرامری مختصر و دقیق
+${expansionRule}
+
+ساختار خروجی:
+یک شیء JSON با کلید "questions" که آرایه‌ای از سوالات است.
+هر سوال این فیلدها را دارد:
+- skill: یکی از این مقادیر: vocab, grammar, praep, article, reading, listening, writing, wordorder
+- type: یکی از این مقادیر: mcq, fill, wordorder, writing
+- level: سطح سوال (مثلاً A1)
+- question_de: متن سوال به آلمانی (یا رشته خالی)
+- question_fa: متن سوال به فارسی/دری
+- hint: راهنمای کوتاه (یا رشته خالی)
+- passage: متن خواندنی برای reading (یا رشته خالی)
+- audio_text: متن آلمانی برای listening (یا رشته خالی)
+- options: آرایه گزینه‌ها — برای mcq چهار گزینه، برای انواع دیگر آرایه خالی
+- answer: جواب صحیح به صورت رشته
+- explanation: توضیح گرامری به فارسی
+- translation_fa: ترجمه فارسی/دری جمله کامل آلمانی (بعد از پر کردن جای خالی یا مرتب کردن کلمات)
+
+نکات:
+- برای fill، writing → options باید [] باشد
+- برای wordorder → options آرایه‌ای از کلمات تکی است (هر کلمه یک عنصر جدا). مثلاً ["Der", "Mann", "hat", "einen", "Bart"]. کلمات را با / یا , یا space جدا نکن. هر کلمه یک رشته جدا.
+- برای wordorder → answer = جمله صحیح کامل با فاصله بین کلمات
+- برای writing → answer = یک نمونه پاسخ خوب
+- از کوتیشن دوتایی " استفاده کن، نه تکی
+- از escape صحیح برای کاراکترهای ویژه استفاده کن
+- هیچ متن اضافی، توضیح، یا markdown قبل و بعد از JSON ننویس
+
+فقط JSON خالص برگردان.`;
+
+  // Build message content
+  const userContent = [];
+  if(state.fileData){
+    if(state.fileData.type === 'image'){
+      userContent.push({
+        type: 'image',
+        source: {type:'base64', media_type:state.fileData.mime, data:state.fileData.data}
+      });
+      promptText += '\n\nاز محتوای تصویر آپلود شده برای ساخت سوالات استفاده کن.';
+    } else if(state.fileData.type === 'pdf'){
+      userContent.push({
+        type: 'document',
+        source: {type:'base64', media_type:'application/pdf', data:state.fileData.data}
+      });
+      promptText += '\n\nاز محتوای PDF آپلود شده برای ساخت سوالات استفاده کن.';
+    } else if(state.fileData.type === 'text'){
+      promptText += `\n\nمتن آپلود شده:\n${state.fileData.data.substring(0, 4000)}`;
+    }
+  }
+  userContent.push({type:'text', text:promptText});
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8000,
+      messages: [{role:'user', content:userContent}]
+    })
+  });
+
+  if(!res.ok){
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  let txt = '';
+  for(const block of (data.content||[])){
+    if(block.type === 'text') txt += block.text;
+  }
+  txt = txt.replace(/```json|```/g, '').trim();
+
+  const parsed = robustParseJSON(txt);
+  if(!parsed || !parsed.questions) throw new Error('پاسخ معتبر نیست — دوباره امتحان کن');
+  state.questions = (parsed.questions || []).slice(0, state.qCount);
+}
+
+// Robust JSON parser — handles common AI mistakes
+function robustParseJSON(raw){
+  // Try direct first
+  try { return JSON.parse(raw); } catch(e){}
+
+  // Extract JSON object
+  let txt = raw;
+  const start = txt.indexOf('{');
+  const end = txt.lastIndexOf('}');
+  if(start === -1 || end === -1) return null;
+  txt = txt.substring(start, end + 1);
+
+  // Try after extraction
+  try { return JSON.parse(txt); } catch(e){}
+
+  // Fix common issues:
+  // 1. Smart/curly quotes → normal
+  txt = txt.replace(/[\u201C\u201D\u201E\u201F]/g, '"').replace(/[\u2018\u2019\u201A\u201B]/g, "'");
+  // 2. Trailing commas
+  txt = txt.replace(/,(\s*[}\]])/g, '$1');
+  // 3. Bad newlines inside strings
+  txt = txt.replace(/("(?:[^"\\]|\\.)*?)\n([^"]*?")/g, '$1 $2');
+  // 4. Unescaped backslashes
+  txt = txt.replace(/\\(?!["\\\/bfnrtu])/g, '\\\\');
+
+  try { return JSON.parse(txt); } catch(e){
+    console.error('JSON parse fail:', e.message, '\nRaw:', raw.substring(0, 500));
+    return null;
+  }
+}
+
+// ============ QUIZ MODE ============
+function enterQuiz(){
+  $('setupMode').style.display = 'none';
+  $('resultsMode').classList.remove('active');
+  $('quizMode').classList.add('active');
+  $('qTotal').textContent = state.questions.length;
+  $('qLvl').textContent = `${state.level} · ${state.exam.toUpperCase()}`;
+  hideStatus();
+
+  if(state.timerMode === 1){
+    $('timerDisp').style.display = 'block';
+    startTimer(false);
+  } else if(state.timerMode === 2){
+    $('timerDisp').style.display = 'block';
+  }
+
+  renderQ();
+}
+
+function exitQuiz(){
+  stopTimer();
+  $('quizMode').classList.remove('active');
+  $('resultsMode').classList.remove('active');
+  $('setupMode').style.display = 'block';
+  updateProgressUI();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderQ(){
+  if(state.curIdx >= state.questions.length){showResults();return;}
+  state.answered = false;
+  const q = state.questions[state.curIdx];
+
+  // Update header stats
+  $('qNum').textContent = state.curIdx + 1;
+  $('okCnt').textContent = state.okCnt;
+  $('badCnt').textContent = state.badCnt;
+  const pct = (state.curIdx / state.questions.length) * 100;
+  $('progFill').style.width = pct + '%';
+
+  // Per-question timer
+  if(state.timerMode === 2){
+    startTimer(true);
+  }
+
+  const skillBadge = {
+    vocab:'vocab', grammar:'grammar', praep:'praep',
+    article:'article', reading:'reading', listening:'listening',
+    writing:'writing', wordorder:'grammar'
+  }[q.skill] || 'vocab';
+  const skillLabel = {
+    vocab:'لغات', grammar:'گرامر', praep:'حروف اضافه',
+    article:'آرتیکل', reading:'خواندن', listening:'شنیدن',
+    writing:'نوشتن', wordorder:'ترتیب کلمات'
+  }[q.skill] || q.skill;
+
+  let html = `<div class="qskill-row">
+    <span class="qskill ${skillBadge}">${skillLabel}</span>
+    <span class="qlevel">${q.level || state.level}</span>
+  </div>`;
+
+  // Audio for listening
+  if(q.skill === 'listening' && (q.audio_text || q.question_de)){
+    html += `<button class="audio-btn" id="audioBtn" onclick="playAudio()">
+      <span class="play-ico">🔊</span>
+      <span>گوش کن (می‌توانی چند بار بزنی)</span>
+      <span class="speed-tag">0.85x</span>
+    </button>`;
+  }
+
+  // Reading passage
+  if(q.skill === 'reading' && q.passage){
+    html += `<div class="reading-passage">${escapeHtml(q.passage)}</div>`;
+  }
+
+  // Question text
+  if(q.question_de){
+    html += `<div class="q-text de">${formatBlanks(escapeHtml(q.question_de))}</div>`;
+  }
+  if(q.question_fa){
+    html += `<div class="q-text" style="font-size:14px;color:var(--text2);font-weight:600;">${escapeHtml(q.question_fa)}</div>`;
+  }
+  if(q.hint){
+    html += `<div class="q-hint">💡 ${escapeHtml(q.hint)}</div>`;
+  }
+
+  // Answer interface
+  if(q.type === 'mcq' || q.type === 'listening_mcq' || q.type === 'reading_mcq'){
+    html += '<div class="mcq-list">';
+    const letters = ['A','B','C','D','E'];
+    (q.options || []).forEach((opt, i)=>{
+      const isDe = /[a-zA-ZäöüÄÖÜß]/.test(opt) && !/[\u0600-\u06FF]/.test(opt);
+      html += `<button class="mcq-item ${isDe ? 'ltr' : ''}" data-opt="${escapeAttr(opt)}" onclick="answerMCQ(this)">
+        <span class="letter">${letters[i]}</span>
+        <span class="text">${escapeHtml(opt)}</span>
+      </button>`;
+    });
+    html += '</div>';
+  } else if(q.type === 'fill'){
+    html += `<div class="fill-wrap">
+      <input class="fill-inp" id="fillInp" placeholder="جواب آلمانی..." onkeydown="if(event.key==='Enter')answerFill()">
+      <button class="btn-check" id="checkBtn" onclick="answerFill()">تایید ✓</button>
+    </div>`;
+  } else if(q.type === 'wordorder'){
+    html += `<div class="word-order-area" id="orderArea"></div>
+    <div class="word-bank" id="wordBank"></div>
+    <button class="btn-check" style="width:100%" onclick="answerOrder()">بررسی ترتیب ✓</button>`;
+  } else if(q.type === 'writing'){
+    html += `<textarea class="write-area" id="writeArea" placeholder="جواب آلمانی خود را اینجا بنویس..."></textarea>
+    <div class="write-counter">
+      <span><span id="writeCnt">0</span> کلمه</span>
+      <span class="req">حداقل 30 کلمه</span>
+    </div>
+    <button class="btn-check" style="width:100%;margin-top:10px;" onclick="answerWriting()">ارسال و بررسی ✓</button>`;
+  }
+
+  // Feedback container
+  html += `<div class="fb-box" id="fbBox"></div>
+  <button class="next-btn" id="nextBtn" onclick="nextQ()">
+    <span>${state.curIdx === state.questions.length - 1 ? 'پایان امتحان' : 'سوال بعدی'}</span>
+    <span>←</span>
+  </button>`;
+
+  $('qcard').innerHTML = html;
+
+  // Init special interactions
+  if(q.type === 'wordorder'){
+    initWordOrder(q.options || []);
+  } else if(q.type === 'writing'){
+    const wa = $('writeArea');
+    wa.addEventListener('input', ()=>{
+      const wc = wa.value.trim().split(/\s+/).filter(Boolean).length;
+      $('writeCnt').textContent = wc;
+    });
+  } else if(q.type === 'fill'){
+    setTimeout(()=>$('fillInp')?.focus(), 100);
+  }
+
+  // Auto-play listening
+  if(q.skill === 'listening' && (q.audio_text || q.question_de)){
+    setTimeout(playAudio, 600);
+  }
+}
+
+function formatBlanks(text){
+  return text.replace(/___+|_+|\{blank\}|\[\.\.\.\]/g, '<span class="blank">_____</span>');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function escapeAttr(s){return String(s).replace(/"/g,'&quot;');}
+
+// ============ AUDIO (Google Translate TTS — قابل اعتماد) ============
+let currentAudio = null;
+
+function playAudio(){
+  const q = state.questions[state.curIdx];
+  const text = q.audio_text || q.question_de || '';
+  if(!text){
+    showToast('متن صوتی موجود نیست');
+    return;
+  }
+
+  // Stop any previous audio
+  if(currentAudio){
+    currentAudio.pause();
+    currentAudio = null;
+  }
+
+  // Truncate to 200 chars (Google TTS limit)
+  const cleanText = text.substring(0, 200);
+  const encoded = encodeURIComponent(cleanText);
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encoded}&tl=de&client=tw-ob`;
+
+  // Visual feedback on button
+  const btn = document.getElementById('audioBtn');
+  if(btn){
+    btn.style.opacity = '0.6';
+    const icon = btn.querySelector('.play-ico');
+    if(icon) icon.textContent = '⏳';
+  }
+
+  currentAudio = new Audio(url);
+  currentAudio.playbackRate = 0.9; // slightly slower for learners
+
+  currentAudio.onplay = ()=>{
+    if(btn){
+      btn.style.opacity = '1';
+      const icon = btn.querySelector('.play-ico');
+      if(icon) icon.textContent = '🔊';
+    }
+  };
+
+  currentAudio.onended = ()=>{
+    if(btn){
+      const icon = btn.querySelector('.play-ico');
+      if(icon) icon.textContent = '🔊';
+    }
+    currentAudio = null;
+  };
+
+  currentAudio.onerror = ()=>{
+    if(btn){
+      btn.style.opacity = '1';
+      const icon = btn.querySelector('.play-ico');
+      if(icon) icon.textContent = '🔊';
+    }
+    // Fallback to Web Speech API if Google TTS blocked
+    fallbackWebSpeech(cleanText);
+  };
+
+  currentAudio.play().catch(()=>{
+    fallbackWebSpeech(cleanText);
+  });
+}
+
+// Fallback if Google TTS fails (CORS, network etc.)
+function fallbackWebSpeech(text){
+  if(!window.speechSynthesis){
+    showToast('صدا کار نکرد — اینترنت را چک کن');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  u.rate = 0.85;
+  const voices = window.speechSynthesis.getVoices();
+  const dv = voices.find(v=>v.lang.startsWith('de'));
+  if(dv) u.voice = dv;
+  window.speechSynthesis.speak(u);
+}
+
+// ============ ANSWER HANDLERS ============
+function answerMCQ(btn){
+  if(state.answered) return;
+  state.answered = true;
+  stopTimer();
+  const q = state.questions[state.curIdx];
+  const chosen = btn.dataset.opt;
+  const isOk = chosen === q.answer;
+
+  document.querySelectorAll('.mcq-item').forEach(b=>{
+    b.disabled = true;
+    if(b.dataset.opt === q.answer) b.classList.add('correct');
+    else if(b.dataset.opt === chosen) b.classList.add('wrong');
+  });
+
+  recordAnswer(isOk, chosen);
+  showFeedback(isOk, q);
+}
+
+function answerFill(){
+  if(state.answered) return;
+  const q = state.questions[state.curIdx];
+  const inp = $('fillInp');
+  const val = inp.value.trim();
+  if(!val) return;
+  state.answered = true;
+  stopTimer();
+  inp.disabled = true;
+  $('checkBtn').disabled = true;
+  const isOk = normalizeAns(val) === normalizeAns(q.answer);
+  inp.classList.add(isOk ? 'correct' : 'wrong');
+  recordAnswer(isOk, val);
+  showFeedback(isOk, q);
+}
+
+function initWordOrder(words){
+  const bank = $('wordBank');
+  const area = $('orderArea');
+  // Normalize: if AI gave single string with separators, split it
+  let wordList = [];
+  if(Array.isArray(words)){
+    // If array has one element with separators, split it
+    if(words.length === 1 && /[\/|,]/.test(words[0])){
+      wordList = words[0].split(/[\/|,]+/).map(w=>w.trim()).filter(Boolean);
+    } else {
+      wordList = words.map(w=>String(w).trim()).filter(Boolean);
+    }
+  } else if(typeof words === 'string'){
+    wordList = words.split(/[\/|,\s]+/).map(w=>w.trim()).filter(Boolean);
+  }
+  // If still no words but we have an answer, derive from answer
+  if(wordList.length < 2){
+    const q = state.questions[state.curIdx];
+    if(q && q.answer){
+      wordList = q.answer.split(/\s+/).filter(Boolean);
+    }
+  }
+  // Shuffle
+  const shuffled = [...wordList].sort(()=>Math.random()-0.5);
+  shuffled.forEach(w=>{
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.textContent = w;
+    chip.onclick = ()=>{
+      if(state.answered) return;
+      if(chip.parentElement === bank){
+        area.appendChild(chip);
+        chip.classList.add('placed');
+      } else {
+        bank.appendChild(chip);
+        chip.classList.remove('placed');
+      }
+    };
+    bank.appendChild(chip);
+  });
+}
+
+function answerOrder(){
+  if(state.answered) return;
+  const q = state.questions[state.curIdx];
+  const area = $('orderArea');
+  if(area.children.length === 0) return;
+  state.answered = true;
+  stopTimer();
+  const user = Array.from(area.children).map(c=>c.textContent).join(' ');
+  const isOk = normalizeAns(user) === normalizeAns(q.answer);
+  recordAnswer(isOk, user);
+  showFeedback(isOk, q);
+}
+
+async function answerWriting(){
+  if(state.answered) return;
+  const q = state.questions[state.curIdx];
+  const wa = $('writeArea');
+  const text = wa.value.trim();
+  if(text.split(/\s+/).filter(Boolean).length < 10){
+    showToast('حداقل 10 کلمه بنویس');
+    return;
+  }
+  state.answered = true;
+  stopTimer();
+  wa.disabled = true;
+
+  // Show loading feedback
+  const fb = $('fbBox');
+  fb.className = 'fb-box show ok';
+  fb.innerHTML = '<div class="fb-title">⏳ در حال بررسی...</div>';
+
+  // AI grade
+  try {
+    const grade = await gradeWriting(text, q, state.level);
+    const score = grade.overall || 0;
+    const isOk = score >= 60;
+    recordAnswer(isOk, text);
+
+    fb.className = 'fb-box show ' + (isOk ? 'ok' : 'bad');
+    fb.innerHTML = `<div class="fb-title">${isOk ? '✅ خوب نوشتی!' : '⚠️ نیاز به تمرین'}</div>
+    <div class="fb-answer">${grade.feedback || ''}</div>
+    <div class="grade-bar">
+      <div class="grade-cell"><div class="grade-label">گرامر</div><div class="grade-val">${grade.grammar || 0}</div></div>
+      <div class="grade-cell"><div class="grade-label">لغات</div><div class="grade-val">${grade.vocab || 0}</div></div>
+      <div class="grade-cell"><div class="grade-label">ساختار</div><div class="grade-val">${grade.structure || 0}</div></div>
+      <div class="grade-cell"><div class="grade-label">کل</div><div class="grade-val">${score}</div></div>
+    </div>
+    <div class="fb-explain"><strong>نمونه جواب:</strong><br>${escapeHtml(q.answer || '')}</div>`;
+    $('nextBtn').classList.add('show');
+  } catch(err){
+    fb.className = 'fb-box show bad';
+    fb.innerHTML = `<div class="fb-title">خطا در بررسی</div><div class="fb-answer">${err.message}</div>`;
+    recordAnswer(false, text);
+    $('nextBtn').classList.add('show');
+  }
+}
+
+async function gradeWriting(text, q, level){
+  const prompt = `این نوشته آلمانی یک زبان‌آموز سطح ${level} است.
+سوال: ${q.question_fa || q.question_de || ''}
+متن: "${text}"
+
+به این متن نمره بده. فقط JSON برگردان:
+{
+  "grammar": 0-100,
+  "vocab": 0-100,
+  "structure": 0-100,
+  "overall": 0-100,
+  "feedback": "بازخورد کوتاه به فارسی (2-3 جمله)"
+}`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 800,
+      messages: [{role:'user', content:prompt}]
+    })
+  });
+  if(!res.ok) throw new Error('خطا در بررسی');
+  const data = await res.json();
+  let txt = data.content?.[0]?.text || '';
+  txt = txt.replace(/```json|```/g, '').trim();
+  const parsed = robustParseJSON(txt);
+  if(!parsed) throw new Error('پاسخ نامعتبر');
+  return parsed;
+}
+
+function normalizeAns(s){
+  return s.toLowerCase()
+    .replace(/[.,!?;:]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function recordAnswer(ok, userAns){
+  if(ok) state.okCnt++; else state.badCnt++;
+  state.reviewLog.push({
+    q: state.questions[state.curIdx],
+    user: userAns,
+    ok
+  });
+  $('okCnt').textContent = state.okCnt;
+  $('badCnt').textContent = state.badCnt;
+}
+
+function showFeedback(ok, q){
+  const fb = $('fbBox');
+  fb.className = 'fb-box show ' + (ok ? 'ok' : 'bad');
+  let html = `<div class="fb-title">${ok ? '✅ درست! آفرین' : '❌ غلط'}</div>`;
+  if(!ok){
+    html += `<div class="fb-answer">جواب صحیح: <strong>${escapeHtml(q.answer)}</strong></div>`;
+  }
+  // Show full German sentence + translation
+  const fullSentence = getFullSentence(q);
+  if(fullSentence){
+    html += `<div class="fb-answer" style="direction:ltr;text-align:left;font-family:'Fraunces',serif;font-size:15px;margin-top:8px;padding:8px 12px;background:rgba(245,197,66,0.06);border-radius:8px;">📖 ${escapeHtml(fullSentence)}</div>`;
+  }
+  if(q.translation_fa || q.fa_translation){
+    const tr = q.translation_fa || q.fa_translation;
+    html += `<div class="fb-answer" style="font-size:13px;color:var(--text2);margin-top:4px;">🇦🇫 ${escapeHtml(tr)}</div>`;
+  }
+  if(q.explanation){
+    html += `<div class="fb-explain"><strong>💡 توضیح:</strong> ${escapeHtml(q.explanation)}</div>`;
+  }
+  fb.innerHTML = html;
+  $('nextBtn').classList.add('show');
+}
+
+// Build the complete sentence by combining question + answer
+function getFullSentence(q){
+  if(!q.question_de) return null;
+  // If question has blank markers, replace with answer
+  if(/___+|_+|\{blank\}|\[\.\.\.\]/.test(q.question_de)){
+    return q.question_de.replace(/___+|_+|\{blank\}|\[\.\.\.\]/g, q.answer || '___');
+  }
+  // For wordorder, the answer IS the sentence
+  if(q.type === 'wordorder' && q.answer){
+    return q.answer;
+  }
+  return null;
+}
+
+function nextQ(){
+  state.curIdx++;
+  if(state.curIdx >= state.questions.length){
+    showResults();
+  } else {
+    renderQ();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+// ============ TIMER ============
+function startTimer(perQuestion){
+  stopTimer();
+  let elapsed = 0;
+  $('timerDisp').textContent = '00:00';
+  state.timerInt = setInterval(()=>{
+    elapsed++;
+    const m = Math.floor(elapsed/60).toString().padStart(2,'0');
+    const s = (elapsed%60).toString().padStart(2,'0');
+    $('timerDisp').textContent = `${m}:${s}`;
+  }, 1000);
+}
+function stopTimer(){
+  if(state.timerInt){
+    clearInterval(state.timerInt);
+    state.timerInt = null;
+  }
+}
+
+// ============ RESULTS ============
+function showResults(){
+  stopTimer();
+  $('quizMode').classList.remove('active');
+  $('resultsMode').classList.add('active');
+  $('progFill').style.width = '100%';
+
+  // Save exam to progress
+  recordExam();
+
+  // Reset save mistakes button state
+  const smBtn = document.getElementById('saveMistakesBtn');
+  if(smBtn){
+    smBtn.classList.remove('saved');
+    smBtn.disabled = false;
+    const wrongs = state.reviewLog.filter(r=>!r.ok).length;
+    if(wrongs === 0){
+      smBtn.innerHTML = '🎉 هیچ غلطی نداشتی!';
+      smBtn.disabled = true;
+    } else {
+      smBtn.innerHTML = `📚 ذخیره ${wrongs} غلط برای تمرین بعدی`;
+    }
+  }
+
+  // Refresh progress UI for when user goes back
+  updateProgressUI();
+
+  const total = state.questions.length;
+  const score = state.okCnt;
+  const pct = Math.round(score / total * 100);
+
+  $('rScore').textContent = `${score}/${total}`;
+  $('rPct').textContent = `${pct}% — ${formatTime(Date.now() - state.startTime)}`;
+
+  const grade = $('rGrade');
+  const trophy = $('rTrophy');
+  const msg = $('rMsg');
+  if(pct >= 90){
+    grade.className = 'r-grade s-a'; grade.textContent = 'SEHR GUT · A';
+    trophy.textContent = '🏆'; msg.textContent = 'عالی! آماده‌ی امتحان واقعی هستی!';
+  } else if(pct >= 75){
+    grade.className = 'r-grade s-b'; grade.textContent = 'GUT · B';
+    trophy.textContent = '🥇'; msg.textContent = 'خوب پیش رفتی — کمی تمرین بیشتر و عالی می‌شوی!';
+  } else if(pct >= 60){
+    grade.className = 'r-grade s-c'; grade.textContent = 'BEFRIEDIGEND · C';
+    trophy.textContent = '🥉'; msg.textContent = 'بد نیست — اما هنوز جا برای پیشرفت داری.';
+  } else {
+    grade.className = 'r-grade s-d'; grade.textContent = 'WIEDERHOLEN · D';
+    trophy.textContent = '📚'; msg.textContent = 'ادامه بده — هر تمرین تو را قوی‌تر می‌کند!';
+  }
+
+  // Breakdown by skill
+  const bySkill = {};
+  state.reviewLog.forEach(r=>{
+    const sk = r.q.skill || 'other';
+    if(!bySkill[sk]) bySkill[sk] = {ok:0, total:0};
+    bySkill[sk].total++;
+    if(r.ok) bySkill[sk].ok++;
+  });
+  const skillNames = {vocab:'لغات', grammar:'گرامر', praep:'حروف اضافه', article:'آرتیکل', reading:'خواندن', listening:'شنیدن', writing:'نوشتن', wordorder:'ترتیب کلمات'};
+  const skillColors = {vocab:'var(--cyan)', grammar:'var(--violet)', praep:'var(--amber)', article:'var(--gold)', reading:'var(--emerald)', listening:'var(--rose)', writing:'var(--indigo)', wordorder:'var(--violet)'};
+  let bdHtml = '';
+  Object.entries(bySkill).forEach(([sk, d])=>{
+    const p = Math.round(d.ok/d.total*100);
+    bdHtml += `<div class="r-bd-item">
+      <div class="r-bd-skill">${skillNames[sk] || sk}</div>
+      <div class="r-bd-track"><div class="r-bd-fill" style="width:${p}%;background:${skillColors[sk] || 'var(--gold)'}"></div></div>
+      <div class="r-bd-val">${d.ok}/${d.total}</div>
+    </div>`;
+  });
+  $('breakdownBody').innerHTML = bdHtml;
+
+  // Review
+  let rvHtml = '';
+  state.reviewLog.forEach((r, i)=>{
+    rvHtml += `<div class="review-item ${r.ok ? 'ok' : 'bad'}">
+      <div class="review-q">${i+1}. ${escapeHtml(r.q.question_de || r.q.question_fa || '')}</div>
+      <div class="review-meta">
+        <span class="ans">✓ ${escapeHtml(r.q.answer || '')}</span>
+        ${!r.ok ? `<span class="user">جواب تو: ${escapeHtml(r.user || '')}</span>` : ''}
+      </div>
+    </div>`;
+  });
+  $('reviewBody').innerHTML = rvHtml;
+}
+
+function formatTime(ms){
+  const s = Math.floor(ms/1000);
+  const m = Math.floor(s/60);
+  return `${m}:${(s%60).toString().padStart(2,'0')}`;
+}
+
+function restartQuiz(){
+  state.curIdx = 0;
+  state.okCnt = 0;
+  state.badCnt = 0;
+  state.reviewLog = [];
+  state.startTime = Date.now();
+  $('resultsMode').classList.remove('active');
+  $('quizMode').classList.add('active');
+  renderQ();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function continueQuiz(){
+  // Generate 10 fresh questions on same topic, with avoidance of repeats
+  const topic = $('topicInp').value.trim();
+  const oldCount = state.qCount;
+  const prevQuestions = state.questions.map(q => q.question_de || q.question_fa).filter(Boolean);
+
+  // Show loading on the button
+  const btns = document.querySelectorAll('.r-act');
+  btns.forEach(b => b.disabled = true);
+  const contBtn = document.querySelector('.r-act.primary');
+  const origText = contBtn.textContent;
+  contBtn.textContent = '⏳ در حال ساخت سوالات جدید...';
+
+  try {
+    state.qCount = 10;
+    await generateQuestionsExtra(topic, prevQuestions);
+    if(state.questions.length === 0) throw new Error('سوالی تولید نشد');
+
+    // Reset for new round
+    state.curIdx = 0;
+    state.okCnt = 0;
+    state.badCnt = 0;
+    state.reviewLog = [];
+    state.startTime = Date.now();
+
+    $('resultsMode').classList.remove('active');
+    $('quizMode').classList.add('active');
+    $('qTotal').textContent = state.questions.length;
+    renderQ();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(err){
+    showToast('❌ ' + (err.message || 'خطا'));
+    state.qCount = oldCount;
+    contBtn.textContent = origText;
+    btns.forEach(b => b.disabled = false);
+  }
+}
+
+async function generateQuestionsExtra(topic, prevQuestions){
+  // Same as generateQuestions but with a "avoid these" addition
+  const avoidList = prevQuestions.length > 0
+    ? `\n\nسوالات قبلی که ساخته شده (نباید تکرار شوند):\n${prevQuestions.slice(0, 15).map((q,i)=>`${i+1}. ${q}`).join('\n')}\n\nسوالات جدید باید کاملاً متفاوت باشند.`
+    : '';
+
+  const skillsDesc = {
+    vocab: 'سوالات معنی لغات (mcq) — اسامی آلمانی همیشه با آرتیکل der/die/das',
+    grammar: 'سوالات گرامر (mcq یا fill) — صرف افعال، زمان‌ها، حالت‌ها',
+    praep: 'سوالات حروف اضافه (mcq) — کدام Präposition درست است',
+    article: 'سوالات آرتیکل (mcq) — der/die/das/den/dem/des برای اسم',
+    reading: 'سوالات درک مطلب — متن کوتاه آلمانی + سوال درباره آن',
+    listening: 'سوالات شنیداری — متن آلمانی که با TTS خوانده می‌شود + سوال',
+    writing: 'سوال نوشتاری — درخواست متن کوتاه به آلمانی',
+    wordorder: 'ترتیب کلمات — کلمات نامرتب + ساخت جمله صحیح'
+  };
+  const activeSkills = state.skills.map(s => `- ${s}: ${skillsDesc[s]}`).join('\n');
+  const examStyles = {
+    goethe: 'سبک Goethe-Zertifikat',
+    telc: 'سبک telc',
+    testdaf: 'سبک TestDaF',
+    dtz: 'سبک DTZ مخصوص Pflegeausbildung',
+    mix: 'ترکیبی'
+  };
+  const levelGuide = {
+    A1:'بسیار ساده',A2:'ساده',B1:'متوسط',B2:'پیشرفته',C1:'حرفه‌ای',C2:'فوق حرفه‌ای'
+  };
+  const expansionRule = state.expand
+    ? `لغات و مفاهیم مرتبط را گسترش بده برای تنوع.`
+    : `فقط از موضوع کاربر استفاده کن.`;
+
+  const promptText = `سطح: ${state.level} (${levelGuide[state.level]}) — سبک: ${examStyles[state.exam]}
+موضوع: ${topic || 'فایل آپلود شده'}
+تعداد: 10 سوال جدید
+مهارت‌ها:
+${activeSkills}
+
+${expansionRule}
+${avoidList}
+
+ساختار خروجی:
+شیء JSON با کلید "questions" که آرایه‌ای از سوالات است.
+فیلدهای هر سوال:
+skill (vocab|grammar|praep|article|reading|listening|writing|wordorder)
+type (mcq|fill|wordorder|writing)
+level: "${state.level}"
+question_de, question_fa, hint, passage, audio_text (رشته یا خالی)
+options (آرایه — برای mcq چهارتا، برای wordorder کلمات تکی، برای انواع دیگر خالی)
+answer (رشته)
+explanation (رشته به فارسی)
+translation_fa (ترجمه فارسی/دری جمله کامل)
+
+از کوتیشن دوتایی استفاده کن. هر اسم آلمانی با آرتیکل. هیچ متن اضافی قبل/بعد JSON ننویس.`;
+
+  const userContent = [];
+  if(state.fileData){
+    if(state.fileData.type === 'image'){
+      userContent.push({type:'image',source:{type:'base64',media_type:state.fileData.mime,data:state.fileData.data}});
+    } else if(state.fileData.type === 'pdf'){
+      userContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:state.fileData.data}});
+    }
+  }
+  userContent.push({type:'text', text:promptText});
+
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:6000,messages:[{role:'user',content:userContent}]})
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message || 'خطا');}
+  const data = await res.json();
+  let txt = '';
+  for(const block of (data.content||[])){if(block.type==='text') txt += block.text;}
+  txt = txt.replace(/```json|```/g,'').trim();
+  const parsed = robustParseJSON(txt);
+  if(!parsed || !parsed.questions) throw new Error('پاسخ نامعتبر — دوباره امتحان کن');
+  state.questions = (parsed.questions || []).slice(0, 10);
+}
+
+// Preload TTS voices
+if(window.speechSynthesis){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = ()=>window.speechSynthesis.getVoices();
+}
+</script>
+
+</body>
+</html>
