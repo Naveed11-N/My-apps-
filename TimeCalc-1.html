@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeCalc — محاسبه‌گر زمان</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a;
+  --bg2:#0f1322;
+  --surface:#141a2e;
+  --surface2:#1a2138;
+  --surface3:#222a45;
+  --border:#222b45;
+  --border2:#2d3858;
+  --text:#f5f7ff;
+  --text2:#a3b0d4;
+  --text3:#6d7aa3;
+  --text4:#3d4a6d;
+  /* accents */
+  --teal:#14b8a6;
+  --teal-bright:#5eead4;
+  --emerald:#10b981;
+  --cyan:#06b6d4;
+  --blue:#3b82f6;
+  --indigo:#6366f1;
+  --violet:#a855f7;
+  --pink:#ec4899;
+  --rose:#f43f5e;
+  --orange:#f97316;
+  --amber:#f59e0b;
+  --yellow:#eab308;
+  --lime:#84cc16;
+  --red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:'Vazirmatn',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* Animated background */
+.bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.3;animation:drift 25s ease-in-out infinite;}
+.bg-orb.o1{width:500px;height:500px;background:radial-gradient(circle,var(--teal),transparent 70%);top:-100px;right:-100px;}
+.bg-orb.o2{width:450px;height:450px;background:radial-gradient(circle,var(--violet),transparent 70%);bottom:-100px;left:-100px;animation-delay:-8s;}
+.bg-orb.o3{width:350px;height:350px;background:radial-gradient(circle,var(--pink),transparent 70%);top:40%;left:30%;animation-delay:-16s;}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-60px) scale(1.08);}66%{transform:translate(-50px,40px) scale(0.92);}}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(20,184,166,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(20,184,166,0.025) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse at center,#000 0%,transparent 80%);}
+
+.app{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:0 14px 80px;}
+
+/* HEADER */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:18px 0 12px;position:sticky;top:0;z-index:50;background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 70%,transparent);backdrop-filter:blur(20px);}
+.logo-block{display:flex;align-items:center;gap:10px;}
+.logo-ico{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 6px 20px rgba(20,184,166,0.3);}
+.logo-text{display:flex;flex-direction:column;line-height:1;}
+.logo-title{font-family:'Fraunces',serif;font-weight:800;font-size:18px;letter-spacing:-0.5px;}
+.logo-sub{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.lang-switch{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px;}
+.lang-btn{background:transparent;border:none;color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:7px;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;}
+.lang-btn.active{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#001a17;}
+
+/* TAB NAV */
+.tab-nav{display:flex;gap:6px;overflow-x:auto;padding:6px 0 16px;scrollbar-width:none;-ms-overflow-style:none;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:10px 16px;border-radius:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.tab-btn:hover{color:var(--text2);border-color:var(--border2);}
+.tab-btn.active{background:linear-gradient(135deg,rgba(20,184,166,0.15),rgba(6,182,212,0.08));border-color:rgba(20,184,166,0.4);color:var(--teal-bright);}
+.tab-btn .ico{font-size:14px;}
+
+/* Tab pages */
+.tab-page{display:none;animation:fadeIn 0.3s ease;}
+.tab-page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARDS */
+.card{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:0.6;}
+
+.card-title{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';width:18px;height:1px;background:var(--teal);}
+
+/* INPUTS */
+.input-group{margin-bottom:14px;}
+.input-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.input-label .lbl-side{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-weight:600;}
+.input-box{background:var(--surface3);border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;font-family:'Vazirmatn',sans-serif;font-size:14px;color:var(--text);width:100%;outline:none;transition:all 0.2s;}
+.input-box:focus{border-color:var(--teal);background:rgba(20,184,166,0.04);}
+.input-box::placeholder{color:var(--text4);}
+
+/* DATE INPUT */
+.date-input{display:grid;grid-template-columns:1fr 1fr 1.4fr auto;gap:6px;align-items:stretch;}
+.date-cell{background:var(--surface3);border:1.5px solid var(--border2);border-radius:10px;padding:10px 6px;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--text);outline:none;text-align:center;transition:all 0.2s;font-weight:700;-moz-appearance:textfield;}
+.date-cell::-webkit-outer-spin-button,.date-cell::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.date-cell:focus{border-color:var(--teal);background:rgba(20,184,166,0.05);}
+.date-cell::placeholder{color:var(--text4);font-weight:600;}
+.date-pick{background:var(--surface3);border:1.5px solid var(--border2);border-radius:10px;width:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px;transition:all 0.2s;}
+.date-pick:hover{border-color:var(--teal);color:var(--teal);}
+
+/* CAL TYPE PILL */
+.cal-pills{display:flex;gap:4px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:8px;}
+.cal-pill{flex:1;padding:7px 4px;border-radius:7px;background:transparent;border:none;color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.cal-pill.shamsi.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+.cal-pill.miladi.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;}
+.cal-pill.qamari.active{background:linear-gradient(135deg,#10b981,#059669);color:#fff;}
+
+/* BUTTONS */
+.btn{padding:14px 18px;border-radius:13px;border:none;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#001a17;box-shadow:0 6px 20px rgba(20,184,166,0.25);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(20,184,166,0.4);}
+.btn-secondary{background:var(--surface3);border:1px solid var(--border2);color:var(--text2);}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal);}
+.btn-danger{background:transparent;border:1px solid rgba(239,68,68,0.3);color:var(--red);}
+.btn-danger:hover{background:rgba(239,68,68,0.1);}
+.btn-row{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px;}
+.btn-full{width:100%;}
+
+/* RESULT */
+.result-box{display:none;margin-top:14px;padding:18px;border-radius:14px;background:linear-gradient(135deg,rgba(20,184,166,0.08),rgba(6,182,212,0.04));border:1px solid rgba(20,184,166,0.25);animation:fadeIn 0.4s ease;}
+.result-box.show{display:block;}
+.result-box.error{background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(244,63,94,0.04));border-color:rgba(239,68,68,0.3);}
+
+.big-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stat-cell{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 6px;text-align:center;}
+.stat-num{font-family:'Fraunces',serif;font-size:32px;font-weight:900;color:var(--teal-bright);line-height:1;}
+.stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700;letter-spacing:1px;margin-top:4px;}
+
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);font-size:13px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{color:var(--text3);}
+.detail-val{color:var(--text);font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+/* PERSON CARD (for multi-person) */
+.person-card{background:var(--surface3);border:1px solid var(--border2);border-radius:14px;padding:14px;margin-bottom:10px;position:relative;}
+.person-card .person-num{position:absolute;top:-8px;right:14px;background:linear-gradient(135deg,var(--teal),var(--cyan));color:#001a17;font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace;}
+.person-remove{position:absolute;top:10px;left:10px;width:26px;height:26px;border-radius:8px;background:transparent;border:1px solid var(--border2);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
+.person-remove:hover{border-color:var(--red);color:var(--red);}
+.add-more-btn{width:100%;padding:12px;border-radius:12px;background:transparent;border:1.5px dashed var(--border2);color:var(--text3);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.add-more-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(20,184,166,0.04);}
+
+/* DIFFERENCE BAR (visual ranking) */
+.diff-bar{display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface);border-radius:11px;margin-bottom:6px;border:1px solid var(--border);}
+.diff-rank{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:11px;flex-shrink:0;}
+.diff-rank.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1500;}
+.diff-rank.r2{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff;}
+.diff-rank.r3{background:linear-gradient(135deg,#a16207,#854d0e);color:#fff;}
+.diff-rank.rx{background:var(--surface3);color:var(--text2);border:1px solid var(--border2);}
+.diff-name{flex:1;font-weight:700;font-size:13px;}
+.diff-age{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal-bright);font-weight:700;}
+
+/* COUNTDOWN LIST */
+.cd-item{background:var(--surface3);border:1px solid var(--border2);border-radius:14px;padding:14px;margin-bottom:10px;position:relative;}
+.cd-item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cd-name{font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;}
+.cd-name .cd-emoji{font-size:18px;}
+.cd-del{width:24px;height:24px;border-radius:7px;background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;}
+.cd-del:hover{color:var(--red);}
+.cd-time{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.cd-cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center;}
+.cd-cell-num{font-family:'Fraunces',serif;font-size:18px;font-weight:800;color:var(--teal-bright);line-height:1;}
+.cd-cell-lbl{font-size:9px;color:var(--text3);margin-top:3px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+.cd-date{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-align:left;direction:ltr;}
+.cd-item.past{opacity:0.5;}
+.cd-item.past .cd-cell-num{color:var(--text3);}
+
+/* RELIGIOUS DATES */
+.rel-list{display:grid;grid-template-columns:1fr;gap:8px;}
+.rel-item{background:var(--surface3);border:1px solid var(--border2);border-radius:12px;padding:14px;display:flex;align-items:center;gap:14px;}
+.rel-emoji{font-size:28px;flex-shrink:0;width:48px;text-align:center;}
+.rel-info{flex:1;min-width:0;}
+.rel-name{font-weight:800;font-size:14px;margin-bottom:3px;}
+.rel-date{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.rel-days{text-align:left;flex-shrink:0;}
+.rel-days-num{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--amber);line-height:1;}
+.rel-days-lbl{font-size:9px;color:var(--text3);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;}
+
+/* CONVERSION RESULT */
+.conv-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;}
+.conv-card{background:var(--surface3);border-radius:13px;padding:14px;border:1px solid var(--border2);border-right:3px solid transparent;}
+.conv-card.shamsi{border-right-color:var(--amber);}
+.conv-card.miladi{border-right-color:var(--blue);}
+.conv-card.qamari{border-right-color:var(--emerald);}
+.conv-card-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:6px;}
+.conv-card.shamsi .conv-card-label{color:var(--amber);}
+.conv-card.miladi .conv-card-label{color:var(--blue);}
+.conv-card.qamari .conv-card-label{color:var(--emerald);}
+.conv-text{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:3px;}
+.conv-iso{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3);}
+
+/* INFO CHIP */
+.info-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;background:rgba(20,184,166,0.1);color:var(--teal-bright);border:1px solid rgba(20,184,166,0.25);margin-bottom:10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--teal);color:var(--text);font-size:12px;font-weight:700;padding:10px 20px;border-radius:100px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (max-width:480px){
+  .big-stats{grid-template-columns:repeat(3,1fr);}
+  .stat-num{font-size:26px;}
+  .date-input{grid-template-columns:1fr 1fr 1.5fr auto;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="bg-grid"></div>
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+  <div class="bg-orb o3"></div>
+</div>
+
+<div class="app">
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="logo-block">
+    <div class="logo-ico">⏱</div>
+    <div class="logo-text">
+      <div class="logo-title">TimeCalc</div>
+      <div class="logo-sub" data-i18n="logoSub">محاسبه‌گر زمان</div>
+    </div>
+  </div>
+  <div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('fa',this)">دری</button>
+    <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('age',this)">
+    <span class="ico">🎂</span><span data-i18n="tabAge">سن من</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('diff',this)">
+    <span class="ico">👥</span><span data-i18n="tabDiff">اختلاف سن</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('conv',this)">
+    <span class="ico">🔄</span><span data-i18n="tabConv">تبدیل تاریخ</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('datediff',this)">
+    <span class="ico">📅</span><span data-i18n="tabDateDiff">تفاوت تاریخ</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('countdown',this)">
+    <span class="ico">⏳</span><span data-i18n="tabCountdown">شمارش معکوس</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('religious',this)">
+    <span class="ico">🌙</span><span data-i18n="tabReligious">تاریخ‌های مذهبی</span>
+  </button>
+</div>
+
+<!-- ===== TAB 1: AGE CALCULATOR ===== -->
+<div class="tab-page active" id="tab-age">
+  <div class="card">
+    <div class="card-title" data-i18n="ageCalcTitle">محاسبه سن</div>
+
+    <div class="input-group">
+      <div class="input-label">
+        <span data-i18n="dobLabel">تاریخ تولد</span>
+        <span class="lbl-side" id="ageCalLbl">روز / ماه / سال</span>
+      </div>
+      <div class="cal-pills">
+        <button class="cal-pill shamsi active" onclick="setAgeCal('shamsi',this)">شمسی</button>
+        <button class="cal-pill miladi" onclick="setAgeCal('miladi',this)">میلادی</button>
+        <button class="cal-pill qamari" onclick="setAgeCal('qamari',this)">قمری</button>
+      </div>
+      <div class="date-input">
+        <input class="date-cell" type="number" id="age-d" placeholder="DD" min="1" max="31">
+        <input class="date-cell" type="number" id="age-m" placeholder="MM" min="1" max="12">
+        <input class="date-cell" type="number" id="age-y" placeholder="YYYY" min="1300" max="2100">
+        <button class="date-pick" onclick="pickDate('age')" title="انتخاب از تقویم">📅</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="clearAge()"><span data-i18n="clear">پاک</span></button>
+      <button class="btn btn-primary" onclick="calcAge()">
+        <span>⚡</span><span data-i18n="calculate">محاسبه</span>
+      </button>
+    </div>
+
+    <div class="result-box" id="ageResult"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 2: AGE DIFFERENCE (MULTI-PERSON) ===== -->
+<div class="tab-page" id="tab-diff">
+  <div class="card">
+    <div class="card-title" data-i18n="diffTitle">اختلاف سن چند نفر</div>
+    <div class="info-chip"><span>👥</span><span data-i18n="diffInfo">می‌توانی تا ۸ نفر اضافه کنی</span></div>
+
+    <div id="personsList"></div>
+
+    <button class="add-more-btn" onclick="addPerson()">
+      <span>➕</span> <span data-i18n="addPerson">اضافه کردن شخص</span>
+    </button>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="clearDiff()"><span data-i18n="clear">پاک</span></button>
+      <button class="btn btn-primary" onclick="calcDiff()">
+        <span>⚡</span><span data-i18n="calculate">محاسبه</span>
+      </button>
+    </div>
+
+    <div class="result-box" id="diffResult"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: DATE CONVERSION ===== -->
+<div class="tab-page" id="tab-conv">
+  <div class="card">
+    <div class="card-title" data-i18n="convTitle">تبدیل تاریخ بین سه تقویم</div>
+
+    <div class="input-group">
+      <div class="input-label">
+        <span data-i18n="fromDate">تاریخ ورودی</span>
+        <button class="lbl-side" style="background:none;border:none;color:var(--teal);cursor:pointer;font-family:'Vazirmatn';font-weight:700;" onclick="setToday('conv')">📍 امروز</button>
+      </div>
+      <div class="cal-pills">
+        <button class="cal-pill shamsi active" onclick="setConvCal('shamsi',this)">شمسی</button>
+        <button class="cal-pill miladi" onclick="setConvCal('miladi',this)">میلادی</button>
+        <button class="cal-pill qamari" onclick="setConvCal('qamari',this)">قمری</button>
+      </div>
+      <div class="date-input">
+        <input class="date-cell" type="number" id="conv-d" placeholder="DD" min="1" max="31">
+        <input class="date-cell" type="number" id="conv-m" placeholder="MM" min="1" max="12">
+        <input class="date-cell" type="number" id="conv-y" placeholder="YYYY">
+        <button class="date-pick" onclick="pickDate('conv')">📅</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="calcConv()">
+      <span>🔄</span><span data-i18n="convert">تبدیل کن</span>
+    </button>
+
+    <div class="result-box" id="convResult"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: DATE DIFFERENCE (MULTI-DATE) ===== -->
+<div class="tab-page" id="tab-datediff">
+  <div class="card">
+    <div class="card-title" data-i18n="ddTitle">تفاوت بین چند تاریخ</div>
+    <div class="info-chip"><span>📅</span><span data-i18n="ddInfo">می‌توانی تا ۸ تاریخ اضافه کنی</span></div>
+
+    <div id="datesList"></div>
+
+    <button class="add-more-btn" onclick="addDate()">
+      <span>➕</span> <span data-i18n="addDate">اضافه کردن تاریخ</span>
+    </button>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="clearDD()"><span data-i18n="clear">پاک</span></button>
+      <button class="btn btn-primary" onclick="calcDD()">
+        <span>⚡</span><span data-i18n="calculate">محاسبه</span>
+      </button>
+    </div>
+
+    <div class="result-box" id="ddResult"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 5: COUNTDOWN ===== -->
+<div class="tab-page" id="tab-countdown">
+  <div class="card">
+    <div class="card-title" data-i18n="cdTitle">شمارش معکوس</div>
+
+    <div class="input-group">
+      <div class="input-label"><span data-i18n="cdName">عنوان مناسبت</span></div>
+      <input class="input-box" id="cd-name" placeholder="مثلاً: عروسی، امتحان Goethe، تولد..." maxlength="40">
+    </div>
+
+    <div class="input-group">
+      <div class="input-label"><span data-i18n="cdDate">تاریخ مناسبت</span></div>
+      <div class="cal-pills">
+        <button class="cal-pill shamsi active" onclick="setCdCal('shamsi',this)">شمسی</button>
+        <button class="cal-pill miladi" onclick="setCdCal('miladi',this)">میلادی</button>
+        <button class="cal-pill qamari" onclick="setCdCal('qamari',this)">قمری</button>
+      </div>
+      <div class="date-input">
+        <input class="date-cell" type="number" id="cd-d" placeholder="DD" min="1" max="31">
+        <input class="date-cell" type="number" id="cd-m" placeholder="MM" min="1" max="12">
+        <input class="date-cell" type="number" id="cd-y" placeholder="YYYY">
+        <button class="date-pick" onclick="pickDate('cd')">📅</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="addCountdown()">
+      <span>➕</span><span data-i18n="addCd">اضافه به لیست شمارش معکوس</span>
+    </button>
+
+    <div id="countdownList" style="margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 6: RELIGIOUS DATES ===== -->
+<div class="tab-page" id="tab-religious">
+  <div class="card">
+    <div class="card-title" data-i18n="relTitle">تاریخ‌های مهم اسلامی</div>
+    <div class="info-chip"><span>🌙</span><span data-i18n="relInfo">برای ۲ سال آینده</span></div>
+    <div class="rel-list" id="religiousList"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// HIJRI SHAMSI (Solar Hijri / Afghan calendar) <-> GREGORIAN
+// ============================================================
+// Persian/Afghan calendar conversion using algorithm by Kazimierz M. Borkowski
+const persianMonthDays = [31,31,31,31,31,31,30,30,30,30,30,29];
+
+function isShamsiLeap(y){
+  // Standard 33-year cycle approximation
+  const breaks = [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+  let jp = breaks[0];
+  let jump;
+  for(let i=1;i<breaks.length;i++){
+    const jm = breaks[i];
+    jump = jm - jp;
+    if(y < jm) break;
+    jp = jm;
+  }
+  let n = y - jp;
+  if(n < jump){
+    if(jump - n < 6) n = n - jump + Math.floor((jump+4)/33)*33;
+    let leap = ((n+1) % 33 - 1) % 4;
+    if(leap === -1) leap = 4;
+    return leap === 0;
+  }
+  return false;
+}
+
+function shamsiToJDN(jy, jm, jd){
+  // Convert Shamsi to Julian Day Number
+  const epbase = jy - (jy >= 0 ? 474 : 473);
+  const epyear = 474 + ((epbase % 2820 + 2820) % 2820);
+  return jd + (jm <= 7 ? (jm-1)*31 : (jm-1)*30 + 6) +
+    Math.floor((epyear*682 - 110)/2816) +
+    (epyear-1)*365 +
+    Math.floor(epbase/2820)*1029983 +
+    1948320;
+}
+
+function jdnToShamsi(jdn){
+  const depoch = jdn - shamsiToJDN(475, 1, 1);
+  const cycle = Math.floor(depoch / 1029983);
+  const cyear = ((depoch % 1029983) + 1029983) % 1029983;
+  let ycycle;
+  if(cyear === 1029982){
+    ycycle = 2820;
+  } else {
+    const aux1 = Math.floor(cyear / 366);
+    const aux2 = cyear % 366;
+    ycycle = Math.floor((2134*aux1 + 2816*aux2 + 2815) / 1028522) + aux1 + 1;
+  }
+  let jy = ycycle + 2820*cycle + 474;
+  if(jy <= 0) jy--;
+  const yday = jdn - shamsiToJDN(jy, 1, 1) + 1;
+  const jm = yday <= 186 ? Math.ceil(yday/31) : Math.ceil((yday-6)/30);
+  const jd = jdn - shamsiToJDN(jy, jm, 1) + 1;
+  return [jy, jm, jd];
+}
+
+// GREGORIAN <-> JDN (Fliegel & Van Flandern algorithm — integer JDN)
+function gregToJDN(y, m, d){
+  const a = Math.floor((14 - m) / 12);
+  const yy = y + 4800 - a;
+  const mm = m + 12*a - 3;
+  return d + Math.floor((153*mm + 2)/5) + 365*yy + Math.floor(yy/4) - Math.floor(yy/100) + Math.floor(yy/400) - 32045;
+}
+
+function jdnToGreg(jdn){
+  jdn = Math.floor(jdn);
+  const a = jdn + 32044;
+  const b = Math.floor((4*a + 3)/146097);
+  const c = a - Math.floor(146097*b/4);
+  const dd = Math.floor((4*c + 3)/1461);
+  const e = c - Math.floor(1461*dd/4);
+  const m = Math.floor((5*e + 2)/153);
+  const day = e - Math.floor((153*m + 2)/5) + 1;
+  const month = m + 3 - 12*Math.floor(m/10);
+  const year = 100*b + dd - 4800 + Math.floor(m/10);
+  return [year, month, day];
+}
+
+// ISLAMIC (Hijri Qamari) <-> JDN — integer arithmetic
+const HIJRI_EPOCH = 1948440;
+
+function hijriToJDN(hy, hm, hd){
+  return Math.ceil(29.5*(hm-1)) + (hy-1)*354 + Math.floor((3+11*hy)/30) + hd + HIJRI_EPOCH - 1;
+}
+
+function jdnToHijri(jdn){
+  jdn = Math.floor(jdn);
+  const hy = Math.floor((30*(jdn - HIJRI_EPOCH) + 10646)/10631);
+  const hm = Math.min(12, Math.ceil((jdn - (29 + hijriToJDN(hy,1,1)))/29.5) + 1);
+  const hd = jdn - hijriToJDN(hy, hm, 1) + 1;
+  return [hy, hm, Math.floor(hd)];
+}
+
+// ============================================================
+// CALENDAR DATA — AFGHAN STYLE
+// ============================================================
+const shamsiMonthsFa = ['حمل','ثور','جوزا','سرطان','اسد','سنبله','میزان','عقرب','قوس','جدی','دلو','حوت'];
+const shamsiMonthsEn = ['Hamal','Sawr','Jawza','Saratan','Asad','Sonbola','Mizan','Aqrab','Qaws','Jadi','Dalw','Hut'];
+const miladiMonthsFa = ['جنوری','فبروری','مارچ','اپریل','می','جون','جولای','اگست','سپتمبر','اکتوبر','نومبر','دسمبر'];
+const miladiMonthsEn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const qamariMonthsFa = ['محرم','صفر','ربیع‌الاول','ربیع‌الثانی','جمادی‌الاول','جمادی‌الثانی','رجب','شعبان','رمضان','شوال','ذی‌القعده','ذی‌الحجه'];
+const qamariMonthsEn = ['Muharram','Safar','Rabi I','Rabi II','Jumada I','Jumada II','Rajab','Shaban','Ramadan','Shawwal','Dhul-Qadah','Dhul-Hijjah'];
+const weekdaysFa = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+const weekdaysEn = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ============================================================
+// I18N
+// ============================================================
+const i18n = {
+  fa: {
+    logoSub: 'محاسبه‌گر زمان',
+    tabAge: 'سن من',
+    tabDiff: 'اختلاف سن',
+    tabConv: 'تبدیل تاریخ',
+    tabDateDiff: 'تفاوت تاریخ',
+    tabCountdown: 'شمارش معکوس',
+    tabReligious: 'تاریخ‌های مذهبی',
+    ageCalcTitle: 'محاسبه سن',
+    dobLabel: 'تاریخ تولد',
+    clear: 'پاک',
+    calculate: 'محاسبه',
+    diffTitle: 'اختلاف سن چند نفر',
+    diffInfo: 'می‌توانی تا ۸ نفر اضافه کنی',
+    addPerson: 'اضافه کردن شخص',
+    convTitle: 'تبدیل تاریخ بین سه تقویم',
+    fromDate: 'تاریخ ورودی',
+    convert: 'تبدیل کن',
+    ddTitle: 'تفاوت بین چند تاریخ',
+    ddInfo: 'می‌توانی تا ۸ تاریخ اضافه کنی',
+    addDate: 'اضافه کردن تاریخ',
+    cdTitle: 'شمارش معکوس',
+    cdName: 'عنوان مناسبت',
+    cdDate: 'تاریخ مناسبت',
+    addCd: 'اضافه به لیست شمارش معکوس',
+    relTitle: 'تاریخ‌های مهم اسلامی',
+    relInfo: 'برای ۲ سال آینده',
+    years: 'سال',
+    months: 'ماه',
+    weeks: 'هفته',
+    days: 'روز',
+    hours: 'ساعت',
+    minutes: 'دقیقه',
+    seconds: 'ثانیه',
+    youngest: 'کم‌سن‌ترین',
+    oldest: 'بزرگ‌ترین',
+    avgAge: 'میانگین سن',
+    totalDiff: 'بیشترین اختلاف',
+    yearsOld: 'ساله',
+    born: 'متولد',
+    nextBirthday: 'تولد بعدی',
+    daysToBday: 'روز تا تولد',
+    weekday: 'روز هفته',
+    totalLived: 'کل زندگی',
+    earliest: 'قدیمی‌ترین',
+    latest: 'جدیدترین',
+    spanDays: 'فاصله کل',
+    name: 'نام',
+    person: 'شخص',
+    date: 'تاریخ',
+    daysAgo: 'روز قبل',
+    daysFromNow: 'روز دیگر',
+    past: 'گذشته',
+    today: 'امروز',
+    inFuture: 'در آینده',
+    invalidDate: 'تاریخ معتبر نیست',
+    enterAll: 'لطفاً همه فیلدها را پر کن',
+    eidFitr: 'عید فطر',
+    eidAdha: 'عید قربان',
+    ashura: 'عاشورا',
+    ramadanStart: 'شروع رمضان',
+    mawlid: 'میلاد النبی',
+    arafah: 'روز عرفه',
+    laylatQadr: 'شب قدر (تخمینی)',
+    isra: 'اسراء و معراج',
+    name1: 'شخص اول',
+    name2: 'شخص دوم',
+    date1: 'تاریخ اول',
+    date2: 'تاریخ دوم'
+  },
+  en: {
+    logoSub: 'Time Calculator',
+    tabAge: 'My Age',
+    tabDiff: 'Age Difference',
+    tabConv: 'Date Convert',
+    tabDateDiff: 'Date Difference',
+    tabCountdown: 'Countdown',
+    tabReligious: 'Islamic Dates',
+    ageCalcTitle: 'Age Calculator',
+    dobLabel: 'Date of Birth',
+    clear: 'Clear',
+    calculate: 'Calculate',
+    diffTitle: 'Multi-Person Age Difference',
+    diffInfo: 'Add up to 8 people',
+    addPerson: 'Add Person',
+    convTitle: 'Convert Between 3 Calendars',
+    fromDate: 'Input Date',
+    convert: 'Convert',
+    ddTitle: 'Multi-Date Difference',
+    ddInfo: 'Add up to 8 dates',
+    addDate: 'Add Date',
+    cdTitle: 'Countdown',
+    cdName: 'Event Name',
+    cdDate: 'Event Date',
+    addCd: 'Add to Countdown List',
+    relTitle: 'Important Islamic Dates',
+    relInfo: 'For next 2 years',
+    years: 'Years',
+    months: 'Months',
+    weeks: 'Weeks',
+    days: 'Days',
+    hours: 'Hours',
+    minutes: 'Min',
+    seconds: 'Sec',
+    youngest: 'Youngest',
+    oldest: 'Oldest',
+    avgAge: 'Average',
+    totalDiff: 'Max Diff',
+    yearsOld: 'yrs',
+    born: 'Born',
+    nextBirthday: 'Next Birthday',
+    daysToBday: 'days to birthday',
+    weekday: 'Day of Week',
+    totalLived: 'Total Life',
+    earliest: 'Earliest',
+    latest: 'Latest',
+    spanDays: 'Total Span',
+    name: 'Name',
+    person: 'Person',
+    date: 'Date',
+    daysAgo: 'days ago',
+    daysFromNow: 'days from now',
+    past: 'Past',
+    today: 'Today',
+    inFuture: 'Future',
+    invalidDate: 'Invalid date',
+    enterAll: 'Please fill all fields',
+    eidFitr: 'Eid al-Fitr',
+    eidAdha: 'Eid al-Adha',
+    ashura: 'Ashura',
+    ramadanStart: 'Start of Ramadan',
+    mawlid: 'Mawlid an-Nabi',
+    arafah: 'Day of Arafah',
+    laylatQadr: 'Laylat al-Qadr (est.)',
+    isra: 'Isra and Miraj',
+    name1: 'Person 1',
+    name2: 'Person 2',
+    date1: 'Date 1',
+    date2: 'Date 2'
+  }
+};
+
+let lang = localStorage.getItem('tc_lang') || 'fa';
+
+function setLang(l, btn){
+  lang = l;
+  localStorage.setItem('tc_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.documentElement.lang = l === 'fa' ? 'fa' : 'en';
+  document.documentElement.dir = l === 'fa' ? 'rtl' : 'ltr';
+  applyI18n();
+  // Re-render dynamic content
+  renderPersons();
+  renderDates();
+  renderCountdowns();
+  renderReligious();
+}
+
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(i18n[lang][key]) el.textContent = i18n[lang][key];
+  });
+}
+
+const t = (key)=> i18n[lang][key] || key;
+
+// ============================================================
+// TAB SYSTEM
+// ============================================================
+function showTab(name, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  // Auto-render
+  if(name === 'religious') renderReligious();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function $(id){return document.getElementById(id);}
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function pad(n){return String(n).padStart(2,'0');}
+
+function getMonthName(cal, m){
+  const idx = m - 1;
+  if(cal === 'shamsi') return lang === 'fa' ? shamsiMonthsFa[idx] : shamsiMonthsEn[idx];
+  if(cal === 'miladi') return lang === 'fa' ? miladiMonthsFa[idx] : miladiMonthsEn[idx];
+  if(cal === 'qamari') return lang === 'fa' ? qamariMonthsFa[idx] : qamariMonthsEn[idx];
+  return '';
+}
+
+function getWeekday(jdn){
+  // For integer JDN: (JDN + 1) mod 7, where 0=Sunday, 1=Monday, ..., 6=Saturday
+  jdn = Math.floor(jdn);
+  const dow = ((jdn + 1) % 7 + 7) % 7;
+  return lang === 'fa' ? weekdaysFa[dow] : weekdaysEn[dow];
+}
+
+function todayJDN(){
+  const now = new Date();
+  return gregToJDN(now.getFullYear(), now.getMonth()+1, now.getDate());
+}
+
+function dateToJDN(cal, y, m, d){
+  if(cal === 'shamsi') return shamsiToJDN(y, m, d);
+  if(cal === 'miladi') return gregToJDN(y, m, d);
+  if(cal === 'qamari') return hijriToJDN(y, m, d);
+  return 0;
+}
+
+function validateDate(cal, y, m, d){
+  if(!y || !m || !d) return false;
+  if(m < 1 || m > 12) return false;
+  if(d < 1 || d > 31) return false;
+  if(cal === 'shamsi'){
+    if(m <= 6 && d > 31) return false;
+    if(m >= 7 && m <= 11 && d > 30) return false;
+    if(m === 12){
+      const isLeap = isShamsiLeap(y);
+      if(d > (isLeap ? 30 : 29)) return false;
+    }
+  } else if(cal === 'miladi'){
+    const daysIn = new Date(y, m, 0).getDate();
+    if(d > daysIn) return false;
+  } else if(cal === 'qamari'){
+    if(d > 30) return false;
+  }
+  return true;
+}
+
+function formatDate(cal, y, m, d, withWeekday){
+  const monthName = getMonthName(cal, m);
+  let s = lang === 'fa'
+    ? `${pad(d)} ${monthName} ${y}`
+    : `${pad(d)} ${monthName} ${y}`;
+  if(withWeekday){
+    const jdn = dateToJDN(cal, y, m, d);
+    s = `${getWeekday(jdn)}، ${s}`;
+  }
+  return s;
+}
+
+function setToday(prefix){
+  const now = new Date();
+  const cal = activeCal[prefix];
+  let y, m, d;
+  if(cal === 'shamsi'){
+    [y, m, d] = jdnToShamsi(gregToJDN(now.getFullYear(), now.getMonth()+1, now.getDate()));
+  } else if(cal === 'miladi'){
+    y = now.getFullYear(); m = now.getMonth()+1; d = now.getDate();
+  } else {
+    [y, m, d] = jdnToHijri(gregToJDN(now.getFullYear(), now.getMonth()+1, now.getDate()));
+  }
+  $(prefix+'-d').value = d;
+  $(prefix+'-m').value = m;
+  $(prefix+'-y').value = y;
+}
+
+function pickDate(prefix){
+  // Use HTML5 date picker on the Gregorian fallback
+  const inp = document.createElement('input');
+  inp.type = 'date';
+  inp.style.position = 'fixed';
+  inp.style.opacity = '0';
+  inp.style.pointerEvents = 'none';
+  document.body.appendChild(inp);
+  inp.addEventListener('change', ()=>{
+    if(inp.value){
+      const [gy, gm, gd] = inp.value.split('-').map(Number);
+      const cal = activeCal[prefix];
+      let y, m, d;
+      if(cal === 'shamsi') [y, m, d] = jdnToShamsi(gregToJDN(gy, gm, gd));
+      else if(cal === 'miladi'){ y=gy; m=gm; d=gd; }
+      else [y, m, d] = jdnToHijri(gregToJDN(gy, gm, gd));
+      $(prefix+'-d').value = d;
+      $(prefix+'-m').value = m;
+      $(prefix+'-y').value = y;
+    }
+    document.body.removeChild(inp);
+  });
+  inp.click();
+  setTimeout(()=>{if(inp.parentNode) inp.focus();}, 100);
+}
+
+// Active calendar per section
+const activeCal = {
+  age: 'shamsi',
+  conv: 'shamsi',
+  cd: 'shamsi'
+};
+function setAgeCal(c, btn){ activeCal.age = c; document.querySelectorAll('#tab-age .cal-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function setConvCal(c, btn){ activeCal.conv = c; document.querySelectorAll('#tab-conv .cal-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function setCdCal(c, btn){ activeCal.cd = c; document.querySelectorAll('#tab-countdown .cal-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+
+// ============================================================
+// AGE CALCULATOR
+// ============================================================
+function clearAge(){
+  $('age-d').value=''; $('age-m').value=''; $('age-y').value='';
+  $('ageResult').classList.remove('show');
+}
+
+function calcAge(){
+  const d = parseInt($('age-d').value);
+  const m = parseInt($('age-m').value);
+  const y = parseInt($('age-y').value);
+  const cal = activeCal.age;
+  if(!validateDate(cal, y, m, d)){
+    showResult('ageResult', '⚠️ ' + t('invalidDate'), true); return;
+  }
+  const birthJDN = dateToJDN(cal, y, m, d);
+  const today = todayJDN();
+  if(birthJDN > today){
+    showResult('ageResult', '⚠️ ' + (lang==='fa'?'تاریخ تولد در آینده!':'Birth date in future!'), true); return;
+  }
+  const totalDays = today - birthJDN;
+
+  // Calculate Y/M/D age in Shamsi (Afghan-friendly)
+  const [by, bm, bd] = jdnToShamsi(birthJDN);
+  const [ty, tm, td] = jdnToShamsi(today);
+  let years = ty - by;
+  let months = tm - bm;
+  let days = td - bd;
+  if(days < 0){
+    months--;
+    // Days in previous month
+    const pm = tm === 1 ? 12 : tm-1;
+    days += persianMonthDays[pm-1];
+    if(pm === 12 && isShamsiLeap(tm === 1 ? ty-1 : ty)) days += 1;
+  }
+  if(months < 0){ years--; months += 12; }
+
+  const totalHours = totalDays * 24;
+  const totalMinutes = totalHours * 60;
+  const totalSeconds = totalMinutes * 60;
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = years * 12 + months;
+
+  // Next birthday
+  let nextBy = ty;
+  if(bm < tm || (bm === tm && bd <= td)) nextBy = ty + 1;
+  let nextBdJDN = shamsiToJDN(nextBy, bm, Math.min(bd, persianMonthDays[bm-1]));
+  const daysToBday = nextBdJDN - today;
+
+  const weekday = getWeekday(birthJDN);
+
+  const html = `
+    <div class="big-stats">
+      <div class="stat-cell"><div class="stat-num">${years}</div><div class="stat-lbl">${t('years')}</div></div>
+      <div class="stat-cell"><div class="stat-num">${months}</div><div class="stat-lbl">${t('months')}</div></div>
+      <div class="stat-cell"><div class="stat-num">${days}</div><div class="stat-lbl">${t('days')}</div></div>
+    </div>
+    <div class="detail-row"><span class="detail-label">${t('born')}</span><span class="detail-val">${weekday}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('nextBirthday')}</span><span class="detail-val">${daysToBday} ${t('days')}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('months')})</span><span class="detail-val">${totalMonths.toLocaleString()}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('weeks')})</span><span class="detail-val">${totalWeeks.toLocaleString()}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('days')})</span><span class="detail-val">${totalDays.toLocaleString()}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('hours')})</span><span class="detail-val">${totalHours.toLocaleString()}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('minutes')})</span><span class="detail-val">${totalMinutes.toLocaleString()}</span></div>
+    <div class="detail-row"><span class="detail-label">${t('totalLived')} (${t('seconds')})</span><span class="detail-val">${totalSeconds.toLocaleString()}</span></div>
+  `;
+  showResult('ageResult', html, false);
+}
+
+function showResult(id, html, isError){
+  const el = $(id);
+  el.innerHTML = html;
+  el.className = 'result-box show' + (isError ? ' error' : '');
+}
+
+// ============================================================
+// MULTI-PERSON DIFFERENCE
+// ============================================================
+let persons = [
+  {id: 1, name: '', cal: 'shamsi', y:'', m:'', d:''},
+  {id: 2, name: '', cal: 'shamsi', y:'', m:'', d:''}
+];
+let personIdCounter = 3;
+
+function renderPersons(){
+  const list = $('personsList');
+  if(!list) return;
+  list.innerHTML = persons.map((p, idx)=>`
+    <div class="person-card">
+      <div class="person-num">${t('person')} ${idx+1}</div>
+      ${persons.length > 2 ? `<button class="person-remove" onclick="removePerson(${p.id})">✕</button>` : ''}
+      <div class="input-group" style="margin-top:6px;margin-bottom:10px;">
+        <input class="input-box" placeholder="${t('name')}" value="${p.name}" oninput="updatePerson(${p.id},'name',this.value)">
+      </div>
+      <div class="cal-pills">
+        <button class="cal-pill shamsi ${p.cal==='shamsi'?'active':''}" onclick="updatePerson(${p.id},'cal','shamsi');renderPersons();">شمسی</button>
+        <button class="cal-pill miladi ${p.cal==='miladi'?'active':''}" onclick="updatePerson(${p.id},'cal','miladi');renderPersons();">میلادی</button>
+        <button class="cal-pill qamari ${p.cal==='qamari'?'active':''}" onclick="updatePerson(${p.id},'cal','qamari');renderPersons();">قمری</button>
+      </div>
+      <div class="date-input" style="margin-top:8px;">
+        <input class="date-cell" type="number" placeholder="DD" min="1" max="31" value="${p.d}" oninput="updatePerson(${p.id},'d',this.value)">
+        <input class="date-cell" type="number" placeholder="MM" min="1" max="12" value="${p.m}" oninput="updatePerson(${p.id},'m',this.value)">
+        <input class="date-cell" type="number" placeholder="YYYY" value="${p.y}" oninput="updatePerson(${p.id},'y',this.value)">
+        <button class="date-pick" onclick="pickPersonDate(${p.id})">📅</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updatePerson(id, key, val){
+  const p = persons.find(x=>x.id===id);
+  if(p) p[key] = val;
+}
+
+function addPerson(){
+  if(persons.length >= 8){
+    showToast(lang==='fa' ? 'حداکثر ۸ نفر' : 'Max 8 persons');
+    return;
+  }
+  persons.push({id: personIdCounter++, name:'', cal:'shamsi', y:'', m:'', d:''});
+  renderPersons();
+}
+
+function removePerson(id){
+  if(persons.length <= 2) return;
+  persons = persons.filter(p=>p.id !== id);
+  renderPersons();
+}
+
+function pickPersonDate(id){
+  const inp = document.createElement('input');
+  inp.type = 'date';
+  inp.style.position='fixed';inp.style.opacity='0';
+  document.body.appendChild(inp);
+  inp.addEventListener('change', ()=>{
+    if(inp.value){
+      const [gy, gm, gd] = inp.value.split('-').map(Number);
+      const p = persons.find(x=>x.id===id);
+      if(p){
+        const cal = p.cal;
+        let y, m, d;
+        if(cal === 'shamsi') [y,m,d] = jdnToShamsi(gregToJDN(gy,gm,gd));
+        else if(cal === 'miladi'){ y=gy;m=gm;d=gd; }
+        else [y,m,d] = jdnToHijri(gregToJDN(gy,gm,gd));
+        p.y = y; p.m = m; p.d = d;
+        renderPersons();
+      }
+    }
+    document.body.removeChild(inp);
+  });
+  inp.click();
+}
+
+function clearDiff(){
+  persons = [
+    {id: 1, name: '', cal: 'shamsi', y:'', m:'', d:''},
+    {id: 2, name: '', cal: 'shamsi', y:'', m:'', d:''}
+  ];
+  personIdCounter = 3;
+  renderPersons();
+  $('diffResult').classList.remove('show');
+}
+
+function calcDiff(){
+  const today = todayJDN();
+  const valid = [];
+  for(const p of persons){
+    const y = parseInt(p.y), m = parseInt(p.m), d = parseInt(p.d);
+    if(!validateDate(p.cal, y, m, d)) continue;
+    const jdn = dateToJDN(p.cal, y, m, d);
+    if(jdn > today) continue;
+    const ageDays = today - jdn;
+    valid.push({
+      name: p.name || `${t('person')} ${persons.indexOf(p)+1}`,
+      jdn,
+      ageDays
+    });
+  }
+  if(valid.length < 2){
+    showResult('diffResult', '⚠️ ' + (lang==='fa'?'حداقل ۲ شخص با تاریخ معتبر':'At least 2 persons with valid dates'), true);
+    return;
+  }
+  // Sort by jdn ascending: oldest first
+  valid.sort((a,b)=>a.jdn - b.jdn);
+  const oldest = valid[0];
+  const youngest = valid[valid.length-1];
+  const maxDiffDays = youngest.jdn - oldest.jdn;
+  const avgDays = valid.reduce((s,v)=>s+v.ageDays,0) / valid.length;
+
+  let html = `
+    <div class="big-stats" style="grid-template-columns:repeat(2,1fr);">
+      <div class="stat-cell">
+        <div class="stat-num" style="font-size:24px;">${formatDuration(maxDiffDays)}</div>
+        <div class="stat-lbl">${t('totalDiff')}</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" style="font-size:24px;">${formatDuration(avgDays)}</div>
+        <div class="stat-lbl">${t('avgAge')}</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+  `;
+  // Show all persons ranked: oldest first (highest age)
+  const ranked = [...valid].sort((a,b)=>b.ageDays - a.ageDays);
+  ranked.forEach((v, i)=>{
+    const rankClass = i===0 ? 'r1' : i===1 ? 'r2' : i===2 ? 'r3' : 'rx';
+    html += `<div class="diff-bar">
+      <div class="diff-rank ${rankClass}">${i+1}</div>
+      <div class="diff-name">${escapeHtml(v.name)}</div>
+      <div class="diff-age">${formatDuration(v.ageDays)}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Pairwise diffs (if 2 persons)
+  if(valid.length === 2){
+    const diffDays = Math.abs(valid[1].ageDays - valid[0].ageDays);
+    html += `<div class="detail-row" style="margin-top:14px;"><span class="detail-label">${escapeHtml(oldest.name)} → ${escapeHtml(youngest.name)}</span><span class="detail-val">${formatDuration(diffDays)}</span></div>`;
+  }
+
+  showResult('diffResult', html, false);
+}
+
+// Format number of days into "X سال Y ماه" / "X yrs Y mo"
+function formatDuration(totalDays){
+  totalDays = Math.round(totalDays);
+  if(totalDays === 0) return lang==='fa' ? '۰ روز' : '0 days';
+  const years = Math.floor(totalDays / 365.2422);
+  const remDays = totalDays - Math.floor(years * 365.2422);
+  const months = Math.floor(remDays / 30.4368);
+  const days = Math.round(remDays - months * 30.4368);
+
+  const parts = [];
+  if(lang === 'fa'){
+    if(years > 0) parts.push(`${years} سال`);
+    if(months > 0) parts.push(`${months} ماه`);
+    if(days > 0 && years === 0) parts.push(`${days} روز`);
+  } else {
+    if(years > 0) parts.push(`${years}y`);
+    if(months > 0) parts.push(`${months}m`);
+    if(days > 0 && years === 0) parts.push(`${days}d`);
+  }
+  return parts.join(' ') || (lang==='fa'?'۰ روز':'0 days');
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+// DATE CONVERSION
+// ============================================================
+function calcConv(){
+  const d = parseInt($('conv-d').value);
+  const m = parseInt($('conv-m').value);
+  const y = parseInt($('conv-y').value);
+  const cal = activeCal.conv;
+  if(!validateDate(cal, y, m, d)){
+    showResult('convResult', '⚠️ ' + t('invalidDate'), true); return;
+  }
+  const jdn = dateToJDN(cal, y, m, d);
+  const weekday = getWeekday(jdn);
+
+  const [sy, sm, sd] = jdnToShamsi(jdn);
+  const [gy, gm, gd] = jdnToGreg(jdn);
+  const [hy, hm, hd] = jdnToHijri(jdn);
+
+  const html = `
+    <div class="conv-grid">
+      <div class="conv-card shamsi">
+        <div class="conv-card-label">${lang==='fa'?'هجری شمسی':'Hijri Shamsi'}</div>
+        <div class="conv-text">${weekday}، ${pad(sd)} ${getMonthName('shamsi', sm)} ${sy}</div>
+        <div class="conv-iso">${sy}/${pad(sm)}/${pad(sd)}</div>
+      </div>
+      <div class="conv-card miladi">
+        <div class="conv-card-label">${lang==='fa'?'میلادی':'Gregorian'}</div>
+        <div class="conv-text">${weekday}، ${pad(gd)} ${getMonthName('miladi', gm)} ${gy}</div>
+        <div class="conv-iso">${gy}/${pad(gm)}/${pad(gd)}</div>
+      </div>
+      <div class="conv-card qamari">
+        <div class="conv-card-label">${lang==='fa'?'هجری قمری':'Hijri Qamari'}</div>
+        <div class="conv-text">${weekday}، ${pad(hd)} ${getMonthName('qamari', hm)} ${hy}</div>
+        <div class="conv-iso">${hy}/${pad(hm)}/${pad(hd)}</div>
+      </div>
+    </div>
+  `;
+  showResult('convResult', html, false);
+}
+
+// ============================================================
+// MULTI-DATE DIFFERENCE
+// ============================================================
+let dates = [
+  {id:1, label:'', cal:'shamsi', y:'', m:'', d:''},
+  {id:2, label:'', cal:'shamsi', y:'', m:'', d:''}
+];
+let dateIdCounter = 3;
+
+function renderDates(){
+  const list = $('datesList');
+  if(!list) return;
+  list.innerHTML = dates.map((dt, idx)=>`
+    <div class="person-card">
+      <div class="person-num">${t('date')} ${idx+1}</div>
+      ${dates.length > 2 ? `<button class="person-remove" onclick="removeDate(${dt.id})">✕</button>` : ''}
+      <div class="input-group" style="margin-top:6px;margin-bottom:10px;">
+        <input class="input-box" placeholder="${lang==='fa'?'برچسب (اختیاری)':'Label (optional)'}" value="${dt.label}" oninput="updateDate(${dt.id},'label',this.value)">
+      </div>
+      <div class="cal-pills">
+        <button class="cal-pill shamsi ${dt.cal==='shamsi'?'active':''}" onclick="updateDate(${dt.id},'cal','shamsi');renderDates();">شمسی</button>
+        <button class="cal-pill miladi ${dt.cal==='miladi'?'active':''}" onclick="updateDate(${dt.id},'cal','miladi');renderDates();">میلادی</button>
+        <button class="cal-pill qamari ${dt.cal==='qamari'?'active':''}" onclick="updateDate(${dt.id},'cal','qamari');renderDates();">قمری</button>
+      </div>
+      <div class="date-input" style="margin-top:8px;">
+        <input class="date-cell" type="number" placeholder="DD" min="1" max="31" value="${dt.d}" oninput="updateDate(${dt.id},'d',this.value)">
+        <input class="date-cell" type="number" placeholder="MM" min="1" max="12" value="${dt.m}" oninput="updateDate(${dt.id},'m',this.value)">
+        <input class="date-cell" type="number" placeholder="YYYY" value="${dt.y}" oninput="updateDate(${dt.id},'y',this.value)">
+        <button class="date-pick" onclick="pickDDDate(${dt.id})">📅</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateDate(id, key, val){
+  const dt = dates.find(x=>x.id===id);
+  if(dt) dt[key] = val;
+}
+
+function addDate(){
+  if(dates.length >= 8){
+    showToast(lang==='fa' ? 'حداکثر ۸ تاریخ' : 'Max 8 dates');
+    return;
+  }
+  dates.push({id: dateIdCounter++, label:'', cal:'shamsi', y:'', m:'', d:''});
+  renderDates();
+}
+
+function removeDate(id){
+  if(dates.length <= 2) return;
+  dates = dates.filter(d=>d.id !== id);
+  renderDates();
+}
+
+function pickDDDate(id){
+  const inp = document.createElement('input');
+  inp.type='date';inp.style.position='fixed';inp.style.opacity='0';
+  document.body.appendChild(inp);
+  inp.addEventListener('change',()=>{
+    if(inp.value){
+      const [gy,gm,gd] = inp.value.split('-').map(Number);
+      const dt = dates.find(x=>x.id===id);
+      if(dt){
+        const cal = dt.cal;
+        let y,m,d;
+        if(cal==='shamsi')[y,m,d]=jdnToShamsi(gregToJDN(gy,gm,gd));
+        else if(cal==='miladi'){y=gy;m=gm;d=gd;}
+        else [y,m,d]=jdnToHijri(gregToJDN(gy,gm,gd));
+        dt.y=y;dt.m=m;dt.d=d;
+        renderDates();
+      }
+    }
+    document.body.removeChild(inp);
+  });
+  inp.click();
+}
+
+function clearDD(){
+  dates = [
+    {id:1, label:'', cal:'shamsi', y:'', m:'', d:''},
+    {id:2, label:'', cal:'shamsi', y:'', m:'', d:''}
+  ];
+  dateIdCounter = 3;
+  renderDates();
+  $('ddResult').classList.remove('show');
+}
+
+function calcDD(){
+  const valid = [];
+  for(const dt of dates){
+    const y = parseInt(dt.y), m = parseInt(dt.m), d = parseInt(dt.d);
+    if(!validateDate(dt.cal, y, m, d)) continue;
+    const jdn = dateToJDN(dt.cal, y, m, d);
+    valid.push({
+      label: dt.label || `${t('date')} ${dates.indexOf(dt)+1}`,
+      jdn,
+      cal: dt.cal,
+      y, m, d
+    });
+  }
+  if(valid.length < 2){
+    showResult('ddResult', '⚠️ ' + (lang==='fa'?'حداقل ۲ تاریخ معتبر':'At least 2 valid dates'), true);
+    return;
+  }
+  valid.sort((a,b)=>a.jdn - b.jdn);
+  const earliest = valid[0];
+  const latest = valid[valid.length-1];
+  const spanDays = latest.jdn - earliest.jdn;
+
+  let html = `
+    <div class="big-stats" style="grid-template-columns:1fr 1fr;">
+      <div class="stat-cell">
+        <div class="stat-num" style="font-size:24px;">${formatDuration(spanDays)}</div>
+        <div class="stat-lbl">${t('spanDays')}</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">${spanDays.toLocaleString()}</div>
+        <div class="stat-lbl">${t('days')} ${lang==='fa'?'کل':'total'}</div>
+      </div>
+    </div>
+  `;
+
+  // Show dates in chronological order
+  html += '<div style="margin-top:14px;">';
+  const sortedByJDN = [...valid].sort((a,b)=>a.jdn - b.jdn);
+  sortedByJDN.forEach((v, i)=>{
+    const rankClass = i===0 ? 'r1' : i===sortedByJDN.length-1 ? 'r2' : 'rx';
+    const dateStr = formatDate(v.cal, v.y, v.m, v.d, false);
+    html += `<div class="diff-bar">
+      <div class="diff-rank ${rankClass}">${i+1}</div>
+      <div class="diff-name">${escapeHtml(v.label)}</div>
+      <div class="diff-age" style="font-size:11px;">${escapeHtml(dateStr)}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Pairwise gaps (if more than 2)
+  if(valid.length > 2){
+    html += `<div style="margin-top:14px;font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:700;letter-spacing:1px;margin-bottom:8px;">${lang==='fa'?'فاصله‌های متوالی':'Consecutive Gaps'}</div>`;
+    for(let i = 1; i < sortedByJDN.length; i++){
+      const gap = sortedByJDN[i].jdn - sortedByJDN[i-1].jdn;
+      html += `<div class="detail-row">
+        <span class="detail-label">${escapeHtml(sortedByJDN[i-1].label)} → ${escapeHtml(sortedByJDN[i].label)}</span>
+        <span class="detail-val">${gap.toLocaleString()} ${t('days')}</span>
+      </div>`;
+    }
+  }
+
+  showResult('ddResult', html, false);
+}
+
+// ============================================================
+// COUNTDOWN
+// ============================================================
+let countdowns = [];
+try { countdowns = JSON.parse(localStorage.getItem('tc_cd') || '[]'); } catch(e){ countdowns = []; }
+
+function saveCountdowns(){
+  try { localStorage.setItem('tc_cd', JSON.stringify(countdowns)); } catch(e){}
+}
+
+function addCountdown(){
+  const name = $('cd-name').value.trim();
+  const d = parseInt($('cd-d').value);
+  const m = parseInt($('cd-m').value);
+  const y = parseInt($('cd-y').value);
+  const cal = activeCal.cd;
+  if(!name){ showToast(lang==='fa'?'یک نام بنویس':'Enter a name'); return; }
+  if(!validateDate(cal, y, m, d)){ showToast('⚠️ ' + t('invalidDate')); return; }
+  const jdn = dateToJDN(cal, y, m, d);
+  // Random emoji based on name keywords
+  const emoji = guessEmoji(name);
+  countdowns.push({id: Date.now(), name, jdn, cal, y, m, d, emoji});
+  saveCountdowns();
+  $('cd-name').value = '';
+  $('cd-d').value = ''; $('cd-m').value = ''; $('cd-y').value = '';
+  renderCountdowns();
+  showToast(lang==='fa'?'✓ اضافه شد':'✓ Added');
+}
+
+function guessEmoji(name){
+  const n = name.toLowerCase();
+  if(/wedding|عروسی|نکاح/i.test(n)) return '💒';
+  if(/birthday|تولد/i.test(n)) return '🎂';
+  if(/exam|امتحان|test|prüfung/i.test(n)) return '📝';
+  if(/eid|عید/i.test(n)) return '🌙';
+  if(/travel|سفر|trip|reise/i.test(n)) return '✈️';
+  if(/job|کار|interview|مصاحبه/i.test(n)) return '💼';
+  if(/new year|سال نو|نوروز/i.test(n)) return '🎉';
+  if(/visa|ویزا|appointment|قرار/i.test(n)) return '📋';
+  if(/graduation|فارغ/i.test(n)) return '🎓';
+  return '⭐';
+}
+
+function removeCountdown(id){
+  countdowns = countdowns.filter(c=>c.id !== id);
+  saveCountdowns();
+  renderCountdowns();
+}
+
+function renderCountdowns(){
+  const list = $('countdownList');
+  if(!list) return;
+  if(countdowns.length === 0){
+    list.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px;">
+      ${lang==='fa'?'هنوز چیزی اضافه نکردی':'Nothing added yet'}
+    </div>`;
+    return;
+  }
+  // Sort by upcoming
+  const today = todayJDN();
+  const sorted = [...countdowns].sort((a,b)=>{
+    const da = a.jdn - today;
+    const db = b.jdn - today;
+    // Future first, then past
+    if(da >= 0 && db < 0) return -1;
+    if(da < 0 && db >= 0) return 1;
+    if(da >= 0) return da - db;
+    return db - da;
+  });
+  list.innerHTML = sorted.map(c=>{
+    const diff = c.jdn - today;
+    const isPast = diff < 0;
+    const absDiff = Math.abs(diff);
+    const yrs = Math.floor(absDiff / 365);
+    const remDays = absDiff - yrs * 365;
+    const mns = Math.floor(remDays / 30);
+    const dys = remDays - mns * 30;
+    const dateStr = formatDate(c.cal, c.y, c.m, c.d, false);
+    const isToday = diff === 0;
+    return `<div class="cd-item ${isPast?'past':''}">
+      <div class="cd-item-head">
+        <div class="cd-name"><span class="cd-emoji">${c.emoji||'⭐'}</span> ${escapeHtml(c.name)}</div>
+        <button class="cd-del" onclick="removeCountdown(${c.id})" title="حذف">✕</button>
+      </div>
+      <div class="cd-date">📅 ${escapeHtml(dateStr)} ${isPast?`(${absDiff} ${t('daysAgo')})`:isToday?'🎯 '+t('today'):`(${diff} ${t('daysFromNow')})`}</div>
+      ${!isToday ? `<div class="cd-time">
+        <div class="cd-cell"><div class="cd-cell-num">${yrs}</div><div class="cd-cell-lbl">${t('years')}</div></div>
+        <div class="cd-cell"><div class="cd-cell-num">${mns}</div><div class="cd-cell-lbl">${t('months')}</div></div>
+        <div class="cd-cell"><div class="cd-cell-num">${dys}</div><div class="cd-cell-lbl">${t('days')}</div></div>
+        <div class="cd-cell"><div class="cd-cell-num">${absDiff}</div><div class="cd-cell-lbl">${t('days')} ${lang==='fa'?'کل':'total'}</div></div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// RELIGIOUS DATES
+// ============================================================
+function renderReligious(){
+  const list = $('religiousList');
+  if(!list) return;
+  const today = todayJDN();
+  const [curHY] = jdnToHijri(today);
+
+  // Get hijri dates for current and next year
+  const events = [];
+  for(let yOffset = 0; yOffset <= 2; yOffset++){
+    const hy = curHY + yOffset;
+    // Muharram 1 — Islamic New Year (not added, but Ashura is)
+    events.push({key:'ashura', emoji:'🕊️', hy, hm:1, hd:10});
+    // Rabi I 12 — Mawlid
+    events.push({key:'mawlid', emoji:'🌟', hy, hm:3, hd:12});
+    // Rajab 27 — Isra and Miraj
+    events.push({key:'isra', emoji:'🌌', hy, hm:7, hd:27});
+    // Ramadan 1
+    events.push({key:'ramadanStart', emoji:'🌙', hy, hm:9, hd:1});
+    // Ramadan 27 — Laylat al-Qadr (estimated)
+    events.push({key:'laylatQadr', emoji:'✨', hy, hm:9, hd:27});
+    // Shawwal 1 — Eid al-Fitr
+    events.push({key:'eidFitr', emoji:'🎉', hy, hm:10, hd:1});
+    // Dhul-Hijjah 9 — Arafah
+    events.push({key:'arafah', emoji:'🕋', hy, hm:12, hd:9});
+    // Dhul-Hijjah 10 — Eid al-Adha
+    events.push({key:'eidAdha', emoji:'🐑', hy, hm:12, hd:10});
+  }
+
+  // Compute JDN and filter future + this year past
+  const annotated = events.map(e=>{
+    const jdn = hijriToJDN(e.hy, e.hm, e.hd);
+    return {...e, jdn, days: jdn - today};
+  }).filter(e=>e.days >= -7) // include past 7 days
+    .sort((a,b)=>a.jdn - b.jdn)
+    .slice(0, 16);
+
+  list.innerHTML = annotated.map(e=>{
+    const [sy,sm,sd] = jdnToShamsi(e.jdn);
+    const [gy,gm,gd] = jdnToGreg(e.jdn);
+    const shamsiStr = `${pad(sd)} ${getMonthName('shamsi', sm)} ${sy}`;
+    const miladiStr = `${pad(gd)} ${getMonthName('miladi', gm)} ${gy}`;
+    const isPast = e.days < 0;
+    return `<div class="rel-item" ${isPast?'style="opacity:0.5;"':''}>
+      <div class="rel-emoji">${e.emoji}</div>
+      <div class="rel-info">
+        <div class="rel-name">${t(e.key)}</div>
+        <div class="rel-date">${shamsiStr} · ${miladiStr}</div>
+      </div>
+      <div class="rel-days">
+        <div class="rel-days-num">${isPast ? Math.abs(e.days) : e.days}</div>
+        <div class="rel-days-lbl">${isPast ? t('daysAgo') : t('days')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+applyI18n();
+renderPersons();
+renderDates();
+renderCountdowns();
+// Set today's date in conv tab by default
+setToday('conv');
+</script>
+
+</body>
+</html>
