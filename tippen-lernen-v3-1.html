@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تمرین تایپ آلمانی — Tippen lernen v2</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d28;
+    --card2: #21252f;
+    --blue: #4da3ff;
+    --blue-dark: #1f5c99;
+    --green: #5fd98b;
+    --yellow: #ffd479;
+    --red: #ff6b6b;
+    --purple: #c792ea;
+    --text: #e8eaed;
+    --muted: #8b94a3;
+    --der: #4da3ff;
+    --die: #ff7eb6;
+    --das: #5fd98b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    font-family: 'Vazirmatn','Segoe UI',Tahoma,sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+  .app { max-width: 720px; margin: 0 auto; }
+  .header {
+    text-align: center;
+    padding: 18px 0 20px;
+    border-bottom: 3px solid var(--blue-dark);
+    margin-bottom: 22px;
+  }
+  .header h1 { font-size: 26px; color: var(--blue); margin-bottom: 4px; }
+  .header .sub { font-size: 14px; color: var(--muted); }
+
+  .source-bar {
+    display: flex; gap: 8px; margin-bottom: 14px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .src-btn {
+    background: var(--card); border: 1px solid #2f3545;
+    color: var(--muted); padding: 9px 16px; border-radius: 20px;
+    cursor: pointer; font-family: inherit; font-size: 14px;
+    transition: all .15s;
+  }
+  .src-btn.active { background: var(--blue-dark); color: #fff; border-color: var(--blue); }
+  .src-btn:hover { border-color: var(--blue); }
+
+  .upload-area {
+    background: var(--card); border: 2px dashed #2f3545;
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+    text-align: center; transition: all .2s;
+  }
+  .upload-area.dragover { border-color: var(--blue); background: var(--card2); }
+  .upload-area h3 { color: var(--blue); font-size: 16px; margin-bottom: 8px; }
+  .upload-area p { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.7; }
+  .file-input-label {
+    display: inline-block; background: var(--blue-dark); color: #fff;
+    padding: 8px 18px; border-radius: 10px; cursor: pointer;
+    font-size: 14px; margin-bottom: 8px;
+  }
+  .file-input-label:hover { background: var(--blue); }
+  .upload-area input[type="file"] { display: none; }
+  .format-hint {
+    background: var(--card2); border-radius: 8px; padding: 8px 12px;
+    font-size: 12px; color: var(--muted); margin-top: 8px;
+    text-align: right; direction: ltr;
+    font-family: 'Courier New', monospace; line-height: 1.6;
+  }
+  .upload-status { margin-top: 8px; font-size: 13px; color: var(--green); }
+  .upload-status.error { color: var(--red); }
+
+  .api-area {
+    background: var(--card); border-radius: 12px;
+    padding: 14px; margin-bottom: 14px;
+  }
+  .api-area label {
+    display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px;
+  }
+  .api-area input {
+    width: 100%; background: var(--card2); border: 1px solid #2f3545;
+    color: var(--text); padding: 9px 12px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; direction: ltr;
+  }
+  .api-area input:focus { outline: none; border-color: var(--blue); }
+  .api-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+  .level-bar {
+    display: flex; gap: 8px; margin-bottom: 16px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .level-btn {
+    background: var(--card); border: 1px solid #2f3545;
+    color: var(--muted); padding: 8px 16px; border-radius: 20px;
+    cursor: pointer; font-family: inherit; font-size: 14px;
+    transition: all .15s;
+  }
+  .level-btn.active { background: var(--blue-dark); color: #fff; border-color: var(--blue); }
+  .level-btn:hover { border-color: var(--blue); }
+
+  .stats { display: flex; gap: 10px; margin-bottom: 18px; }
+  .stat {
+    flex: 1; background: var(--card); border-radius: 12px;
+    padding: 12px 8px; text-align: center;
+  }
+  .stat .num { font-size: 24px; font-weight: bold; color: var(--blue); }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .stat.wpm .num { color: var(--yellow); }
+  .stat.acc .num { color: var(--green); }
+
+  .progress-wrap {
+    background: var(--card); height: 8px; border-radius: 4px;
+    margin-bottom: 20px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue-dark), var(--blue));
+    width: 0%; transition: width .3s;
+  }
+
+  .card {
+    background: var(--card); border-radius: 18px;
+    padding: 28px 22px; text-align: center; margin-bottom: 16px;
+  }
+  .word-meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .badge {
+    display: inline-block; background: var(--card2);
+    padding: 3px 10px; border-radius: 10px; font-size: 12px; margin: 0 3px;
+  }
+  .emoji { font-size: 46px; margin: 6px 0 10px; }
+  .german-word {
+    font-size: 36px; font-weight: bold; direction: ltr;
+    margin-bottom: 6px; letter-spacing: 1px;
+  }
+  .article-der { color: var(--der); }
+  .article-die { color: var(--die); }
+  .article-das { color: var(--das); }
+  .dari-meaning { font-size: 20px; color: var(--yellow); margin-bottom: 4px; }
+  .speak-btn {
+    background: var(--card2); border: 1px solid #2f3545;
+    color: var(--blue); border-radius: 20px; padding: 6px 14px;
+    cursor: pointer; font-family: inherit; font-size: 13px; margin-top: 8px;
+  }
+  .speak-btn:hover { border-color: var(--blue); }
+
+  /* NEW: Sentence box */
+  .sentence-box {
+    background: linear-gradient(135deg, #1d2331, #232a3a);
+    border: 1px solid #2f3545;
+    border-right: 4px solid var(--purple);
+    border-radius: 14px; padding: 16px 18px; margin-top: 14px;
+    text-align: right;
+  }
+  .sentence-box .label {
+    font-size: 12px; color: var(--purple); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sentence-de {
+    font-size: 19px; color: var(--text);
+    direction: ltr; text-align: left;
+    margin-bottom: 10px; line-height: 1.5; font-weight: 500;
+  }
+  .sentence-de .highlight {
+    background: rgba(199, 146, 234, 0.22);
+    color: var(--purple); padding: 1px 5px;
+    border-radius: 4px; font-weight: bold;
+  }
+  .sentence-dari {
+    font-size: 16px; color: var(--yellow); line-height: 1.7;
+    border-top: 1px dashed #2f3545; padding-top: 10px;
+  }
+  .sentence-loading { color: var(--muted); font-size: 14px; font-style: italic; }
+  .sentence-loading::after {
+    content: '...'; animation: dots 1.4s infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
+  .speak-sentence-btn {
+    background: var(--card2); border: 1px solid #2f3545;
+    color: var(--purple); border-radius: 16px; padding: 5px 12px;
+    cursor: pointer; font-family: inherit; font-size: 12px; margin-top: 8px;
+  }
+  .speak-sentence-btn:hover { border-color: var(--purple); }
+
+  .type-display {
+    direction: ltr; font-size: 30px;
+    font-family: 'Courier New', monospace; letter-spacing: 2px;
+    margin: 18px 0 10px; min-height: 40px; word-break: break-all;
+  }
+  .ch { transition: color .1s; }
+  .ch.correct { color: var(--green); }
+  .ch.wrong { color: var(--red); background: rgba(255,107,107,.15); border-radius:3px; }
+  .ch.pending { color: var(--muted); }
+  .ch.current { color: var(--text); border-bottom: 3px solid var(--blue); }
+  .hidden-input { position: absolute; opacity: 0; width: 1px; height: 1px; border: 0; }
+  .type-hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .btn-row { display: flex; gap: 10px; }
+  .btn {
+    flex: 1; padding: 13px; border-radius: 12px; border: none;
+    font-family: inherit; font-size: 15px; font-weight: bold;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-primary { background: var(--blue-dark); color: #fff; }
+  .btn-primary:hover { background: var(--blue); }
+  .btn-ghost {
+    background: var(--card); color: var(--muted);
+    border: 1px solid #2f3545;
+  }
+  .btn-ghost:hover { color: var(--text); }
+
+  .result-card {
+    background: var(--card); border-radius: 18px;
+    padding: 30px 22px; text-align: center;
+  }
+  .result-card h2 { color: var(--green); font-size: 24px; margin-bottom: 14px; }
+  .result-big {
+    font-size: 50px; font-weight: bold; color: var(--yellow); margin: 10px 0;
+  }
+  .result-detail {
+    font-size: 15px; color: var(--muted);
+    line-height: 1.9; margin-bottom: 18px;
+  }
+
+  .legend {
+    display: flex; justify-content: center; gap: 14px;
+    font-size: 12px; color: var(--muted);
+    margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display:inline-block; }
+
+  .footer {
+    text-align: center; font-size: 12px; color: #6b7585;
+    margin-top: 20px; padding-top: 14px; border-top: 1px solid #2a2f3d;
+  }
+  .keyboard-tip {
+    background: var(--card2); border-radius: 10px;
+    padding: 10px 14px; font-size: 13px; color: var(--muted);
+    margin-bottom: 16px; line-height: 1.7;
+  }
+  .keyboard-tip b { color: var(--blue); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1>⌨️ تمرین تایپ آلمانی v2</h1>
+    <div class="sub">لغات + جمله‌سازی هوشمند با AI 🤖🇩🇪</div>
+  </div>
+
+  <div class="source-bar">
+    <button class="src-btn active" data-src="builtin">📚 لغات پیش‌فرض</button>
+    <button class="src-btn" data-src="upload">📁 آپلود فایل من</button>
+  </div>
+
+  <div class="upload-area hidden" id="uploadArea">
+    <h3>📤 فایل لغات خود را آپلود کن</h3>
+    <p>فایل <b>.txt</b> با این فارمت (هر خط یک لغت):</p>
+    <label class="file-input-label" for="fileInput">انتخاب فایل .txt</label>
+    <input type="file" id="fileInput" accept=".txt,text/plain">
+    <div class="format-hint">
+      der Patient | مریض | 🏥 | صحت<br>
+      die Pflege | مراقبت | 🩺 | صحت<br>
+      helfen | کمک کردن | 🤲 | فعل
+    </div>
+    <p style="margin-top:10px; font-size:12px;">
+      فقط دو ستون هم قبول است: <code>der Patient | مریض</code><br>
+      جداکننده: <b>|</b> یا <b>=</b> یا <b>tab</b> یا <b>;</b> — emoji و دسته اختیاری
+    </p>
+    <div class="upload-status" id="uploadStatus"></div>
+  </div>
+
+  <div class="api-area">
+    <label for="apiKey">🔑 کلید Anthropic API (برای جمله‌سازی):</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <div class="api-hint">
+      کلید فقط در مرورگر شما می‌ماند و به جای دیگری ارسال نمی‌شود. اگر کلید ندهی، برنامه بدون جمله‌سازی کار می‌کند.
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--der)"></span> der</span>
+    <span><span class="dot" style="background:var(--die)"></span> die</span>
+    <span><span class="dot" style="background:var(--das)"></span> das</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="statWord">۰/۰</div><div class="lbl">لغت</div></div>
+    <div class="stat wpm"><div class="num" id="statWpm">۰</div><div class="lbl">سرعت (WPM)</div></div>
+    <div class="stat acc"><div class="num" id="statAcc">۱۰۰٪</div><div class="lbl">دقت</div></div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div id="practiceArea">
+    <div class="card">
+      <div class="word-meta">
+        <span class="badge" id="wordCat">—</span>
+        <span class="badge" id="wordLevel">—</span>
+      </div>
+      <div class="emoji" id="wordEmoji">📝</div>
+      <div class="german-word" id="germanWord">—</div>
+      <div class="type-display" id="typeDisplay"></div>
+      <div class="type-hint">همین لغت آلمانی را تایپ کن ⬆️</div>
+      <input type="text" class="hidden-input" id="hiddenInput" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div id="revealBox" style="display:none; margin-top:14px;">
+        <div class="dari-meaning" id="dariMeaning">—</div>
+        <button class="speak-btn" id="speakBtn">🔊 شنیدن تلفظ آلمانی</button>
+
+        <div class="sentence-box" id="sentenceBox">
+          <div class="label">✨ جمله با این لغت:</div>
+          <div class="sentence-de" id="sentenceDe">
+            <span class="sentence-loading">در حال ساختن جمله</span>
+          </div>
+          <div class="sentence-dari" id="sentenceDari"></div>
+          <button class="speak-sentence-btn hidden" id="speakSentenceBtn">🔊 شنیدن جمله</button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="nextBtn">لغت بعدی ⬅️ (Enter)</button>
+      <button class="btn btn-ghost" id="skipBtn">رد کردن</button>
+    </div>
+  </div>
+
+  <div id="resultArea" style="display:none;">
+    <div class="result-card">
+      <h2>🎉 تمرین تمام شد!</h2>
+      <div class="result-big" id="resultWpm">۰</div>
+      <div class="result-detail" id="resultDetail"></div>
+      <button class="btn btn-primary" id="restartBtn">شروع دوباره 🔄</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DEFAULT_VOCAB = [
+  {de:"der Name", dari:"نام", emoji:"📛", cat:"شخصی", lvl:"A1.1"},
+  {de:"die Frau", dari:"زن / خانم", emoji:"👩", cat:"اشخاص", lvl:"A1.1"},
+  {de:"der Mann", dari:"مرد", emoji:"👨", cat:"اشخاص", lvl:"A1.1"},
+  {de:"das Kind", dari:"کودک", emoji:"🧒", cat:"اشخاص", lvl:"A1.1"},
+  {de:"der Freund", dari:"دوست (مرد)", emoji:"🤝", cat:"اشخاص", lvl:"A1.1"},
+  {de:"die Familie", dari:"خانواده", emoji:"👨‍👩‍👧", cat:"اشخاص", lvl:"A1.1"},
+  {de:"das Land", dari:"کشور", emoji:"🗺️", cat:"جغرافیا", lvl:"A1.1"},
+  {de:"die Stadt", dari:"شهر", emoji:"🏙️", cat:"جغرافیا", lvl:"A1.1"},
+  {de:"die Sprache", dari:"زبان", emoji:"🗣️", cat:"عمومی", lvl:"A1.1"},
+  {de:"der Beruf", dari:"شغل / حرفه", emoji:"💼", cat:"کار", lvl:"A1.1"},
+  {de:"die Arbeit", dari:"کار", emoji:"🛠️", cat:"کار", lvl:"A1.1"},
+  {de:"das Hobby", dari:"سرگرمی", emoji:"🎨", cat:"اوقات فراغت", lvl:"A1.1"},
+  {de:"der Tag", dari:"روز", emoji:"☀️", cat:"زمان", lvl:"A1.1"},
+  {de:"die Woche", dari:"هفته", emoji:"📅", cat:"زمان", lvl:"A1.1"},
+  {de:"das Jahr", dari:"سال", emoji:"🗓️", cat:"زمان", lvl:"A1.1"},
+  {de:"die Zeit", dari:"وقت / زمان", emoji:"⏰", cat:"زمان", lvl:"A1.1"},
+  {de:"das Haus", dari:"خانه", emoji:"🏠", cat:"خانه", lvl:"A1.1"},
+  {de:"die Wohnung", dari:"آپارتمان", emoji:"🏢", cat:"خانه", lvl:"A1.1"},
+  {de:"das Zimmer", dari:"اتاق", emoji:"🛋️", cat:"خانه", lvl:"A1.1"},
+  {de:"der Tisch", dari:"میز", emoji:"🪑", cat:"خانه", lvl:"A1.1"},
+  {de:"der Stuhl", dari:"چوکی", emoji:"🪑", cat:"خانه", lvl:"A1.1"},
+  {de:"das Bett", dari:"بستر", emoji:"🛏️", cat:"خانه", lvl:"A1.1"},
+  {de:"das Wasser", dari:"آب", emoji:"💧", cat:"خوراک", lvl:"A1.1"},
+  {de:"das Brot", dari:"نان", emoji:"🍞", cat:"خوراک", lvl:"A1.1"},
+  {de:"der Kaffee", dari:"قهوه", emoji:"☕", cat:"خوراک", lvl:"A1.1"},
+  {de:"die Milch", dari:"شیر", emoji:"🥛", cat:"خوراک", lvl:"A1.1"},
+  {de:"der Apfel", dari:"سیب", emoji:"🍎", cat:"خوراک", lvl:"A1.1"},
+  {de:"das Auto", dari:"موتر", emoji:"🚗", cat:"حمل و نقل", lvl:"A1.1"},
+  {de:"der Bus", dari:"بس", emoji:"🚌", cat:"حمل و نقل", lvl:"A1.1"},
+  {de:"der Zug", dari:"قطار", emoji:"🚆", cat:"حمل و نقل", lvl:"A1.1"},
+  {de:"das Buch", dari:"کتاب", emoji:"📖", cat:"مکتب", lvl:"A1.1"},
+  {de:"der Kurs", dari:"کورس", emoji:"📚", cat:"مکتب", lvl:"A1.1"},
+  {de:"die Schule", dari:"مکتب", emoji:"🏫", cat:"مکتب", lvl:"A1.1"},
+  {de:"hallo", dari:"سلام", emoji:"👋", cat:"احوالپرسی", lvl:"A1.1"},
+  {de:"danke", dari:"تشکر", emoji:"🙏", cat:"احوالپرسی", lvl:"A1.1"},
+  {de:"bitte", dari:"لطفاً / خواهش می‌کنم", emoji:"🙇", cat:"احوالپرسی", lvl:"A1.1"},
+  {de:"ja", dari:"بله", emoji:"✅", cat:"عمومی", lvl:"A1.1"},
+  {de:"nein", dari:"نه", emoji:"❌", cat:"عمومی", lvl:"A1.1"},
+  {de:"gut", dari:"خوب", emoji:"👍", cat:"صفت", lvl:"A1.1"},
+  {de:"groß", dari:"بزرگ", emoji:"🔼", cat:"صفت", lvl:"A1.1"},
+  {de:"klein", dari:"کوچک", emoji:"🔽", cat:"صفت", lvl:"A1.1"},
+  {de:"heißen", dari:"نامیده شدن", emoji:"📛", cat:"فعل", lvl:"A1.1"},
+  {de:"kommen", dari:"آمدن", emoji:"🚶", cat:"فعل", lvl:"A1.1"},
+  {de:"wohnen", dari:"زندگی کردن", emoji:"🏡", cat:"فعل", lvl:"A1.1"},
+  {de:"sprechen", dari:"صحبت کردن", emoji:"💬", cat:"فعل", lvl:"A1.1"},
+  {de:"arbeiten", dari:"کار کردن", emoji:"⚒️", cat:"فعل", lvl:"A1.1"},
+  {de:"lernen", dari:"یاد گرفتن", emoji:"🧠", cat:"فعل", lvl:"A1.1"},
+  {de:"essen", dari:"خوردن", emoji:"🍽️", cat:"فعل", lvl:"A1.1"},
+  {de:"trinken", dari:"نوشیدن", emoji:"🥤", cat:"فعل", lvl:"A1.1"},
+  {de:"kaufen", dari:"خریدن", emoji:"🛒", cat:"فعل", lvl:"A1.1"},
+
+  {de:"der Termin", dari:"وقت ملاقات / نوبت", emoji:"📆", cat:"کار", lvl:"A1.2"},
+  {de:"der Arzt", dari:"داکتر", emoji:"👨‍⚕️", cat:"صحت", lvl:"A1.2"},
+  {de:"die Praxis", dari:"مطب / کلینیک", emoji:"🏥", cat:"صحت", lvl:"A1.2"},
+  {de:"der Körper", dari:"بدن", emoji:"🧍", cat:"صحت", lvl:"A1.2"},
+  {de:"der Kopf", dari:"سر", emoji:"🧠", cat:"بدن", lvl:"A1.2"},
+  {de:"die Hand", dari:"دست", emoji:"✋", cat:"بدن", lvl:"A1.2"},
+  {de:"das Auge", dari:"چشم", emoji:"👁️", cat:"بدن", lvl:"A1.2"},
+  {de:"der Zahn", dari:"دندان", emoji:"🦷", cat:"بدن", lvl:"A1.2"},
+  {de:"gesund", dari:"صحتمند", emoji:"💪", cat:"صحت", lvl:"A1.2"},
+  {de:"krank", dari:"مریض", emoji:"🤒", cat:"صحت", lvl:"A1.2"},
+  {de:"die Reise", dari:"سفر", emoji:"🧳", cat:"سفر", lvl:"A1.2"},
+  {de:"der Urlaub", dari:"رخصتی", emoji:"🏖️", cat:"سفر", lvl:"A1.2"},
+  {de:"das Wetter", dari:"هوا", emoji:"🌤️", cat:"طبیعت", lvl:"A1.2"},
+  {de:"die Sonne", dari:"آفتاب", emoji:"☀️", cat:"طبیعت", lvl:"A1.2"},
+  {de:"der Regen", dari:"باران", emoji:"🌧️", cat:"طبیعت", lvl:"A1.2"},
+  {de:"der Winter", dari:"زمستان", emoji:"❄️", cat:"فصل", lvl:"A1.2"},
+  {de:"der Sommer", dari:"تابستان", emoji:"🌞", cat:"فصل", lvl:"A1.2"},
+  {de:"das Geschenk", dari:"تحفه", emoji:"🎁", cat:"عمومی", lvl:"A1.2"},
+  {de:"das Geld", dari:"پول", emoji:"💶", cat:"خرید", lvl:"A1.2"},
+  {de:"der Markt", dari:"بازار", emoji:"🛍️", cat:"خرید", lvl:"A1.2"},
+  {de:"das Geschäft", dari:"دکان / مغازه", emoji:"🏪", cat:"خرید", lvl:"A1.2"},
+  {de:"die Kleidung", dari:"لباس", emoji:"👕", cat:"لباس", lvl:"A1.2"},
+  {de:"der Schuh", dari:"بوت", emoji:"👞", cat:"لباس", lvl:"A1.2"},
+  {de:"die Küche", dari:"آشپزخانه", emoji:"🍳", cat:"خانه", lvl:"A1.2"},
+  {de:"das Bad", dari:"حمام", emoji:"🛁", cat:"خانه", lvl:"A1.2"},
+  {de:"der Garten", dari:"باغ", emoji:"🌳", cat:"خانه", lvl:"A1.2"},
+  {de:"die Straße", dari:"سرک", emoji:"🛣️", cat:"شهر", lvl:"A1.2"},
+  {de:"der Weg", dari:"راه", emoji:"🚶‍♂️", cat:"شهر", lvl:"A1.2"},
+  {de:"links", dari:"چپ", emoji:"⬅️", cat:"جهت", lvl:"A1.2"},
+  {de:"rechts", dari:"راست", emoji:"➡️", cat:"جهت", lvl:"A1.2"},
+  {de:"geradeaus", dari:"مستقیم", emoji:"⬆️", cat:"جهت", lvl:"A1.2"},
+  {de:"der Freitag", dari:"جمعه", emoji:"📅", cat:"روزها", lvl:"A1.2"},
+  {de:"der Montag", dari:"دوشنبه", emoji:"📅", cat:"روزها", lvl:"A1.2"},
+  {de:"der Geburtstag", dari:"روز تولد", emoji:"🎂", cat:"زمان", lvl:"A1.2"},
+  {de:"die Uhr", dari:"ساعت", emoji:"🕐", cat:"زمان", lvl:"A1.2"},
+  {de:"müssen", dari:"باید / مجبور بودن", emoji:"❗", cat:"فعل کمکی", lvl:"A1.2"},
+  {de:"wollen", dari:"خواستن", emoji:"💭", cat:"فعل کمکی", lvl:"A1.2"},
+  {de:"sollen", dari:"باید (وظیفه)", emoji:"📋", cat:"فعل کمکی", lvl:"A1.2"},
+  {de:"können", dari:"توانستن", emoji:"✔️", cat:"فعل کمکی", lvl:"A1.2"},
+  {de:"möchten", dari:"میل داشتن", emoji:"🙋", cat:"فعل کمکی", lvl:"A1.2"},
+  {de:"fahren", dari:"رفتن (با وسیله)", emoji:"🚙", cat:"فعل", lvl:"A1.2"},
+  {de:"helfen", dari:"کمک کردن", emoji:"🤲", cat:"فعل", lvl:"A1.2"},
+  {de:"schlafen", dari:"خوابیدن", emoji:"😴", cat:"فعل", lvl:"A1.2"},
+  {de:"spielen", dari:"بازی کردن", emoji:"⚽", cat:"فعل", lvl:"A1.2"},
+  {de:"kochen", dari:"پختن", emoji:"🍲", cat:"فعل", lvl:"A1.2"},
+  {de:"besuchen", dari:"دیدن کردن", emoji:"🚪", cat:"فعل", lvl:"A1.2"},
+  {de:"warten", dari:"انتظار کشیدن", emoji:"⏳", cat:"فعل", lvl:"A1.2"},
+  {de:"verstehen", dari:"فهمیدن", emoji:"💡", cat:"فعل", lvl:"A1.2"},
+  {de:"schön", dari:"زیبا", emoji:"🌸", cat:"صفت", lvl:"A1.2"},
+  {de:"teuer", dari:"گران", emoji:"💸", cat:"صفت", lvl:"A1.2"},
+  {de:"billig", dari:"ارزان", emoji:"🪙", cat:"صفت", lvl:"A1.2"},
+
+  // ===== افعال جداشدنی (trennbare Verben) — پیشوند در جمله جدا می‌شود =====
+  {de:"aufstehen", dari:"بیدار شدن / برخاستن — جداشدنی (auf...)", emoji:"⏰", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"aufmachen", dari:"باز کردن — جداشدنی (auf...)", emoji:"🔓", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"zumachen", dari:"بستن — جداشدنی (zu...)", emoji:"🔒", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"einkaufen", dari:"خرید کردن — جداشدنی (ein...)", emoji:"🛒", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"anrufen", dari:"تلفن کردن — جداشدنی (an...)", emoji:"📞", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"mitkommen", dari:"همراه آمدن — جداشدنی (mit...)", emoji:"🚶‍♂️", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"mitbringen", dari:"با خود آوردن — جداشدنی (mit...)", emoji:"🎁", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"ankommen", dari:"رسیدن — جداشدنی (an...)", emoji:"🛬", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"anfangen", dari:"شروع کردن — جداشدنی (an...)", emoji:"🏁", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"aufhören", dari:"تمام کردن / دست کشیدن — جداشدنی (auf...)", emoji:"🛑", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"fernsehen", dari:"تلویزیون دیدن — جداشدنی (fern...)", emoji:"📺", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"einladen", dari:"دعوت کردن — جداشدنی (ein...)", emoji:"💌", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"aussehen", dari:"به نظر رسیدن — جداشدنی (aus...)", emoji:"👀", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"abholen", dari:"کسی را آوردن / گرفتن — جداشدنی (ab...)", emoji:"🚗", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"einsteigen", dari:"سوار شدن — جداشدنی (ein...)", emoji:"🚪", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"aussteigen", dari:"پیاده شدن — جداشدنی (aus...)", emoji:"🚶", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"umsteigen", dari:"تعویض کردن (وسیله) — جداشدنی (um...)", emoji:"🔄", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"zuhören", dari:"گوش دادن — جداشدنی (zu...)", emoji:"👂", cat:"فعل جداشدنی", lvl:"A1.2"},
+  {de:"vorbereiten", dari:"آماده کردن — جداشدنی (vor...)", emoji:"📋", cat:"فعل جداشدنی", lvl:"B1"},
+  {de:"teilnehmen", dari:"شرکت کردن — جداشدنی (teil...)", emoji:"🙋", cat:"فعل جداشدنی", lvl:"B1"},
+
+  // ===== افعال ناجداشدنی (untrennbare Verben) — پیشوند جدا نمی‌شود =====
+  {de:"bezahlen", dari:"پرداختن — ناجداشدنی (be...)", emoji:"💳", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"bekommen", dari:"دریافت کردن — ناجداشدنی (be...)", emoji:"📥", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"beginnen", dari:"آغاز کردن — ناجداشدنی (be...)", emoji:"▶️", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"erklären", dari:"توضیح دادن — ناجداشدنی (er...)", emoji:"💡", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"erzählen", dari:"تعریف کردن / قصه گفتن — ناجداشدنی (er...)", emoji:"🗣️", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"vergessen", dari:"فراموش کردن — ناجداشدنی (ver...)", emoji:"🤔", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"verkaufen", dari:"فروختن — ناجداشدنی (ver...)", emoji:"🏷️", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"verdienen", dari:"درآمد داشتن / به دست آوردن — ناجداشدنی (ver...)", emoji:"💰", cat:"فعل ناجداشدنی", lvl:"A1.2"},
+  {de:"erlauben", dari:"اجازه دادن — ناجداشدنی (er...)", emoji:"✅", cat:"فعل ناجداشدنی", lvl:"B1"},
+  {de:"empfehlen", dari:"توصیه کردن — ناجداشدنی (emp...)", emoji:"👌", cat:"فعل ناجداشدنی", lvl:"B1"},
+  {de:"gehören", dari:"متعلق بودن — ناجداشدنی (ge...)", emoji:"🔑", cat:"فعل ناجداشدنی", lvl:"B1"},
+  {de:"benutzen", dari:"استفاده کردن — ناجداشدنی (be...)", emoji:"🔧", cat:"فعل ناجداشدنی", lvl:"B1"},
+
+  // ===== حروف اضافه (Präpositionen) =====
+  {de:"mit", dari:"با (+ Dativ)", emoji:"🤝", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"ohne", dari:"بدون (+ Akkusativ)", emoji:"🚫", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"für", dari:"برای (+ Akkusativ)", emoji:"🎯", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"zu", dari:"به / به سوی (+ Dativ)", emoji:"➡️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"von", dari:"از (+ Dativ)", emoji:"📤", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"nach", dari:"بعد از / به سوی (+ Dativ)", emoji:"⏭️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"bei", dari:"نزد / در (+ Dativ)", emoji:"📍", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"aus", dari:"از (داخل به بیرون) (+ Dativ)", emoji:"🚪", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"in", dari:"در / داخل (Wechsel)", emoji:"📦", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"auf", dari:"روی (Wechsel)", emoji:"⬆️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"unter", dari:"زیر (Wechsel)", emoji:"⬇️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"über", dari:"بالای / در باره (Wechsel)", emoji:"🔼", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"vor", dari:"جلوی / قبل از (Wechsel)", emoji:"⏮️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"hinter", dari:"پشت (Wechsel)", emoji:"🔙", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"neben", dari:"کنار (Wechsel)", emoji:"↔️", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"zwischen", dari:"بین (Wechsel)", emoji:"🔀", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"gegen", dari:"علیه / در مقابل (+ Akkusativ)", emoji:"🥊", cat:"حرف اضافه", lvl:"B1"},
+  {de:"durch", dari:"از میان / به وسیله (+ Akkusativ)", emoji:"🚇", cat:"حرف اضافه", lvl:"B1"},
+  {de:"um", dari:"ساعت / دور (+ Akkusativ)", emoji:"🕐", cat:"حرف اضافه", lvl:"A1.2"},
+  {de:"seit", dari:"از (زمان تا حالا) (+ Dativ)", emoji:"📆", cat:"حرف اضافه", lvl:"B1"},
+
+  // ===== حروف ربط (Konjunktionen) =====
+  {de:"und", dari:"و", emoji:"➕", cat:"حرف ربط", lvl:"A1.1"},
+  {de:"oder", dari:"یا", emoji:"🔀", cat:"حرف ربط", lvl:"A1.1"},
+  {de:"aber", dari:"اما / ولی", emoji:"↩️", cat:"حرف ربط", lvl:"A1.2"},
+  {de:"denn", dari:"چون / زیرا (فعل سر جایش)", emoji:"💬", cat:"حرف ربط", lvl:"A1.2"},
+  {de:"weil", dari:"چون (فعل می‌رود آخر)", emoji:"❓", cat:"حرف ربط", lvl:"A1.2"},
+  {de:"dass", dari:"که (فعل می‌رود آخر)", emoji:"🔗", cat:"حرف ربط", lvl:"A1.2"},
+  {de:"wenn", dari:"اگر / وقتی که (فعل می‌رود آخر)", emoji:"🔁", cat:"حرف ربط", lvl:"B1"},
+  {de:"dann", dari:"سپس / بعد", emoji:"⏩", cat:"حرف ربط", lvl:"A1.2"},
+  {de:"deshalb", dari:"به همین خاطر", emoji:"➡️", cat:"حرف ربط", lvl:"B1"},
+  {de:"trotzdem", dari:"با وجود این", emoji:"🤷", cat:"حرف ربط", lvl:"B1"},
+  {de:"sondern", dari:"بلکه", emoji:"↪️", cat:"حرف ربط", lvl:"B1"},
+  {de:"obwohl", dari:"اگرچه (فعل می‌رود آخر)", emoji:"🌗", cat:"حرف ربط", lvl:"B1"},
+];
+
+let VOCAB = DEFAULT_VOCAB.slice();
+let currentSource = 'builtin';
+let currentLevel = 'all';
+let pool = [];
+let idx = 0;
+let typed = "";
+let totalKeystrokes = 0;
+let correctKeystrokes = 0;
+let startTime = null;
+let finishedWords = 0;
+const sentenceCache = {};
+
+function faNum(n){
+  const map = {'0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹'};
+  return String(n).replace(/[0-9]/g, d => map[d]);
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function articleClass(word){
+  if(word.startsWith('der ')) return 'article-der';
+  if(word.startsWith('die ')) return 'article-die';
+  if(word.startsWith('das ')) return 'article-das';
+  return '';
+}
+function renderGermanWord(word){
+  const parts = word.split(' ');
+  if(['der','die','das'].includes(parts[0])){
+    const cls = articleClass(word);
+    return `<span class="${cls}">${parts[0]}</span> ${parts.slice(1).join(' ')}`;
+  }
+  return word;
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function parseVocabFile(text){
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('#'));
+  const out = [];
+  for(const line of lines){
+    let parts;
+    if(line.includes('|')) parts = line.split('|').map(p => p.trim());
+    else if(line.includes('\t')) parts = line.split('\t').map(p => p.trim());
+    else if(line.includes(';')) parts = line.split(';').map(p => p.trim());
+    else if(line.includes('=')) parts = line.split('=').map(p => p.trim());
+    else continue;
+    if(parts.length < 2) continue;
+    const de = parts[0];
+    const dari = parts[1];
+    const emoji = parts[2] || '📝';
+    const cat = parts[3] || 'لغات من';
+    if(de && dari){
+      out.push({ de, dari, emoji, cat, lvl: 'من' });
+    }
+  }
+  return out;
+}
+
+function handleFile(file){
+  const status = document.getElementById('uploadStatus');
+  if(!file){ return; }
+  if(!file.name.toLowerCase().endsWith('.txt')){
+    status.textContent = '❌ فقط فایل .txt قبول است';
+    status.classList.add('error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    const parsed = parseVocabFile(text);
+    if(parsed.length === 0){
+      status.textContent = '❌ هیچ لغتی پیدا نشد. فارمت فایل را بررسی کن.';
+      status.classList.add('error');
+      return;
+    }
+    VOCAB = parsed;
+    status.classList.remove('error');
+    status.textContent = `✅ ${faNum(parsed.length)} لغت بارگذاری شد!`;
+    currentLevel = 'all';
+    buildPool();
+    renderWord();
+  };
+  reader.onerror = () => {
+    status.textContent = '❌ خطا در خواندن فایل';
+    status.classList.add('error');
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function buildPool(){
+  let filtered = VOCAB;
+  if(currentLevel !== 'all'){
+    filtered = VOCAB.filter(w => w.lvl === currentLevel);
+  }
+  if(filtered.length === 0) filtered = VOCAB;
+  pool = shuffle(filtered);
+  idx = 0;
+  typed = "";
+  totalKeystrokes = 0;
+  correctKeystrokes = 0;
+  startTime = null;
+  finishedWords = 0;
+}
+
+function renderWord(){
+  const w = pool[idx];
+  if(!w) return;
+  document.getElementById('wordCat').textContent = w.cat;
+  document.getElementById('wordLevel').textContent = w.lvl;
+  document.getElementById('wordEmoji').textContent = w.emoji;
+  document.getElementById('germanWord').innerHTML = renderGermanWord(w.de);
+  document.getElementById('dariMeaning').textContent = w.dari;
+  document.getElementById('revealBox').style.display = 'none';
+  document.getElementById('sentenceDe').innerHTML = '<span class="sentence-loading">در حال ساختن جمله</span>';
+  document.getElementById('sentenceDari').textContent = '';
+  document.getElementById('speakSentenceBtn').classList.add('hidden');
+  typed = "";
+  renderTypeDisplay();
+  updateStats();
+  document.getElementById('hiddenInput').value = "";
+  document.getElementById('hiddenInput').focus();
+}
+
+function renderTypeDisplay(){
+  const target = pool[idx].de;
+  const disp = document.getElementById('typeDisplay');
+  let html = "";
+  for(let i=0;i<target.length;i++){
+    const tc = target[i];
+    let cls = 'pending';
+    if(i < typed.length){
+      cls = (typed[i] === tc) ? 'correct' : 'wrong';
+    } else if(i === typed.length){
+      cls = 'current';
+    }
+    const shown = tc === ' ' ? '&nbsp;' : tc;
+    html += `<span class="ch ${cls}">${shown}</span>`;
+  }
+  disp.innerHTML = html;
+}
+
+function updateStats(){
+  document.getElementById('statWord').textContent =
+    faNum(finishedWords) + '/' + faNum(pool.length);
+  const acc = totalKeystrokes > 0
+    ? Math.round((correctKeystrokes/totalKeystrokes)*100) : 100;
+  document.getElementById('statAcc').textContent = faNum(acc) + '٪';
+  let wpm = 0;
+  if(startTime){
+    const mins = (Date.now() - startTime)/60000;
+    if(mins > 0){
+      wpm = Math.round((correctKeystrokes/5)/mins);
+    }
+  }
+  document.getElementById('statWpm').textContent = faNum(wpm);
+  const prog = (finishedWords/pool.length)*100;
+  document.getElementById('progressBar').style.width = prog + '%';
+}
+
+function onInput(e){
+  const val = e.target.value;
+  const target = pool[idx].de;
+  if(!startTime && val.length > 0) startTime = Date.now();
+  if(val.length > typed.length){
+    const newCh = val[val.length-1];
+    const expectedCh = target[val.length-1];
+    totalKeystrokes++;
+    if(newCh === expectedCh) correctKeystrokes++;
+  }
+  typed = val;
+  renderTypeDisplay();
+  updateStats();
+  if(typed === target){
+    wordComplete();
+  }
+}
+
+function wordComplete(){
+  document.getElementById('revealBox').style.display = 'block';
+  const w = pool[idx];
+  speakGerman(w.de);
+  generateSentence(w);
+}
+
+async function generateSentence(word){
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const sentenceDe = document.getElementById('sentenceDe');
+  const sentenceDari = document.getElementById('sentenceDari');
+  const speakBtn = document.getElementById('speakSentenceBtn');
+
+  const cacheKey = word.de;
+  if(sentenceCache[cacheKey]){
+    const c = sentenceCache[cacheKey];
+    showSentence(c.de, c.dari, word.de);
+    return;
+  }
+
+  if(!apiKey){
+    sentenceDe.innerHTML = '<span style="color:var(--muted); font-size:13px;">برای جمله‌سازی، کلید API را در بالا وارد کن.</span>';
+    sentenceDari.textContent = '';
+    return;
+  }
+
+  try {
+    const prompt = `Generate ONE simple A1-level German sentence (max 8 words) using the word "${word.de}". The sentence must be natural, useful for daily life, and appropriate for a beginner learning German for Pflege (nursing) in Germany when possible. Then provide the Dari (Afghan Persian — NOT Iranian Farsi) translation using Afghan vocabulary.
+
+Respond ONLY with valid JSON in this exact format, no markdown, no extra text:
+{"de": "German sentence here.", "dari": "ترجمه دری اینجا"}
+
+Word to use: ${word.de}
+Word meaning in Dari: ${word.dari}`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if(!response.ok){
+      const errText = await response.text();
+      throw new Error(`API ${response.status}: ${errText.slice(0,80)}`);
+    }
+
+    const data = await response.json();
+    let text = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(text);
+
+    if(parsed.de && parsed.dari){
+      sentenceCache[cacheKey] = { de: parsed.de, dari: parsed.dari };
+      showSentence(parsed.de, parsed.dari, word.de);
+    } else {
+      throw new Error('پاسخ نامعتبر از AI');
+    }
+  } catch(err){
+    sentenceDe.innerHTML = `<span style="color:var(--red); font-size:13px;">⚠️ ${escapeHtml(err.message)}</span>`;
+    sentenceDari.textContent = '';
+  }
+}
+
+function showSentence(de, dari, targetWord){
+  const sentenceDe = document.getElementById('sentenceDe');
+  const sentenceDari = document.getElementById('sentenceDari');
+  const speakBtn = document.getElementById('speakSentenceBtn');
+
+  const bareWord = targetWord.replace(/^(der|die|das)\s+/, '');
+  const escapedDe = escapeHtml(de);
+  const re = new RegExp('(' + bareWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\w*)', 'gi');
+  const highlighted = escapedDe.replace(re, '<span class="highlight">$1</span>');
+  sentenceDe.innerHTML = highlighted;
+  sentenceDari.textContent = dari;
+  speakBtn.classList.remove('hidden');
+  speakBtn.onclick = () => speakGerman(de);
+}
+
+function nextWord(){
+  if(idx < pool.length - 1){
+    finishedWords++;
+    idx++;
+    renderWord();
+  } else {
+    finishedWords++;
+    showResult();
+  }
+}
+
+function skipWord(){
+  if(idx < pool.length - 1){
+    idx++;
+    renderWord();
+  } else {
+    showResult();
+  }
+}
+
+function speakGerman(text){
+  if(!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  u.rate = 0.85;
+  const voices = window.speechSynthesis.getVoices();
+  const deVoice = voices.find(v => v.lang && v.lang.startsWith('de'));
+  if(deVoice) u.voice = deVoice;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function showResult(){
+  document.getElementById('practiceArea').style.display = 'none';
+  document.getElementById('resultArea').style.display = 'block';
+  let wpm = 0;
+  if(startTime){
+    const mins = (Date.now() - startTime)/60000;
+    if(mins > 0) wpm = Math.round((correctKeystrokes/5)/mins);
+  }
+  const acc = totalKeystrokes > 0
+    ? Math.round((correctKeystrokes/totalKeystrokes)*100) : 100;
+  document.getElementById('resultWpm').textContent = faNum(wpm) + ' WPM';
+  let msg = '';
+  if(wpm < 15) msg = 'شروع خوبی است! هر روز تمرین کن، سرعتت بالا می‌رود. 💪';
+  else if(wpm < 30) msg = 'پیشرفت خوب! نزدیک سطح متوسط هستی. 👍';
+  else if(wpm < 45) msg = 'عالی! سرعتت خیلی خوب شده. 🔥';
+  else msg = 'فوق‌العاده! مثل یک ربات تایپ می‌کنی! 🤖';
+  document.getElementById('resultDetail').innerHTML =
+    `دقت: <b style="color:var(--green)">${faNum(acc)}٪</b><br>` +
+    `لغات تمرین‌شده: <b>${faNum(pool.length)}</b><br><br>` + msg;
+}
+
+document.querySelectorAll('.src-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.src-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSource = btn.dataset.src;
+    if(currentSource === 'upload'){
+      document.getElementById('uploadArea').classList.remove('hidden');
+    } else {
+      document.getElementById('uploadArea').classList.add('hidden');
+      VOCAB = DEFAULT_VOCAB.slice();
+      currentLevel = 'all';
+      buildPool();
+      renderWord();
+    }
+  });
+});
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  handleFile(file);
+});
+
+const uploadArea = document.getElementById('uploadArea');
+['dragenter','dragover'].forEach(evt => {
+  uploadArea.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    uploadArea.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(evt => {
+  uploadArea.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    uploadArea.classList.remove('dragover');
+  });
+});
+uploadArea.addEventListener('drop', e => {
+  const file = e.dataTransfer.files[0];
+  handleFile(file);
+});
+
+document.getElementById('hiddenInput').addEventListener('input', onInput);
+document.getElementById('hiddenInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    const target = pool[idx].de;
+    // اگر کلمه کامل و درست تایپ شده باشد، با Enter به لغت بعدی برو
+    if(typed === target){
+      nextWord();
+    }
+  }
+});
+document.getElementById('nextBtn').addEventListener('click', nextWord);
+document.getElementById('skipBtn').addEventListener('click', skipWord);
+document.getElementById('speakBtn').addEventListener('click', () => {
+  speakGerman(pool[idx].de);
+});
+document.getElementById('restartBtn').addEventListener('click', () => {
+  document.getElementById('practiceArea').style.display = 'block';
+  document.getElementById('resultArea').style.display = 'none';
+  buildPool();
+  renderWord();
+});
+document.getElementById('typeDisplay').addEventListener('click', () => {
+  document.getElementById('hiddenInput').focus();
+});
+document.querySelector('.card').addEventListener('click', () => {
+  document.getElementById('hiddenInput').focus();
+});
+
+// نگه‌دارنده فوکوس: اگر فوکوس از input تایپ بیرون رفت و روی فیلد دیگری نبود، برگردان
+document.addEventListener('click', (e) => {
+  const tag = e.target.tagName;
+  const isInteractive = tag === 'INPUT' || tag === 'BUTTON' || tag === 'LABEL' ||
+                        tag === 'A' || tag === 'TEXTAREA' ||
+                        e.target.closest('button') || e.target.closest('label');
+  // فقط وقتی منطقه تمرین فعال است و روی چیز تعاملی دیگری کلیک نشده
+  const practiceVisible = document.getElementById('practiceArea').style.display !== 'none';
+  if(practiceVisible && !isInteractive){
+    document.getElementById('hiddenInput').focus();
+  }
+});
+
+document.querySelectorAll('.level-btn').forEach(btn => {
+  btn.addEventListener('click', () => {});
+});
+
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.getVoices();
+}
+
+buildPool();
+renderWord();
+</script>
+</body>
+</html>
