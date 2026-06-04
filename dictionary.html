@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دیکشنری آلمانی ⇄ دری</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0f16;
+  --bg2:#11151f;
+  --card:#161b27;
+  --card-h:#1c2230;
+  --line:#242b3a;
+  --txt:#e8ecf4;
+  --muted:#8b94a8;
+  --accent:#f5b544;
+  --der:#4d9bff;   /* der - آبی */
+  --die:#ff6fa5;   /* die - صورتی */
+  --das:#3ed68a;   /* das - سبز */
+  --syn:#5cc1c4;
+  --ant:#ff8a6b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:radial-gradient(1200px 600px at 50% -10%, #1a2030 0%, var(--bg) 60%);
+  color:var(--txt);
+  font-family:'Vazirmatn',sans-serif;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+header{
+  text-align:center;
+  padding:26px 0 18px;
+}
+.logo{
+  font-family:'Manrope',sans-serif;
+  font-weight:800;
+  font-size:1.7rem;
+  letter-spacing:.5px;
+  background:linear-gradient(120deg,var(--accent),#ffd98a);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.logo .ar{font-family:'Vazirmatn';font-weight:700}
+.sub{color:var(--muted);font-size:.82rem;margin-top:4px}
+.count{color:var(--muted);font-size:.72rem;margin-top:2px;opacity:.7}
+
+.searchbox{
+  position:sticky;top:10px;z-index:20;
+  margin:10px 0 18px;
+}
+.searchbox input{
+  width:100%;
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:16px;
+  padding:15px 18px;
+  color:var(--txt);
+  font-family:'Vazirmatn';
+  font-size:1.05rem;
+  outline:none;
+  transition:.2s;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+}
+.searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,181,68,.12),0 8px 24px rgba(0,0,0,.4)}
+.searchbox input::placeholder{color:var(--muted)}
+
+.results{display:flex;flex-direction:column;gap:12px}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px 18px;
+  cursor:pointer;
+  transition:.18s;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0 auto 0 0;width:4px;
+  background:var(--accent);opacity:.0;transition:.2s;
+}
+.card:hover{background:var(--card-h);transform:translateY(-2px);border-color:#33415c}
+.card:hover::before{opacity:.9}
+
+.card-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;direction:ltr;justify-content:flex-start}
+.artikel{
+  font-family:'Manrope';font-weight:800;font-size:.92rem;
+  padding:2px 9px;border-radius:8px;
+}
+.a-der{color:var(--der);background:rgba(77,155,255,.13)}
+.a-die{color:var(--die);background:rgba(255,111,165,.13)}
+.a-das{color:var(--das);background:rgba(62,214,138,.13)}
+.a-none{color:var(--muted);background:rgba(139,148,168,.12)}
+.word{font-family:'Manrope';font-weight:700;font-size:1.35rem;color:#fff;direction:ltr}
+.plural{color:var(--muted);font-size:.8rem;direction:ltr;font-family:'Manrope'}
+.speak{
+  margin-inline-start:auto;background:none;border:1px solid var(--line);
+  color:var(--accent);border-radius:10px;width:36px;height:36px;
+  font-size:1rem;cursor:pointer;transition:.15s;flex-shrink:0;
+}
+.speak:hover{background:rgba(245,181,68,.12);border-color:var(--accent)}
+.fa{font-size:1.12rem;margin-top:8px;color:var(--txt);text-align:right;display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end}
+.meaning{
+  background:rgba(245,181,68,.08);border:1px solid rgba(245,181,68,.18);
+  border-radius:9px;padding:2px 11px;font-size:.98rem;color:#f0d9a8;
+}
+.pos{display:inline-block;color:var(--muted);font-size:.72rem;margin-top:6px;border:1px solid var(--line);padding:1px 8px;border-radius:6px}
+.reg{display:inline-block;font-size:.72rem;margin-top:6px;margin-inline-start:6px;padding:1px 9px;border-radius:6px;font-weight:600}
+.reg-umg{color:#ff9d57;background:rgba(255,157,87,.12);border:1px solid rgba(255,157,87,.3)}
+.reg-form{color:#b58cff;background:rgba(181,140,255,.12);border:1px solid rgba(181,140,255,.3)}
+.reg-neu{color:#8b94a8;background:rgba(139,148,168,.1);border:1px solid var(--line)}
+
+/* expandable detail */
+.detail{
+  max-height:0;overflow:hidden;transition:max-height .35s ease;
+}
+.detail.open{max-height:600px}
+.detail-inner{padding-top:14px;margin-top:12px;border-top:1px dashed var(--line)}
+
+.example{
+  background:var(--bg2);border-radius:12px;padding:10px 12px;margin-bottom:10px;
+}
+.example .de{direction:ltr;font-family:'Manrope';color:#dfe6f3;font-size:.95rem}
+.example .fa{margin-top:3px;font-size:.92rem;color:var(--muted)}
+
+.relrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.rellabel{font-size:.78rem;color:var(--muted);min-width:80px}
+.chip{
+  font-family:'Manrope';font-weight:600;font-size:.86rem;
+  padding:4px 11px;border-radius:9px;cursor:pointer;transition:.15s;direction:ltr;
+}
+.chip-syn{color:var(--syn);background:rgba(92,193,196,.12);border:1px solid rgba(92,193,196,.25)}
+.chip-syn:hover{background:rgba(92,193,196,.22)}
+.chip-ant{color:var(--ant);background:rgba(255,138,107,.12);border:1px solid rgba(255,138,107,.25)}
+.chip-ant:hover{background:rgba(255,138,107,.22)}
+
+.note{
+  margin-top:12px;background:linear-gradient(135deg,rgba(245,181,68,.1),rgba(245,181,68,.03));
+  border:1px solid rgba(245,181,68,.25);border-radius:12px;padding:10px 13px;
+}
+.note .t{color:var(--accent);font-weight:700;font-size:.82rem;margin-bottom:4px}
+.note .b{font-size:.92rem;color:var(--txt);line-height:1.7}
+
+.empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:1rem}
+.empty .big{font-size:2.4rem;margin-bottom:10px;opacity:.5}
+
+.legend{display:flex;gap:14px;justify-content:center;margin:22px 0 6px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)}
+.dot{width:11px;height:11px;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Wörterbuch <span class="ar">·  واژه‌نامه</span></div>
+    <div class="sub">دیکشنری آفلاین آلمانی ⇄ دری / فارسی</div>
+    <div class="count" id="count"></div>
+  </header>
+
+  <div class="searchbox">
+    <input id="search" type="text" placeholder="جستجو به آلمانی یا دری…  (Haus / خانه)" autocomplete="off">
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <div class="legend">
+    <div class="leg"><span class="dot" style="background:var(--der)"></span> der (مذکر)</div>
+    <div class="leg"><span class="dot" style="background:var(--die)"></span> die (مؤنث)</div>
+    <div class="leg"><span class="dot" style="background:var(--das)"></span> das (خنثی)</div>
+  </div>
+  <div class="legend" style="margin-top:6px">
+    <div class="leg"><span class="dot" style="background:#ff9d57"></span> عامیانه</div>
+    <div class="leg"><span class="dot" style="background:#b58cff"></span> رسمی/کتابی</div>
+    <div class="leg"><span class="dot" style="background:#8b94a8"></span> خنثی</div>
+  </div>
+</div>
+
+<!-- ====================================================================
+     داده لغات — این بخش جداست. برای اضافه کردن لغات جدید فقط همینجا
+     اضافه کن، به بقیه کد دست نزن. بعداً میشود این را به فایل words.json
+     جدا منتقل کرد و هزاران لغت داخلش ریخت.
+     ساختار هر لغت:
+       de       : لغت آلمانی
+       art      : آرتیکل (der/die/das یا "" برای فعل/صفت)
+       plural   : جمع (اختیاری)
+       pos      : نوع کلمه (Nomen/Verb/Adjektiv...)
+       reg      : سطح زبانی (اختیاری) — "umg"=عامیانه ، "form"=رسمی/کتابی ، "neu"=خنثی
+       fa       : معنی دری/فارسی — برای چند معنا با ؛ جدا کن: "دیدن؛ ملاقات کردن"
+       ex       : [{de:"جمله", fa:"ترجمه"}]  مثال (اختیاری)
+       syn      : ["مشابه‌ها"]   (اختیاری)
+       ant      : ["متضادها"]    (اختیاری)
+       note     : "نکته طلایی / فرق با لغت مشابه"  (اختیاری)
+==================================================================== -->
+<script>
+const WORDS = [
+  {de:"Haus", art:"das", plural:"Häuser", pos:"Nomen", fa:"خانه", 
+   ex:[{de:"Das ist mein Haus.", fa:"این خانهٔ من است."}],
+   syn:["Gebäude","Wohnung"], ant:[]},
+
+  {de:"Wohnung", art:"die", plural:"Wohnungen", pos:"Nomen", fa:"آپارتمان، منزل",
+   ex:[{de:"Ich suche eine Wohnung.", fa:"دنبال یک آپارتمان میگردم."}],
+   syn:["Haus"], ant:[],
+   note:"Wohnung = آپارتمان (بخشی از یک ساختمان) ولی Haus = خانهٔ مستقل."},
+
+  {de:"Arbeit", art:"die", plural:"Arbeiten", pos:"Nomen", fa:"کار؛ شغل؛ زحمت؛ تکلیف(درسی)",
+   ex:[{de:"Ich gehe zur Arbeit.", fa:"به سرِ کار میروم."}],
+   syn:["Job","Beruf"], ant:["Freizeit"]},
+
+  {de:"arbeiten", art:"", pos:"Verb", fa:"کار کردن",
+   ex:[{de:"Ich arbeite im Krankenhaus.", fa:"در شفاخانه کار میکنم."}],
+   syn:[], ant:["ruhen"]},
+
+  {de:"groß", art:"", pos:"Adjektiv", fa:"بزرگ، بلند(قد)",
+   ex:[{de:"Das Haus ist sehr groß.", fa:"خانه خیلی بزرگ است."}],
+   syn:["riesig"], ant:["klein"]},
+
+  {de:"klein", art:"", pos:"Adjektiv", fa:"کوچک، خرد",
+   ex:[{de:"Die Wohnung ist klein.", fa:"آپارتمان کوچک است."}],
+   syn:["winzig"], ant:["groß"]},
+
+  {de:"Tag", art:"der", plural:"Tage", pos:"Nomen", fa:"روز",
+   ex:[{de:"Guten Tag!", fa:"روز بخیر!"}],
+   syn:[], ant:["Nacht"]},
+
+  {de:"Nacht", art:"die", plural:"Nächte", pos:"Nomen", fa:"شب",
+   ex:[{de:"Gute Nacht!", fa:"شب بخیر!"}],
+   syn:[], ant:["Tag"]},
+
+  {de:"Wasser", art:"das", plural:"", pos:"Nomen", fa:"آب",
+   ex:[{de:"Ich trinke Wasser.", fa:"آب مینوشم."}],
+   syn:[], ant:[]},
+
+  {de:"essen", art:"", pos:"Verb", fa:"خوردن",
+   ex:[{de:"Wir essen zu Mittag.", fa:"ناهار میخوریم."}],
+   syn:["speisen"], ant:[]},
+
+  {de:"sehen", art:"", pos:"Verb", fa:"دیدن؛ متوجه شدن؛ ملاقات کردن",
+   ex:[{de:"Ich sehe einen Vogel.", fa:"یک پرنده میبینم."}],
+   syn:["schauen","gucken"], ant:[],
+   note:"sehen = دیدن (متوجه شدن با چشم). schauen/gucken = نگاه کردن (با قصد و توجه)."},
+
+  {de:"schauen", art:"", pos:"Verb", reg:"neu", fa:"نگاه کردن",
+   ex:[{de:"Schau mal hier!", fa:"اینجا را نگاه کن!"}],
+   syn:["sehen","gucken"], ant:[]},
+
+  {de:"gucken", art:"", pos:"Verb", reg:"umg", fa:"نگاه کردن (عامیانه)",
+   ex:[{de:"Guck mal!", fa:"ببین!"}],
+   syn:["schauen","sehen"], ant:[],
+   note:"gucken خیلی عامیانه است (در گفتار روزمره). در نوشتار رسمی از sehen یا betrachten استفاده کن."},
+
+  {de:"erblicken", art:"", pos:"Verb", reg:"form", fa:"دیدن؛ مشاهده کردن (ادبی)",
+   ex:[{de:"Er erblickte das Meer.", fa:"او دریا را دید."}],
+   syn:["sehen"], ant:[],
+   note:"erblicken لغت کتابی و ادبی است. در گفتار روزمره استفاده نمیشود — به جایش sehen بگو."},
+
+  {de:"Krankenhaus", art:"das", plural:"Krankenhäuser", pos:"Nomen", fa:"شفاخانه، بیمارستان",
+   ex:[{de:"Sie arbeitet im Krankenhaus.", fa:"او در شفاخانه کار میکند."}],
+   syn:["Klinik"], ant:[]},
+
+  {de:"Arzt", art:"der", plural:"Ärzte", pos:"Nomen", fa:"داکتر (مرد)",
+   ex:[{de:"Der Arzt ist freundlich.", fa:"داکتر مهربان است."}],
+   syn:["Mediziner"], ant:["Patient"]},
+
+  {de:"Patient", art:"der", plural:"Patienten", pos:"Nomen", fa:"مریض، بیمار",
+   ex:[{de:"Der Patient braucht Hilfe.", fa:"مریض به کمک نیاز دارد."}],
+   syn:["Kranke"], ant:["Arzt"]},
+
+  {de:"helfen", art:"", pos:"Verb", fa:"کمک کردن",
+   ex:[{de:"Kannst du mir helfen?", fa:"میتوانی به من کمک کنی؟"}],
+   syn:["unterstützen"], ant:[]},
+
+  {de:"Pflege", art:"die", plural:"", pos:"Nomen", fa:"پرستاری، مراقبت",
+   ex:[{de:"Die Pflege der Patienten ist wichtig.", fa:"مراقبت از مریضان مهم است."}],
+   syn:["Betreuung"], ant:[]},
+
+  {de:"gut", art:"", pos:"Adjektiv", fa:"خوب",
+   ex:[{de:"Das Essen ist gut.", fa:"غذا خوب است."}],
+   syn:["prima","toll"], ant:["schlecht"]},
+
+  {de:"schlecht", art:"", pos:"Adjektiv", fa:"بد",
+   ex:[{de:"Das Wetter ist schlecht.", fa:"هوا بد است."}],
+   syn:["schlimm"], ant:["gut"]},
+
+  {de:"kommen", art:"", pos:"Verb", fa:"آمدن",
+   ex:[{de:"Woher kommst du?", fa:"از کجا می‌آیی؟"}],
+   syn:[], ant:["gehen"]},
+
+  {de:"gehen", art:"", pos:"Verb", fa:"رفتن",
+   ex:[{de:"Ich gehe nach Hause.", fa:"به خانه میروم."}],
+   syn:["laufen"], ant:["kommen"]},
+];
+</script>
+
+<script>
+const $results = document.getElementById('results');
+const $search  = document.getElementById('search');
+const $count   = document.getElementById('count');
+$count.textContent = WORDS.length + " لغت  ·  قابل گسترش";
+
+const artClass = a => a==="der"?"a-der":a==="die"?"a-die":a==="das"?"a-das":"a-none";
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE'; u.rate = .9;
+  speechSynthesis.speak(u);
+}
+
+function norm(s){return (s||"").toLowerCase().replace(/[äÄ]/g,'a').replace(/[öÖ]/g,'o').replace(/[üÜ]/g,'u').replace(/ß/g,'ss').trim();}
+
+function matches(w, q){
+  const nq = norm(q);
+  if(!nq) return true;
+  return norm(w.de).includes(nq) || (w.fa||"").includes(q.trim());
+}
+
+// برچسب سطح زبانی (Register)
+function regBadge(reg){
+  if(!reg) return "";
+  const map = {
+    "عامیانه":"reg-umg", "umg":"reg-umg",
+    "رسمی":"reg-form", "form":"reg-form",
+    "خنثی":"reg-neu", "neu":"reg-neu"
+  };
+  const labelMap = {"umg":"عامیانه","form":"رسمی","neu":"خنثی"};
+  const label = labelMap[reg] || reg;
+  const cls = map[reg] || "reg-neu";
+  return `<span class="reg ${cls}">${label}</span>`;
+}
+
+function findWord(de){ return WORDS.find(w => norm(w.de)===norm(de)); }
+
+// چند معنا را زیبا نمایش میدهد: با ، یا ؛ جدا شده باشند
+function renderMeanings(fa){
+  const parts = (fa||"").split(/[،؛]/).map(s=>s.trim()).filter(Boolean);
+  if(parts.length <= 1) return fa;
+  return parts.map(p=>`<span class="meaning">${p}</span>`).join('');
+}
+
+function render(list){
+  if(list.length===0){
+    $results.innerHTML = `<div class="empty"><div class="big">⌕</div>لغتی پیدا نشد.<br>به آلمانی یا دری جستجو کن.</div>`;
+    return;
+  }
+  $results.innerHTML = "";
+  list.forEach(w=>{
+    const card = document.createElement('div');
+    card.className='card';
+    const art = w.art ? `<span class="artikel ${artClass(w.art)}">${w.art}</span>` : "";
+    const plural = w.plural ? `<span class="plural">· Pl: die ${w.plural}</span>` : "";
+
+    let detail = `<div class="detail"><div class="detail-inner">`;
+    if(w.ex && w.ex.length){
+      w.ex.forEach(e=> detail += `<div class="example"><div class="de">${e.de}</div><div class="fa">${e.fa}</div></div>`);
+    }
+    if(w.syn && w.syn.length){
+      detail += `<div class="relrow"><span class="rellabel">مشابه (Synonym):</span>`;
+      w.syn.forEach(s=> detail += `<span class="chip chip-syn" data-go="${s}">${s}</span>`);
+      detail += `</div>`;
+    }
+    if(w.ant && w.ant.length){
+      detail += `<div class="relrow"><span class="rellabel">متضاد (Gegenteil):</span>`;
+      w.ant.forEach(s=> detail += `<span class="chip chip-ant" data-go="${s}">${s}</span>`);
+      detail += `</div>`;
+    }
+    if(w.note){
+      detail += `<div class="note"><div class="t">★ نکته طلایی</div><div class="b">${w.note}</div></div>`;
+    }
+    detail += `</div></div>`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        ${art}
+        <span class="word">${w.de}</span>${plural}
+        <button class="speak" title="تلفظ">🔊</button>
+      </div>
+      <div class="fa">${renderMeanings(w.fa)}</div>
+      <span class="pos">${w.pos||""}</span>${regBadge(w.reg)}
+      ${detail}`;
+
+    card.querySelector('.speak').addEventListener('click', e=>{ e.stopPropagation(); speak(w.de); });
+    card.addEventListener('click', e=>{
+      if(e.target.dataset.go){
+        const target = findWord(e.target.dataset.go);
+        if(target){ $search.value = target.de; doSearch(); window.scrollTo({top:0,behavior:'smooth'}); }
+        return;
+      }
+      card.querySelector('.detail').classList.toggle('open');
+    });
+    $results.appendChild(card);
+  });
+}
+
+function doSearch(){
+  const q = $search.value;
+  render(WORDS.filter(w=>matches(w,q)).sort((a,b)=>a.de.localeCompare(b.de)));
+}
+
+$search.addEventListener('input', doSearch);
+render([...WORDS].sort((a,b)=>a.de.localeCompare(b.de)));
+</script>
+</body>
+</html>
