@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دیکشنری آلمانی ⇄ دری</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0f16;--bg2:#11151f;--card:#161b27;--card-h:#1c2230;--line:#242b3a;
+  --txt:#e8ecf4;--muted:#8b94a8;--accent:#f5b544;
+  --der:#4d9bff;--die:#ff6fa5;--das:#3ed68a;--syn:#5cc1c4;--ant:#ff8a6b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:radial-gradient(1200px 600px at 50% -10%, #1a2030 0%, var(--bg) 60%);
+  color:var(--txt);font-family:'Vazirmatn',sans-serif;min-height:100vh;padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+header{text-align:center;padding:26px 0 18px}
+.logo{font-family:'Manrope',sans-serif;font-weight:800;font-size:1.7rem;letter-spacing:.5px;
+  background:linear-gradient(120deg,var(--accent),#ffd98a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.logo .ar{font-family:'Vazirmatn';font-weight:700}
+.sub{color:var(--muted);font-size:.82rem;margin-top:4px}
+.count{color:var(--muted);font-size:.72rem;margin-top:2px;opacity:.7}
+.searchbox{position:sticky;top:10px;z-index:20;margin:10px 0 18px}
+.searchbox input{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:15px 18px;color:var(--txt);font-family:'Vazirmatn';font-size:1.05rem;outline:none;transition:.2s;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,181,68,.12),0 8px 24px rgba(0,0,0,.4)}
+.searchbox input::placeholder{color:var(--muted)}
+.results{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--accent);opacity:0;transition:.2s}
+.card:hover{background:var(--card-h);transform:translateY(-2px);border-color:#33415c}
+.card:hover::before{opacity:.9}
+.card-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;direction:ltr;justify-content:flex-start}
+.artikel{font-family:'Manrope';font-weight:800;font-size:.92rem;padding:2px 9px;border-radius:8px}
+.a-der{color:var(--der);background:rgba(77,155,255,.13)}
+.a-die{color:var(--die);background:rgba(255,111,165,.13)}
+.a-das{color:var(--das);background:rgba(62,214,138,.13)}
+.a-none{color:var(--muted);background:rgba(139,148,168,.12)}
+.word{font-family:'Manrope';font-weight:700;font-size:1.35rem;color:#fff;direction:ltr}
+.plural{color:var(--muted);font-size:.8rem;direction:ltr;font-family:'Manrope'}
+.speak{margin-inline-start:auto;background:none;border:1px solid var(--line);color:var(--accent);border-radius:10px;width:36px;height:36px;font-size:1rem;cursor:pointer;transition:.15s;flex-shrink:0}
+.speak:hover{background:rgba(245,181,68,.12);border-color:var(--accent)}
+.fa{font-size:1.12rem;margin-top:8px;color:var(--txt);text-align:right;display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end}
+.meaning{background:rgba(245,181,68,.08);border:1px solid rgba(245,181,68,.18);border-radius:9px;padding:2px 11px;font-size:.98rem;color:#f0d9a8}
+.pos{display:inline-block;color:var(--muted);font-size:.72rem;margin-top:6px;border:1px solid var(--line);padding:1px 8px;border-radius:6px}
+.reg{display:inline-block;font-size:.72rem;margin-top:6px;margin-inline-start:6px;padding:1px 9px;border-radius:6px;font-weight:600}
+.reg-umg{color:#ff9d57;background:rgba(255,157,87,.12);border:1px solid rgba(255,157,87,.3)}
+.reg-form{color:#b58cff;background:rgba(181,140,255,.12);border:1px solid rgba(181,140,255,.3)}
+.reg-neu{color:#8b94a8;background:rgba(139,148,168,.1);border:1px solid var(--line)}
+.detail{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.detail.open{max-height:600px}
+.detail-inner{padding-top:14px;margin-top:12px;border-top:1px dashed var(--line)}
+.example{background:var(--bg2);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.example .de{direction:ltr;font-family:'Manrope';color:#dfe6f3;font-size:.95rem}
+.example .fa{margin-top:3px;font-size:.92rem;color:var(--muted);display:block;text-align:right}
+.relrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.rellabel{font-size:.78rem;color:var(--muted);min-width:80px}
+.chip{font-family:'Manrope';font-weight:600;font-size:.86rem;padding:4px 11px;border-radius:9px;cursor:pointer;transition:.15s;direction:ltr}
+.chip-syn{color:var(--syn);background:rgba(92,193,196,.12);border:1px solid rgba(92,193,196,.25)}
+.chip-syn:hover{background:rgba(92,193,196,.22)}
+.chip-ant{color:var(--ant);background:rgba(255,138,107,.12);border:1px solid rgba(255,138,107,.25)}
+.chip-ant:hover{background:rgba(255,138,107,.22)}
+.note{margin-top:12px;background:linear-gradient(135deg,rgba(245,181,68,.1),rgba(245,181,68,.03));border:1px solid rgba(245,181,68,.25);border-radius:12px;padding:10px 13px}
+.note .t{color:var(--accent);font-weight:700;font-size:.82rem;margin-bottom:4px}
+.note .b{font-size:.92rem;color:var(--txt);line-height:1.7}
+.empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:1rem}
+.empty .big{font-size:2.4rem;margin-bottom:10px;opacity:.5}
+.legend{display:flex;gap:14px;justify-content:center;margin:22px 0 6px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)}
+.dot{width:11px;height:11px;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Wörterbuch <span class="ar">·  واژه‌نامه</span></div>
+    <div class="sub">دیکشنری آفلاین آلمانی ⇄ دری / فارسی</div>
+    <div class="count" id="count">در حال بارگذاری…</div>
+  </header>
+  <div class="searchbox">
+    <input id="search" type="text" placeholder="جستجو به آلمانی یا دری…  (Haus / خانه)" autocomplete="off">
+  </div>
+  <div class="results" id="results"></div>
+  <div class="legend">
+    <div class="leg"><span class="dot" style="background:var(--der)"></span> der (مذکر)</div>
+    <div class="leg"><span class="dot" style="background:var(--die)"></span> die (مؤنث)</div>
+    <div class="leg"><span class="dot" style="background:var(--das)"></span> das (خنثی)</div>
+  </div>
+  <div class="legend" style="margin-top:6px">
+    <div class="leg"><span class="dot" style="background:#ff9d57"></span> عامیانه</div>
+    <div class="leg"><span class="dot" style="background:#b58cff"></span> رسمی/کتابی</div>
+    <div class="leg"><span class="dot" style="background:#8b94a8"></span> خنثی</div>
+  </div>
+</div>
+
+<script>
+let WORDS = [];
+const $results = document.getElementById('results');
+const $search  = document.getElementById('search');
+const $count   = document.getElementById('count');
+
+const artClass = a => a==="der"?"a-der":a==="die"?"a-die":a==="das"?"a-das":"a-none";
+function norm(s){return (s||"").toLowerCase().replace(/[äÄ]/g,'a').replace(/[öÖ]/g,'o').replace(/[üÜ]/g,'u').replace(/ß/g,'ss').trim();}
+
+function dedupe(list){
+  const seen = new Set(); const out = [];
+  for(const w of list){
+    const key = norm(w.de);
+    if(seen.has(key)) continue;
+    seen.add(key); out.push(w);
+  }
+  return out;
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='de-DE'; u.rate=.9; speechSynthesis.speak(u);
+}
+function renderMeanings(fa){
+  const parts=(fa||"").split(/[،؛]/).map(s=>s.trim()).filter(Boolean);
+  if(parts.length<=1) return fa;
+  return parts.map(p=>`<span class="meaning">${p}</span>`).join('');
+}
+function regBadge(reg){
+  if(!reg) return "";
+  const labelMap={"umg":"عامیانه","form":"رسمی","neu":"خنثی"};
+  const clsMap={"umg":"reg-umg","form":"reg-form","neu":"reg-neu"};
+  return `<span class="reg ${clsMap[reg]||'reg-neu'}">${labelMap[reg]||reg}</span>`;
+}
+function findWord(de){ return WORDS.find(w=>norm(w.de)===norm(de)); }
+function matches(w,q){
+  const nq=norm(q); if(!nq) return true;
+  return norm(w.de).includes(nq) || (w.fa||"").includes(q.trim());
+}
+
+function render(list){
+  if(list.length===0){
+    $results.innerHTML=`<div class="empty"><div class="big">⌕</div>لغتی پیدا نشد.<br>به آلمانی یا دری جستجو کن.</div>`;
+    return;
+  }
+  $results.innerHTML="";
+  list.forEach(w=>{
+    const card=document.createElement('div'); card.className='card';
+    const art=w.art?`<span class="artikel ${artClass(w.art)}">${w.art}</span>`:"";
+    const plural=w.plural?`<span class="plural">· Pl: die ${w.plural}</span>`:"";
+    let detail=`<div class="detail"><div class="detail-inner">`;
+    if(w.ex&&w.ex.length) w.ex.forEach(e=>detail+=`<div class="example"><div class="de">${e.de}</div><span class="fa">${e.fa}</span></div>`);
+    if(w.syn&&w.syn.length){detail+=`<div class="relrow"><span class="rellabel">مشابه (Synonym):</span>`;w.syn.forEach(s=>detail+=`<span class="chip chip-syn" data-go="${s}">${s}</span>`);detail+=`</div>`;}
+    if(w.ant&&w.ant.length){detail+=`<div class="relrow"><span class="rellabel">متضاد (Gegenteil):</span>`;w.ant.forEach(s=>detail+=`<span class="chip chip-ant" data-go="${s}">${s}</span>`);detail+=`</div>`;}
+    if(w.note) detail+=`<div class="note"><div class="t">★ نکته طلایی</div><div class="b">${w.note}</div></div>`;
+    detail+=`</div></div>`;
+    card.innerHTML=`<div class="card-top">${art}<span class="word">${w.de}</span>${plural}<button class="speak" title="تلفظ">🔊</button></div>
+      <div class="fa">${renderMeanings(w.fa)}</div>
+      <span class="pos">${w.pos||""}</span>${regBadge(w.reg)}${detail}`;
+    card.querySelector('.speak').addEventListener('click',e=>{e.stopPropagation();speak(w.de);});
+    card.addEventListener('click',e=>{
+      if(e.target.dataset.go){
+        const t=findWord(e.target.dataset.go);
+        if(t){$search.value=t.de;doSearch();window.scrollTo({top:0,behavior:'smooth'});}
+        return;
+      }
+      card.querySelector('.detail').classList.toggle('open');
+    });
+    $results.appendChild(card);
+  });
+}
+function doSearch(){
+  const q=$search.value;
+  render(WORDS.filter(w=>matches(w,q)).sort((a,b)=>a.de.localeCompare(b.de)));
+}
+$search.addEventListener('input',doSearch);
+
+fetch('words.json')
+  .then(r=>r.json())
+  .then(data=>{
+    WORDS = dedupe(data);
+    $count.textContent = WORDS.length + " لغت  ·  قابل گسترش";
+    render([...WORDS].sort((a,b)=>a.de.localeCompare(b.de)));
+  })
+  .catch(err=>{
+    $count.textContent = "خطا در بارگذاری لغات";
+    $results.innerHTML=`<div class="empty"><div class="big">⚠</div>فایل words.json پیدا نشد.<br>مطمئن شو هر دو فایل در GitHub کنار هم باشند.</div>`;
+  });
+</script>
+</body>
+</html>
