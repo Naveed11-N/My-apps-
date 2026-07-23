@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✂️ PDF Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--bg:#08090f;--s1:#0e1018;--s2:#131520;--s3:#181b28;--bd:#1e2235;--bd2:#272c42;--ac:#6366f1;--ac2:#4f46e5;--ac3:#a5b4fc;--gr:#22c55e;--rd:#ef4444;--or:#f59e0b;--tx:#e8edf8;--t2:#8892b0;--t3:#4a5578;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;direction:rtl;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 50% 35% at 15% 5%,rgba(99,102,241,.07) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:14px 12px 60px;}
+
+/* Header */
+.hdr{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--bd);border-radius:18px;padding:14px 18px;margin-bottom:12px;}
+.hlogo{width:46px;height:46px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(99,102,241,.3);}
+.htx h1{font-size:18px;font-weight:800;}
+.htx p{font-size:11px;color:var(--t3);margin-top:2px;}
+.bgs{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.bg{padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700;border:1px solid rgba(34,197,94,.3);color:var(--gr);background:rgba(34,197,94,.07);}
+
+/* Upload */
+.upz{border:2px dashed var(--bd2);border-radius:16px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--s1);position:relative;margin-bottom:12px;}
+.upz:hover,.upz.drag{border-color:var(--ac);background:rgba(99,102,241,.04);}
+.upz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.upz-i{font-size:38px;margin-bottom:10px;}
+.upz h2{font-size:15px;font-weight:700;margin-bottom:4px;}
+.upz p{font-size:12px;color:var(--t3);}
+
+/* Info bar */
+.inf{display:none;background:var(--s2);border:1px solid var(--bd);border-radius:14px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:var(--t3);display:none;gap:12px;flex-wrap:wrap;align-items:center;}
+.inf.show{display:flex;}
+.iv{font-weight:700;color:var(--ac3);}
+
+/* Progress */
+.prg{display:none;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin-bottom:12px;}
+.prg.show{display:block;}
+.prl{font-size:12px;color:var(--t2);margin-bottom:6px;}
+.prb{background:var(--s3);border-radius:100px;height:5px;overflow:hidden;}
+.prf{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac3));border-radius:100px;transition:width .3s;width:0%;}
+
+/* ── MAIN SECTIONS ── */
+.section{background:var(--s2);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px;display:none;}
+.section.show{display:block;}
+.sec-title{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* Number input range */
+.range-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.range-label{font-size:12px;color:var(--t3);white-space:nowrap;}
+.num-inp{background:var(--s1);border:1.5px solid var(--bd2);border-radius:10px;color:var(--tx);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:700;padding:8px 12px;outline:none;width:80px;text-align:center;transition:border-color .2s;}
+.num-inp:focus{border-color:var(--ac);}
+.range-sep{color:var(--t3);font-size:13px;}
+
+/* Page list input */
+.pg-inp{width:100%;background:var(--s1);border:1.5px solid var(--bd2);border-radius:10px;color:var(--tx);font-family:'Vazirmatn',sans-serif;font-size:13px;padding:10px 14px;outline:none;resize:none;height:60px;direction:ltr;transition:border-color .2s;margin-bottom:6px;}
+.pg-inp:focus{border-color:var(--ac);}
+.pg-hint{font-size:11px;color:var(--t3);}
+
+/* Action buttons */
+.act-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:12px;border:1px solid var(--bd2);background:var(--s3);color:var(--t2);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;width:100%;margin-bottom:8px;}
+.act-btn:hover{border-color:var(--ac);color:var(--ac3);background:rgba(99,102,241,.08);}
+.act-btn.danger{border-color:rgba(239,68,68,.3);color:var(--rd);}
+.act-btn.danger:hover{background:rgba(239,68,68,.08);}
+.act-btn.primary{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:white;box-shadow:0 4px 14px rgba(99,102,241,.3);}
+.act-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.4);}
+.act-btn.success{background:linear-gradient(135deg,#16a34a,#15803d);border-color:transparent;color:white;box-shadow:0 4px 14px rgba(34,197,94,.3);}
+.act-btn.success:hover{transform:translateY(-1px);}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+
+/* Preview */
+.prev-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-top:10px;display:none;}
+.prev-wrap.show{display:block;}
+.prev-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd);}
+.prev-nav-btns{display:flex;gap:6px;}
+.prev-btn{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;color:var(--t2);width:32px;height:32px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.prev-btn:hover{border-color:var(--ac);color:var(--ac3);}
+.prev-btn:disabled{opacity:.3;cursor:not-allowed;}
+.prev-pnum{font-size:13px;font-weight:700;color:var(--ac3);}
+.prev-canvas-wrap{background:#f0f0f0;display:flex;align-items:center;justify-content:center;min-height:300px;padding:8px;}
+.prev-canvas-wrap canvas{max-width:100%;max-height:500px;display:block;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+.prev-actions{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--bd);flex-wrap:wrap;}
+.pa-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--bd2);background:var(--s2);color:var(--t2);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;min-width:80px;}
+.pa-btn:hover{border-color:var(--ac);color:var(--ac3);}
+.pa-btn.del{border-color:rgba(239,68,68,.3);color:var(--rd);}
+.pa-btn.del:hover{background:rgba(239,68,68,.08);}
+.pa-btn.keep{border-color:rgba(34,197,94,.3);color:var(--gr);}
+.pa-btn.keep:hover{background:rgba(34,197,94,.08);}
+
+/* Marked pages chips */
+.marked-wrap{margin-top:10px;}
+.marked-title{font-size:11px;color:var(--t3);margin-bottom:6px;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;}
+.chip.del{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--rd);}
+.chip.keep{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--gr);}
+.chip:hover{opacity:.8;}
+
+/* Rotation modal */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:center;justify-content:center;padding:20px;}
+.mov.show{display:flex;}
+.mod{background:var(--s2);border:1px solid var(--bd2);border-radius:20px;padding:22px;width:100%;max-width:340px;}
+.mod h3{font-size:15px;font-weight:800;margin-bottom:14px;}
+.rot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ro{background:var(--s3);border:2px solid var(--bd);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .2s;}
+.ro:hover,.ro.act{border-color:var(--ac);background:rgba(99,102,241,.08);}
+.ro .ri{font-size:22px;margin-bottom:5px;}
+.ro .rl{font-size:12px;font-weight:700;color:var(--t2);}
+.ro.act .rl{color:var(--ac3);}
+.mbtns{display:flex;gap:8px;}
+.mbtn{flex:1;padding:10px;border-radius:11px;border:1px solid var(--bd2);background:var(--s3);color:var(--t2);font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.mbtn.cf{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:white;}
+
+/* Add pages modal */
+.atabs{display:flex;gap:6px;margin-bottom:12px;}
+.atab{flex:1;padding:8px;border-radius:10px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+.atab.act{border-color:var(--ac);color:var(--ac3);background:rgba(99,102,241,.1);}
+.adrop{border:2px dashed var(--bd2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;position:relative;transition:all .2s;margin-bottom:8px;}
+.adrop:hover{border-color:var(--ac);}
+.adrop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.adrop-i{font-size:26px;margin-bottom:5px;}
+.adrop-t{font-size:12px;font-weight:600;}
+.ast{font-size:11px;color:var(--t3);min-height:16px;}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);padding:9px 20px;border-radius:100px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{background:var(--gr);color:#052010;}
+.toast.er{background:var(--rd);color:white;}
+.toast.in{background:var(--ac);color:white;}
+
+.divider{height:1px;background:var(--bd);margin:12px 0;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <div class="hlogo">✂️</div>
+  <div class="htx">
+    <h1>PDF Editor</h1>
+    <p>سبک، سریع، رایگان — بدون آپلود</p>
+    <div class="bgs">
+      <span class="bg">✓ رایگان</span>
+      <span class="bg">✓ بدون محدودیت</span>
+      <span class="bg">✓ حریم خصوصی</span>
+    </div>
+  </div>
+</div>
+
+<!-- Upload -->
+<div class="upz" id="upz">
+  <input type="file" id="fi" accept=".pdf" onchange="loadPDF(this.files[0])">
+  <div class="upz-i">📄</div>
+  <h2>فایل PDF را اینجا بینداز</h2>
+  <p>یا کلیک کن · هر سایزی قبول است</p>
+</div>
+
+<!-- Progress -->
+<div class="prg" id="prg"><div class="prl" id="prl">...</div><div class="prb"><div class="prf" id="prf"></div></div></div>
+
+<!-- Info -->
+<div class="inf" id="inf">
+  <span>📄 صفحات: <span class="iv" id="pc">0</span></span>
+  <span>📦 حجم: <span class="iv" id="fs">-</span></span>
+  <span>🗑️ حذف: <span class="iv" id="dc" style="color:var(--rd)">0</span></span>
+  <span>✓ نگه‌دار: <span class="iv" id="kc" style="color:var(--gr)">0</span></span>
+</div>
+
+<!-- ── PREVIEW SECTION ── -->
+<div class="section show" id="secPrev" style="display:none;">
+  <div class="sec-title">👁️ پیش‌نمایش صفحه</div>
+  <div class="range-row">
+    <span class="range-label">صفحه:</span>
+    <input type="number" class="num-inp" id="prevNum" min="1" value="1" oninput="previewPage(+this.value)">
+    <span class="range-sep">از <span id="totalPg">0</span></span>
+    <button class="act-btn" style="width:auto;padding:8px 14px;margin:0;" onclick="previewPage(+document.getElementById('prevNum').value)">نمایش</button>
+  </div>
+  <div class="prev-wrap" id="prevWrap">
+    <div class="prev-nav">
+      <div class="prev-nav-btns">
+        <button class="prev-btn" id="btnPrev" onclick="navPrev()">‹</button>
+        <button class="prev-btn" id="btnNext" onclick="navNext()">›</button>
+      </div>
+      <span class="prev-pnum" id="prevPnum">صفحه 1</span>
+      <div class="prev-nav-btns">
+        <button class="prev-btn" onclick="markDel(curPrev)" title="حذف این صفحه" style="color:var(--rd)">🗑</button>
+        <button class="prev-btn" onclick="markKeep(curPrev)" title="نگه‌داشتن" style="color:var(--gr)">✓</button>
+        <button class="prev-btn" onclick="showRotForPage(curPrev)" title="چرخش">↻</button>
+      </div>
+    </div>
+    <div class="prev-canvas-wrap"><canvas id="prevCanvas"></canvas></div>
+    <div class="prev-actions">
+      <button class="pa-btn del" onclick="markDel(curPrev)">🗑️ حذف این صفحه</button>
+      <button class="pa-btn keep" onclick="markKeep(curPrev)">✓ نگه‌داشتن</button>
+      <button class="pa-btn" onclick="clearMark(curPrev)">↩️ برگشت</button>
+      <button class="pa-btn" onclick="showRotForPage(curPrev)">↻ چرخش</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE BY RANGE ── -->
+<div class="section" id="secDel" style="display:none;">
+  <div class="sec-title">🗑️ حذف صفحات</div>
+
+  <div style="font-size:12px;color:var(--t3);margin-bottom:10px;">روش ۱ — محدوده صفحات</div>
+  <div class="range-row">
+    <span class="range-label">از صفحه</span>
+    <input type="number" class="num-inp" id="delFrom" min="1" value="1">
+    <span class="range-sep">تا</span>
+    <input type="number" class="num-inp" id="delTo" min="1" value="1">
+  </div>
+  <button class="act-btn danger" onclick="delRange()">🗑️ حذف این محدوده</button>
+
+  <div class="divider"></div>
+  <div style="font-size:12px;color:var(--t3);margin-bottom:8px;">روش ۲ — شماره صفحات دقیق</div>
+  <textarea class="pg-inp" id="delPages" placeholder="1, 5, 10, 15-20, 25"></textarea>
+  <div class="pg-hint">مثال: 1,3,5 یا 10-20 یا هر دو با هم: 1,3,10-20,25</div>
+  <button class="act-btn danger" style="margin-top:8px;" onclick="delByList()">🗑️ حذف صفحات وارد شده</button>
+
+  <div class="divider"></div>
+  <div style="font-size:12px;color:var(--t3);margin-bottom:8px;">روش ۳ — فقط این صفحات را نگه دار</div>
+  <textarea class="pg-inp" id="keepPages" placeholder="1, 5, 10-20"></textarea>
+  <div class="pg-hint">صفحاتی که می‌نویسی نگه داشته می‌شوند، بقیه حذف</div>
+  <button class="act-btn primary" style="margin-top:8px;" onclick="keepByList()">✓ فقط این صفحات بمانند</button>
+</div>
+
+<!-- ── ROTATE SECTION ── -->
+<div class="section" id="secRot" style="display:none;">
+  <div class="sec-title">↻ چرخش صفحات</div>
+  <div class="range-row">
+    <span class="range-label">از صفحه</span>
+    <input type="number" class="num-inp" id="rotFrom" min="1" value="1">
+    <span class="range-sep">تا</span>
+    <input type="number" class="num-inp" id="rotTo" min="1" value="1">
+  </div>
+  <div class="rot-grid" style="margin-bottom:10px;">
+    <div class="ro act" data-d="90" onclick="pickRot(this)"><div class="ri">↻</div><div class="rl">۹۰° راست</div></div>
+    <div class="ro" data-d="270" onclick="pickRot(this)"><div class="ri">↺</div><div class="rl">۹۰° چپ</div></div>
+    <div class="ro" data-d="180" onclick="pickRot(this)"><div class="ri">🔄</div><div class="rl">۱۸۰° وارونه</div></div>
+    <div class="ro" data-d="0" onclick="pickRot(this)"><div class="ri">⬆️</div><div class="rl">بازگشت اصل</div></div>
+  </div>
+  <button class="act-btn primary" onclick="applyRotRange()">↻ اعمال چرخش</button>
+</div>
+
+<!-- ── ADD SECTION ── -->
+<div class="section" id="secAdd" style="display:none;">
+  <div class="sec-title">➕ افزودن صفحات</div>
+  <div class="range-row">
+    <span class="range-label">بعد از صفحه:</span>
+    <input type="number" class="num-inp" id="addAfter" min="0" value="0">
+    <span class="range-sep" style="font-size:11px;">(0 = ابتدا)</span>
+  </div>
+  <div class="atabs">
+    <button class="atab act" id="tpdf" onclick="swTab('pdf')">📄 از PDF</button>
+    <button class="atab" id="timg" onclick="swTab('img')">🖼️ از تصویر</button>
+  </div>
+  <div id="ppdf">
+    <div class="adrop"><input type="file" id="apfi" accept=".pdf" onchange="hdlPdf(this.files[0])"><div class="adrop-i">📄</div><div class="adrop-t">فایل PDF انتخاب کن</div></div>
+    <div class="ast" id="aps">هنوز انتخاب نشده</div>
+  </div>
+  <div id="pimg" style="display:none;">
+    <div class="adrop"><input type="file" id="aifi" accept="image/jpeg,image/png,image/webp" multiple onchange="hdlImg(this.files)"><div class="adrop-i">🖼️</div><div class="adrop-t">تصاویر JPG/PNG انتخاب کن</div></div>
+    <div class="ast" id="ais">هنوز انتخاب نشده</div>
+  </div>
+  <button class="act-btn primary" style="margin-top:10px;" onclick="confAdd()">➕ افزودن</button>
+</div>
+
+<!-- ── MARKED PAGES ── -->
+<div class="section" id="secMarked" style="display:none;">
+  <div class="sec-title">📋 صفحات علامت‌گذاری شده</div>
+  <div id="markedContent"></div>
+  <button class="act-btn danger" style="margin-top:10px;" onclick="applyMarks()">✂️ اعمال و حذف صفحات علامت‌دار</button>
+</div>
+
+<!-- ── SAVE ── -->
+<div class="section" id="secSave" style="display:none;">
+  <div class="sec-title">💾 ذخیره PDF</div>
+  <div style="font-size:12px;color:var(--t3);margin-bottom:10px;" id="saveInfo">آماده برای ذخیره</div>
+  <button class="act-btn success" onclick="savePDF()">⬇️ دانلود PDF ویرایش شده</button>
+</div>
+
+<!-- Nav tabs -->
+<div id="navTabs" style="display:none;position:fixed;bottom:0;right:0;left:0;background:var(--s2);border-top:1px solid var(--bd);padding:8px 12px;z-index:100;">
+  <div style="display:flex;gap:6px;max-width:600px;margin:0 auto;">
+    <button class="mbtn" style="font-size:11px;padding:8px 4px;" onclick="showSec('secPrev')">👁️ نمایش</button>
+    <button class="mbtn" style="font-size:11px;padding:8px 4px;" onclick="showSec('secDel')">🗑️ حذف</button>
+    <button class="mbtn" style="font-size:11px;padding:8px 4px;" onclick="showSec('secRot')">↻ چرخش</button>
+    <button class="mbtn" style="font-size:11px;padding:8px 4px;" onclick="showSec('secAdd')">➕ افزودن</button>
+    <button class="mbtn" style="font-size:11px;padding:8px 4px;" onclick="showSec('secMarked')">📋 لیست</button>
+    <button class="mbtn cf" style="font-size:11px;padding:8px 4px;" onclick="showSec('secSave')">💾 ذخیره</button>
+  </div>
+</div>
+
+<!-- Rotation modal for single page -->
+<div class="mov" id="mrot">
+  <div class="mod">
+    <h3>↻ چرخش صفحه <span id="rotPageNum"></span></h3>
+    <div class="rot-grid">
+      <div class="ro act" data-d="90" onclick="pickRotSingle(this)"><div class="ri">↻</div><div class="rl">۹۰° راست</div></div>
+      <div class="ro" data-d="270" onclick="pickRotSingle(this)"><div class="ri">↺</div><div class="rl">۹۰° چپ</div></div>
+      <div class="ro" data-d="180" onclick="pickRotSingle(this)"><div class="ri">🔄</div><div class="rl">۱۸۰°</div></div>
+      <div class="ro" data-d="0" onclick="pickRotSingle(this)"><div class="ri">⬆️</div><div class="rl">اصل</div></div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn" onclick="closeRot()">لغو</button>
+      <button class="mbtn cf" onclick="applyRotSingle()">اعمال</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let pdfBytes=null, pdfDoc=null, fname='', totalPages=0;
+// pages[i] = { del: bool, rot: 0/90/180/270, keep: bool }
+let pageStates=[];
+let curPrev=1, selRot=90, selRotSingle=90, rotForPage=null;
+let addPdfB=null, addImgs=[], addTab='pdf';
+
+// ── Upload ──
+const upz=document.getElementById('upz');
+upz.addEventListener('dragover',e=>{e.preventDefault();upz.classList.add('drag');});
+upz.addEventListener('dragleave',()=>upz.classList.remove('drag'));
+upz.addEventListener('drop',e=>{e.preventDefault();upz.classList.remove('drag');loadPDF(e.dataTransfer.files[0]);});
+
+async function loadPDF(file){
+  if(!file||file.type!=='application/pdf'){toast('لطفاً فایل PDF انتخاب کن','er');return;}
+  fname=file.name;
+  showP('در حال بارگذاری...',10);
+  const buf=await file.arrayBuffer();
+  pdfBytes=new Uint8Array(buf);
+  showP('در حال خواندن صفحات...',50);
+  pdfDoc=await pdfjsLib.getDocument({data:pdfBytes}).promise;
+  totalPages=pdfDoc.numPages;
+  pageStates=Array.from({length:totalPages},()=>({del:false,rot:0,keep:false}));
+  document.getElementById('pc').textContent=totalPages;
+  document.getElementById('fs').textContent=fmtSz(file.size);
+  document.getElementById('totalPg').textContent=totalPages;
+  document.getElementById('delTo').value=totalPages;
+  document.getElementById('rotTo').value=totalPages;
+  document.getElementById('rotFrom').value=1;
+  document.getElementById('addAfter').max=totalPages;
+  document.getElementById('prevNum').max=totalPages;
+  document.getElementById('delFrom').max=totalPages;
+  document.getElementById('delTo').max=totalPages;
+  hideP();
+  upz.style.display='none';
+  document.getElementById('inf').classList.add('show');
+  document.getElementById('navTabs').style.display='block';
+  ['secPrev','secDel','secRot','secAdd','secMarked','secSave'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('secPrev').style.display='block';
+  document.getElementById('secSave').style.display='block';
+  updateSaveInfo();
+  await previewPage(1);
+  toast('✓ '+totalPages+' صفحه بارگذاری شد','in');
+}
+
+function showSec(id){
+  ['secPrev','secDel','secRot','secAdd','secMarked','secSave'].forEach(i=>{
+    const el=document.getElementById(i);
+    if(el) el.style.display=(i===id||i==='secSave')?'block':'none';
+  });
+  if(id==='secMarked') renderMarked();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Preview ──
+async function previewPage(n){
+  if(!pdfDoc) return;
+  n=Math.max(1,Math.min(totalPages,n));
+  curPrev=n;
+  document.getElementById('prevNum').value=n;
+  document.getElementById('prevPnum').textContent='صفحه '+n+' از '+totalPages;
+  document.getElementById('btnPrev').disabled=n<=1;
+  document.getElementById('btnNext').disabled=n>=totalPages;
+  document.getElementById('prevWrap').classList.add('show');
+  const page=await pdfDoc.getPage(n);
+  const rot=pageStates[n-1].rot;
+  const vp=page.getViewport({scale:1.2,rotation:rot});
+  const canvas=document.getElementById('prevCanvas');
+  canvas.width=vp.width; canvas.height=vp.height;
+  await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+  // Show mark status
+  const st=pageStates[n-1];
+  const wrap=document.getElementById('prevWrap');
+  wrap.style.border=st.del?'2px solid var(--rd)':st.keep?'2px solid var(--gr)':'1px solid var(--bd)';
+}
+
+function navPrev(){if(curPrev>1) previewPage(curPrev-1);}
+function navNext(){if(curPrev<totalPages) previewPage(curPrev+1);}
+
+// ── Mark pages ──
+function markDel(n){
+  pageStates[n-1].del=true; pageStates[n-1].keep=false;
+  updateCounts(); previewPage(n);
+  toast('صفحه '+n+' علامت حذف گرفت','er');
+}
+function markKeep(n){
+  pageStates[n-1].keep=true; pageStates[n-1].del=false;
+  updateCounts(); previewPage(n);
+  toast('صفحه '+n+' نگه داشته می‌شود','ok');
+}
+function clearMark(n){
+  pageStates[n-1].del=false; pageStates[n-1].keep=false;
+  updateCounts(); previewPage(n);
+  toast('علامت صفحه '+n+' پاک شد');
+}
+
+function updateCounts(){
+  const d=pageStates.filter(s=>s.del).length;
+  const k=pageStates.filter(s=>s.keep).length;
+  document.getElementById('dc').textContent=d;
+  document.getElementById('kc').textContent=k;
+  updateSaveInfo();
+}
+
+function updateSaveInfo(){
+  const d=pageStates.filter(s=>s.del).length;
+  const remaining=totalPages-d;
+  document.getElementById('saveInfo').textContent=`${totalPages} صفحه → بعد از حذف: ${remaining} صفحه باقی می‌ماند`;
+}
+
+// ── Delete by range ──
+function delRange(){
+  const f=+document.getElementById('delFrom').value;
+  const t=+document.getElementById('delTo').value;
+  if(f<1||t>totalPages||f>t){toast('محدوده نامعتبر','er');return;}
+  let c=0;
+  for(let i=f;i<=t;i++){pageStates[i-1].del=true;pageStates[i-1].keep=false;c++;}
+  updateCounts();
+  toast('✓ '+c+' صفحه علامت حذف گرفت');
+}
+
+// ── Delete by list ──
+function parsePageList(str){
+  const pages=new Set();
+  str.split(',').forEach(part=>{
+    part=part.trim();
+    if(part.includes('-')){
+      const [a,b]=part.split('-').map(Number);
+      for(let i=a;i<=b;i++) if(i>=1&&i<=totalPages) pages.add(i);
+    } else {
+      const n=parseInt(part);
+      if(n>=1&&n<=totalPages) pages.add(n);
+    }
+  });
+  return pages;
+}
+
+function delByList(){
+  const str=document.getElementById('delPages').value;
+  if(!str.trim()){toast('شماره صفحات را وارد کن','er');return;}
+  const pgs=parsePageList(str);
+  pgs.forEach(n=>{pageStates[n-1].del=true;pageStates[n-1].keep=false;});
+  updateCounts();
+  toast('✓ '+pgs.size+' صفحه علامت حذف گرفت');
+}
+
+function keepByList(){
+  const str=document.getElementById('keepPages').value;
+  if(!str.trim()){toast('شماره صفحاتی که باید بمانند را وارد کن','er');return;}
+  const keep=parsePageList(str);
+  for(let i=1;i<=totalPages;i++){
+    if(!keep.has(i)){pageStates[i-1].del=true;pageStates[i-1].keep=false;}
+    else{pageStates[i-1].del=false;pageStates[i-1].keep=true;}
+  }
+  updateCounts();
+  toast('✓ فقط '+keep.size+' صفحه نگه داشته می‌شود');
+}
+
+// ── Rotation ──
+function pickRot(el){document.querySelectorAll('#secRot .ro').forEach(o=>o.classList.remove('act'));el.classList.add('act');selRot=+el.dataset.d;}
+function applyRotRange(){
+  const f=+document.getElementById('rotFrom').value;
+  const t=+document.getElementById('rotTo').value;
+  if(f<1||t>totalPages||f>t){toast('محدوده نامعتبر','er');return;}
+  for(let i=f;i<=t;i++) pageStates[i-1].rot=selRot;
+  toast('✓ چرخش برای صفحات '+f+' تا '+t+' اعمال شد');
+  if(curPrev>=f&&curPrev<=t) previewPage(curPrev);
+}
+
+function showRotForPage(n){
+  rotForPage=n;
+  document.getElementById('rotPageNum').textContent=n;
+  document.getElementById('mrot').classList.add('show');
+}
+function closeRot(){document.getElementById('mrot').classList.remove('show');}
+function pickRotSingle(el){document.querySelectorAll('#mrot .ro').forEach(o=>o.classList.remove('act'));el.classList.add('act');selRotSingle=+el.dataset.d;}
+function applyRotSingle(){
+  if(rotForPage) pageStates[rotForPage-1].rot=selRotSingle;
+  closeRot();
+  toast('✓ چرخش صفحه '+rotForPage+' اعمال شد');
+  previewPage(rotForPage);
+}
+
+// ── Marked list ──
+function renderMarked(){
+  const del=[], keep=[];
+  pageStates.forEach((s,i)=>{if(s.del)del.push(i+1);if(s.keep)keep.push(i+1);});
+  let html='';
+  if(del.length){
+    html+=`<div class="marked-title" style="color:var(--rd);">🗑️ ${del.length} صفحه برای حذف:</div><div class="chips">`;
+    del.forEach(n=>{html+=`<span class="chip del" onclick="clearMark(${n});renderMarked()">✕ ${n}</span>`;});
+    html+='</div><div style="height:10px;"></div>';
+  }
+  if(keep.length){
+    html+=`<div class="marked-title" style="color:var(--gr);">✓ ${keep.length} صفحه نگه‌داشتنی:</div><div class="chips">`;
+    keep.forEach(n=>{html+=`<span class="chip keep" onclick="clearMark(${n});renderMarked()">✓ ${n}</span>`;});
+    html+='</div>';
+  }
+  if(!del.length&&!keep.length) html='<div style="color:var(--t3);font-size:12px;">هنوز هیچ صفحه‌ای علامت‌گذاری نشده</div>';
+  document.getElementById('markedContent').innerHTML=html;
+}
+
+function applyMarks(){
+  const d=pageStates.filter(s=>s.del).length;
+  if(!d){toast('هیچ صفحه‌ای برای حذف نیست','er');return;}
+  if(!confirm(d+' صفحه حذف شود؟'))return;
+  // Remove deleted pages
+  pageStates=pageStates.filter(s=>!s.del);
+  totalPages=pageStates.length;
+  document.getElementById('pc').textContent=totalPages;
+  document.getElementById('totalPg').textContent=totalPages;
+  updateCounts();
+  renderMarked();
+  toast('✓ '+d+' صفحه حذف شد — برای ذخیره به بخش ذخیره بروید','ok');
+}
+
+// ── Add Pages ──
+function swTab(t){
+  addTab=t;
+  document.getElementById('tpdf').className='atab'+(t==='pdf'?' act':'');
+  document.getElementById('timg').className='atab'+(t==='img'?' act':'');
+  document.getElementById('ppdf').style.display=t==='pdf'?'block':'none';
+  document.getElementById('pimg').style.display=t==='img'?'block':'none';
+}
+async function hdlPdf(file){
+  if(!file)return;
+  const buf=await file.arrayBuffer();
+  addPdfB=new Uint8Array(buf);
+  const d=await pdfjsLib.getDocument({data:addPdfB}).promise;
+  document.getElementById('aps').textContent='✓ '+file.name+' — '+d.numPages+' صفحه';
+}
+function hdlImg(files){addImgs=[...files];document.getElementById('ais').textContent='✓ '+files.length+' تصویر';}
+
+async function confAdd(){
+  const after=+document.getElementById('addAfter').value;
+  if(addTab==='pdf'){
+    if(!addPdfB){toast('فایل PDF انتخاب کن','er');return;}
+    showP('در حال افزودن...',30);
+    const {PDFDocument}=PDFLib;
+    const mainDoc=await PDFDocument.load(pdfBytes);
+    const addDoc=await PDFDocument.load(addPdfB);
+    const addN=addDoc.getPageCount();
+    const idxs=Array.from({length:addN},(_,i)=>i);
+    const copied=await mainDoc.copyPages(addDoc,idxs);
+    const insertAt=Math.min(after,mainDoc.getPageCount());
+    const allPages=mainDoc.getPages();
+    // Insert at position
+    const newDoc=await PDFDocument.create();
+    const mainIdxsBefore=Array.from({length:insertAt},(_,i)=>i);
+    const mainIdxsAfter=Array.from({length:allPages.length-insertAt},(_,i)=>i+insertAt);
+    const cpBefore=await newDoc.copyPages(mainDoc,mainIdxsBefore);
+    cpBefore.forEach(p=>newDoc.addPage(p));
+    copied.forEach(p=>newDoc.addPage(p));
+    const cpAfter=await newDoc.copyPages(mainDoc,mainIdxsAfter);
+    cpAfter.forEach(p=>newDoc.addPage(p));
+    pdfBytes=await newDoc.save();
+    pdfDoc=await pdfjsLib.getDocument({data:pdfBytes}).promise;
+    totalPages=pdfDoc.numPages;
+    const addStates=Array.from({length:addN},()=>({del:false,rot:0,keep:false}));
+    pageStates=[...pageStates.slice(0,insertAt),...addStates,...pageStates.slice(insertAt)];
+    document.getElementById('pc').textContent=totalPages;
+    document.getElementById('totalPg').textContent=totalPages;
+    addPdfB=null;document.getElementById('aps').textContent='هنوز انتخاب نشده';
+    hideP();updateCounts();
+    toast('✓ '+addN+' صفحه اضافه شد','ok');
+  } else {
+    if(!addImgs.length){toast('تصویر انتخاب کن','er');return;}
+    showP('در حال تبدیل تصاویر...',20);
+    const {PDFDocument}=PDFLib;
+    const mainDoc=await PDFDocument.load(pdfBytes);
+    const insertAt=Math.min(+document.getElementById('addAfter').value,mainDoc.getPageCount());
+    const tmpDoc=await PDFDocument.create();
+    for(let i=0;i<addImgs.length;i++){
+      setPrg(Math.round((i/addImgs.length)*80),'تبدیل تصویر '+(i+1)+'...');
+      const buf=await addImgs[i].arrayBuffer();
+      const bytes=new Uint8Array(buf);
+      let img;
+      if(addImgs[i].type==='image/png') img=await tmpDoc.embedPng(bytes);
+      else img=await tmpDoc.embedJpg(bytes);
+      const {width,height}=img.scale(1);
+      const pg=tmpDoc.addPage([width,height]);
+      pg.drawImage(img,{x:0,y:0,width,height});
+    }
+    const newDoc=await PDFDocument.create();
+    const mainPages=mainDoc.getPageCount();
+    if(insertAt>0){const cp=await newDoc.copyPages(mainDoc,Array.from({length:insertAt},(_,i)=>i));cp.forEach(p=>newDoc.addPage(p));}
+    const imgN=tmpDoc.getPageCount();
+    const cpImg=await newDoc.copyPages(tmpDoc,Array.from({length:imgN},(_,i)=>i));
+    cpImg.forEach(p=>newDoc.addPage(p));
+    if(insertAt<mainPages){const cp=await newDoc.copyPages(mainDoc,Array.from({length:mainPages-insertAt},(_,i)=>i+insertAt));cp.forEach(p=>newDoc.addPage(p));}
+    pdfBytes=await newDoc.save();
+    pdfDoc=await pdfjsLib.getDocument({data:pdfBytes}).promise;
+    totalPages=pdfDoc.numPages;
+    const addStates=Array.from({length:imgN},()=>({del:false,rot:0,keep:false}));
+    pageStates=[...pageStates.slice(0,insertAt),...addStates,...pageStates.slice(insertAt)];
+    document.getElementById('pc').textContent=totalPages;
+    document.getElementById('totalPg').textContent=totalPages;
+    addImgs=[];document.getElementById('ais').textContent='هنوز انتخاب نشده';
+    hideP();updateCounts();
+    toast('✓ '+imgN+' تصویر اضافه شد','ok');
+  }
+}
+
+// ── Save ──
+async function savePDF(){
+  if(!pdfBytes){toast('ابتدا فایل بارگذاری کن','er');return;}
+  showP('در حال ساختن PDF...',0);
+  try{
+    const {PDFDocument,degrees}=PDFLib;
+    const srcDoc=await PDFDocument.load(pdfBytes);
+    const outDoc=await PDFDocument.create();
+    const keep=pageStates.map((s,i)=>s.del?null:i).filter(i=>i!==null);
+    const copied=await outDoc.copyPages(srcDoc,keep);
+    keep.forEach((srcIdx,outIdx)=>{
+      const pg=copied[outIdx];
+      const rot=pageStates[srcIdx].rot;
+      if(rot){const cur=pg.getRotation().angle;pg.setRotation(degrees((cur+rot)%360));}
+      outDoc.addPage(pg);
+    });
+    setPrg(90,'نهایی‌سازی...');
+    const bytes=await outDoc.save();
+    setPrg(100,'آماده!');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    a.download=fname.replace('.pdf','_edited.pdf');a.click();
+    toast('✓ PDF ذخیره شد!','ok');
+  }catch(e){toast('خطا: '+e.message,'er');}
+  finally{hideP();}
+}
+
+// ── Helpers ──
+function showP(msg,pct){const el=document.getElementById('prg');el.classList.add('show');document.getElementById('prl').textContent=msg;document.getElementById('prf').style.width=(pct||0)+'%';}
+function setPrg(pct,msg){document.getElementById('prf').style.width=pct+'%';if(msg)document.getElementById('prl').textContent=msg;}
+function hideP(){setTimeout(()=>document.getElementById('prg').classList.remove('show'),600);}
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'ok');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
