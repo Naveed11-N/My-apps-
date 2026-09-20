@@ -634,6 +634,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <div class="vqhint" id="vQHint"></div>
       <button class="vqspeak" onclick="speakVQ()">🔊 بشنو</button>
     </div>
+    <div id="vSynBox" style="display:none;"></div>
     <div class="transcript" id="vTranscript">اینجا جواب شما نمایش داده می‌شود...</div>
     <div class="micwrap">
       <button class="micbtn" id="vMicBtn" onclick="toggleVMic()">🎤</button>
@@ -1079,6 +1080,70 @@ function parseWords(text){
   else toast('❌ فرمت فایل درست نیست','err');
 }
 
+// ── Synonym Map ──────────────────────────────────────
+let synMap = {}; // de → [word, word, ...]
+
+function buildSynMap(){
+  synMap = {};
+  const tokenMap = new Map();
+  words.forEach((w,i)=>{
+    // Group by shared meaning tokens (split by /)
+    const tokens = (w.mainFa||w.fa).split('/').map(t=>t.trim().toLowerCase()).filter(t=>t.length>1);
+    tokens.forEach(t=>{
+      if(!tokenMap.has(t)) tokenMap.set(t,[]);
+      tokenMap.get(t).push(i);
+    });
+  });
+  // Build synMap: for each word, find all words sharing a meaning token
+  tokenMap.forEach((idxs)=>{
+    if(idxs.length<2) return;
+    idxs.forEach(i=>{
+      const de=words[i].de;
+      if(!synMap[de]) synMap[de]=new Set();
+      idxs.forEach(j=>{ if(j!==i) synMap[de].add(j); });
+    });
+  });
+  // Convert Sets to arrays
+  Object.keys(synMap).forEach(k=>{ synMap[k]=[...synMap[k]]; });
+}
+
+function getSynWords(w){
+  const idxs = synMap[w.de];
+  if(!idxs||!idxs.length) return [];
+  return idxs.map(i=>words[i]).filter(Boolean);
+}
+
+function synBoxHTML(w){
+  const syns = getSynWords(w);
+  if(!syns.length) return '';
+  const artColors = {der:'#38bdf8',die:'#f472b6',das:'#4ade80'};
+  // Include current word + synonyms
+  const allW = [w, ...syns];
+  const items = allW.map(sw=>{
+    const isCur = sw===w;
+    const ac = artColors[sw.article]||'#dde4f8';
+    const artSpan = sw.article?`<span style="color:${ac};font-size:11px;font-weight:700;">${sw.article}</span> `:'';
+    const pluralSpan = sw.plural?` <span style="color:#3d4870;font-size:10px;">${sw.plural}</span>`:'';
+    const perfM = sw.de.match(/\(([^)]+)\)/);
+    const deClean = sw.de.replace(/\s*\([^)]+\)/,'').trim();
+    const perfSpan = perfM?` <span style="color:#3d4870;font-size:10px;">(${perfM[1]})</span>`:'';
+    return `<div style="display:flex;justify-content:space-between;align-items:flex-start;
+      padding:7px 10px;border-radius:10px;margin-bottom:5px;
+      border:1px solid ${isCur?'rgba(99,102,241,.4)':'rgba(255,255,255,.05)'};
+      background:${isCur?'rgba(99,102,241,.1)':'rgba(255,255,255,.02)'};">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;direction:ltr;text-align:left;">${artSpan}<b>${deClean}</b>${pluralSpan}${perfSpan}</div>
+        ${sw.diff?`<div style="font-size:10px;color:#6b7280;margin-top:2px;">📌 ${sw.diff}</div>`:''}
+      </div>
+      <div style="font-size:11px;color:#a78bfa;font-weight:600;text-align:right;margin-right:8px;flex-shrink:0;">${sw.fa}</div>
+    </div>`;
+  }).join('');
+  return `<div style="margin:10px 0 4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 14px;">
+    <div style="font-size:10px;color:#4a5578;font-weight:700;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;">🔗 لغات مشابه این گروه</div>
+    ${items}
+  </div>`;
+}
+
 function loadDemo(){words=[...DEMO];saveWords();loadLearned();refreshStats();showBadge(words.length);toast('✅ '+words.length+' لغت نمونه','ok');}
 function showBadge(n){const b=document.getElementById('wordBadge');b.style.display='block';b.textContent='✅ '+n+' لغت آماده — همه بخش‌ها از این لغات استفاده می‌کنند';}
 function loadLearned(){try{learned=JSON.parse(localStorage.getItem(LEARNED_STORAGE)||'{}');}catch(e){learned={};}}
@@ -1243,6 +1308,10 @@ function renderFlash(body,w){
     if(faBtn){faBtn.onclick=function(e){e.stopPropagation();tts(window._fcWord.fa,'fa-IR');};}
     if(autoTTS)tts(window._fcWord.de,'de-DE');
   },100);
+  // Synonym box
+  const synH = synBoxHTML(w);
+  if(synH) body.innerHTML += synH;
+
   const rr=srs[w.de];
   body.innerHTML+='<div class="fctap">👆 روی کارت بزن</div>'+(rr?'<div class="srsdot">مرور '+rr.ok+'✅ / '+rr.no+'❌ · فاصلهٔ بعدی: '+(rr.iv||0)+' روز</div>':'<div class="srsdot">✨ لغت جدید</div>');
   const btns=document.createElement('div');btns.className='fcbtns';btns.id='fcBtns';btns.style.display='none';
@@ -1393,6 +1462,10 @@ function vRenderQ(){
     setTimeout(()=>tts(baseDe(w.de),'de-DE'),400);  // article mode: only word, user guesses article
   }
   updVBar();
+  // Synonym box in voice quiz
+  const vSynH = synBoxHTML(w);
+  const vSynEl = document.getElementById('vSynBox');
+  if(vSynEl){ vSynEl.innerHTML = vSynH || ''; vSynEl.style.display = vSynH?'block':'none'; }
 }
 function speakVQ(){const w=vWords[vIdx];if(vMode==='fa-to-de'||vMode==='spell')tts(w.fa,'fa-IR');else if(vMode==='v-article')tts(baseDe(w.de),'de-DE');else tts(fullDe(w),'de-DE');}
 let vMicTimeout=null,vInterim='';
