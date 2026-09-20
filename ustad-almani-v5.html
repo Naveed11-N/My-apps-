@@ -181,6 +181,13 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.4)}50%{box-shadow:0 0 0 14px rgba(244,63,94,0)}}
 .miclabel{font-size:.7rem;color:var(--muted);font-weight:600;}
 .vresbox{width:100%;max-width:380px;border-radius:13px;padding:13px 15px;text-align:center;display:none;}
+.syn-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:9px;margin-bottom:5px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);}
+.syn-item:last-child{margin-bottom:0;}
+.syn-de{font-size:13px;font-weight:700;direction:ltr;text-align:left;}
+.syn-fa{font-size:11px;color:#9333ea;font-weight:600;}
+.syn-diff{font-size:10px;color:#3d4870;margin-top:2px;}
+.syn-current{border-color:rgba(79,127,255,.3);background:rgba(79,127,255,.06);}
+
 .vresbox.ok{background:rgba(6,214,160,.07);border:2px solid rgba(6,214,160,.25);}
 .vresbox.no{background:rgba(244,63,94,.07);border:2px solid rgba(244,63,94,.25);}
 .vresemoji{font-size:1.7rem;margin-bottom:3px;}
@@ -633,6 +640,11 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <div class="vqword" id="vQWord"></div>
       <div class="vqhint" id="vQHint"></div>
       <button class="vqspeak" onclick="speakVQ()">🔊 بشنو</button>
+    </div>
+    <!-- لغات مشابه -->
+    <div id="vSynBox" style="display:none;margin:10px 0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 14px;">
+      <div style="font-size:10px;color:#3d4870;font-weight:700;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;">🔗 لغات مشابه این گروه</div>
+      <div id="vSynList"></div>
     </div>
     <div class="transcript" id="vTranscript">اینجا جواب شما نمایش داده می‌شود...</div>
     <div class="micwrap">
@@ -1089,6 +1101,71 @@ function baseDe(de){return (de||'').split(',')[0].replace(/\(.*?\)/g,'').trim();
 function getPerfektForm(de){
   // Extract content inside parentheses e.g. "nehmen (hat genommen)" -> "hat genommen"
   const m=(de||'').match(/\(([^)]+)\)/);
+
+// ── Synonym groups ──────────────────────────────
+function buildSynGroups(wordArr){
+  const map = new Map();
+  wordArr.forEach((w,i)=>{
+    const tokens = (w.fa||'').split('/').map(t=>t.trim().toLowerCase()).filter(Boolean);
+    tokens.forEach(t=>{ if(!map.has(t)) map.set(t,[]); map.get(t).push(i); });
+  });
+  const groups = [], seen = new Set();
+  map.forEach((idxs,meaning)=>{
+    if(idxs.length<2) return;
+    const key=idxs.slice().sort((a,b)=>a-b).join('-');
+    if(seen.has(key)) return; seen.add(key);
+    groups.push({fa:meaning, idxs});
+  });
+  return groups;
+}
+
+function getSynGroupForWord(w, wordArr, synGroups){
+  const i = wordArr.indexOf(w);
+  if(i<0) return null;
+  return synGroups.find(g=>g.idxs.includes(i)) || null;
+}
+
+const DIFF_HINTS = {
+  'Geschichte':'داستان وسیع‌تر — هم داستان هم تاریخ',
+  'Erzählung':'روایت ادبی — رسمی‌تر',
+  'streiten':'دعوای شدید',
+  'zanken':'دعوای کلامی سطحی',
+  'zeichnen':'نقاشی با قلم/پنسل',
+  'malen':'نقاشی با رنگ و قلم‌مو',
+  'verrückt':'دیوانه — محاوره‌ای',
+  'wahnsinnig':'دیوانه یا فوق‌العاده زیاد',
+  'Anfang':'شروع — عمومی',
+  'Beginn':'شروع — رسمی‌تر',
+  'Ende':'پایان — عمومی',
+  'Schluss':'پایان + نتیجه‌گیری',
+  'Sache':'موضوع انتزاعی',
+  'Ding':'چیز مشخص و ملموس',
+  'einfach':'ساده — هم آسان هم بی‌پیچیدگی',
+  'leicht':'آسان یا سبک وزن',
+  'Cousin':'پسرخاله/عمه — مدرن',
+  'Vetter':'پسرخاله/عمه — قدیمی',
+  'Cousine':'دخترخاله/عمه — مدرن',
+  'früher':'قبلاً — نسبی',
+  'damals':'در آن زمان — گذشته دور',
+  'kompliziert':'پیچیده — ذاتاً',
+  'schwierig':'دشوار — نیاز به تلاش',
+  'passieren':'رخ دادن — عامیانه',
+  'geschehen':'رخ دادن — رسمی',
+  'öffnen':'باز کردن — رسمی',
+  'aufmachen':'باز کردن — محاوره‌ای',
+  'Enkel':'نواسه پسر',
+  'Enkelin':'نواسه دختر',
+  'schön':'زیبا — عمومی',
+  'hübsch':'زیبا — برای چهره و ظاهر',
+  'treffen':'ملاقات — برنامه‌ریزی‌شده',
+  'besuchen':'بازدید — رفتن پیش کسی',
+  'begegnen':'ملاقات — تصادفی',
+};
+
+let _synGroups = null;
+function getSynGroups(wordArr){ if(!_synGroups) _synGroups=buildSynGroups(wordArr); return _synGroups; }
+function resetSynGroups(){ _synGroups=null; }
+
   return m?m[1].trim():null;
 }
 function hasPerfekt(w){return !!getPerfektForm(w.de);}
@@ -1393,7 +1470,35 @@ function vRenderQ(){
     setTimeout(()=>tts(baseDe(w.de),'de-DE'),400);  // article mode: only word, user guesses article
   }
   updVBar();
+  showVSynBox(w);
 }
+function showVSynBox(w){
+  const box = document.getElementById('vSynBox');
+  const list = document.getElementById('vSynList');
+  const sg = getSynGroups(words);
+  const grp = getSynGroupForWord(w, words, sg);
+  if(!grp || grp.idxs.length < 2){ box.style.display='none'; return; }
+  
+  const artColors = {der:'#38bdf8', die:'#f472b6', das:'#4ade80'};
+  list.innerHTML = grp.idxs.map(i=>{
+    const word = words[i];
+    const isCurrent = word === w;
+    const artColor = artColors[word.article] || '#dde4f8';
+    const deStr = word.article
+      ? `<span style="color:${artColor};font-size:11px;">${word.article}</span> <b>${word.de}</b>${word.plural?' <span style="color:#3d4870;font-size:10px;">'+word.plural+'</span>':''}`
+      : `<b>${word.de}</b>${word.perf?` <span style="color:#3d4870;font-size:10px;">(${word.perf})</span>`:''}`;
+    const diff = DIFF_HINTS[word.de] || DIFF_HINTS[word.base] || '';
+    return `<div class="syn-item${isCurrent?' syn-current':''}">
+      <div>
+        <div class="syn-de">${deStr}</div>
+        ${diff?`<div class="syn-diff">📌 ${diff}</div>`:''}
+      </div>
+      <div class="syn-fa">${word.fa}</div>
+    </div>`;
+  }).join('');
+  box.style.display = 'block';
+}
+
 function speakVQ(){const w=vWords[vIdx];if(vMode==='fa-to-de'||vMode==='spell')tts(w.fa,'fa-IR');else if(vMode==='v-article')tts(baseDe(w.de),'de-DE');else tts(fullDe(w),'de-DE');}
 let vMicTimeout=null,vInterim='';
 function setupVRecog(){
